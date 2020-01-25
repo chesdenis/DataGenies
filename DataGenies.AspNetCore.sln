@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesCore", "src\DataGenies.AspNetCore.DataGeniesCore\DataGenies.AspNetCore.DataGeniesCore.csproj", "{DEE76808-7FCD-4495-B582-8E4F37918E69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F4E1D96-D0F3-44B0-ABD1-6435D364152D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEE76808-7FCD-4495-B582-8E4F37918E69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEE76808-7FCD-4495-B582-8E4F37918E69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEE76808-7FCD-4495-B582-8E4F37918E69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEE76808-7FCD-4495-B582-8E4F37918E69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DEE76808-7FCD-4495-B582-8E4F37918E69} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
+	EndGlobalSection
+EndGlobal
