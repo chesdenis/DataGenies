@@ -38,8 +38,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Providers
         private string GetApplicationTypeVersionFromPackagePath(string packagePath)
         {
             var relativePath = packagePath.Replace(this._options.DropFolderOptions.Path, string.Empty);
-            var packageVersion = packagePath.Split(relativePath,
-                Path.PathSeparator)[0];
+            var packageVersion = relativePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)[0];
 
             return packageVersion;
         }

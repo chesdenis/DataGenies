@@ -12,7 +12,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore
 
         public DropFolderOptions DropFolderOptions { get; set; } = new DropFolderOptions()
         {
-            Path = "C:\\DropFolder",
+            Path = "C:\\GeniesDropFolder",
             UseZippedPackages = false
         };
        

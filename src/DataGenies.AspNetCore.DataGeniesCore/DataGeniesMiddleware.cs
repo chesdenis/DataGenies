@@ -1,17 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers;
-using DataGenies.AspNetCore.DataGeniesCore.Attributes;
-using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

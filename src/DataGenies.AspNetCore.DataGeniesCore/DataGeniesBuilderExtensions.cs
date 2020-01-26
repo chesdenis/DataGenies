@@ -1,5 +1,6 @@
 ﻿using System;
 using DataGenies.AspNetCore.DataGeniesCore.Providers;
+using DataGenies.AspNetCore.DataGeniesCore.Repositories;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,9 +24,10 @@ namespace DataGenies.AspNetCore.DataGeniesCore
 
         public static void AddDataGeniesServices(this IServiceCollection services)
         {
-            services.AddScoped<IAssemblyTypesProvider, AssemblyTypesProvider>();
-            services.AddScoped<IApplicationTypesScanner, ApplicationTypesScanner>();
-            services.AddScoped<DataGeniesOptions>();
+            services.AddTransient<IFileSystemRepository, FileSystemRepository>();
+            services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
+            services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
+            services.AddTransient<DataGeniesOptions>();
         }
     }
 }
