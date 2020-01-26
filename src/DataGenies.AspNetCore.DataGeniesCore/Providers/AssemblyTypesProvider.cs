@@ -30,7 +30,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Providers
                 {
                     AssemblyPath = assemblyFullPath,
                     TypeName = type.Name,
-                    PackageVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
+                    AssemblyVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
                 };
             }
         }

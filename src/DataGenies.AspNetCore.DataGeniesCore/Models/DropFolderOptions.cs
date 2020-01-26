@@ -1,4 +1,4 @@
-namespace DataGenies.AspNetCore.DataGeniesCore
+namespace DataGenies.AspNetCore.DataGeniesCore.Models
 {
     public class DropFolderOptions
     {

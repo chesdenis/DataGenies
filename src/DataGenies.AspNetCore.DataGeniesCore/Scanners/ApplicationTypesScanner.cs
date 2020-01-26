@@ -42,7 +42,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Scanners
                     yield return new ApplicationType
                     {
                         TypeName = appTypeInfo.TypeName,
-                        TypeVersion = appTypeInfo.PackageVersion,
+                        TypeVersion = appTypeInfo.AssemblyVersion,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };
                 }

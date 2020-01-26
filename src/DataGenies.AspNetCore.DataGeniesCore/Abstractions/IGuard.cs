@@ -3,7 +3,7 @@ using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Receivers;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions
 {
-    public interface IGuard : IReceiver, IPublisher, IRunnable
+    public interface IGuard : IReceiver, IPublisher, IStartable
     {
         
     }

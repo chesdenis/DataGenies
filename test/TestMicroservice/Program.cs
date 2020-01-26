@@ -19,7 +19,7 @@ namespace TestMicroservice
     }
     
     [ApplicationType]
-    public class HtmlSimpleParser : IReceiver, IPublisher, IRunnable
+    public class HtmlSimpleParser : IReceiver, IPublisher, IStartable
     {
         private readonly BasicDataReceiver _receiver;
         private readonly BasicDataPublisher _publisher;
@@ -36,7 +36,7 @@ namespace TestMicroservice
 
         public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher?.PublishRange(dataRange);
 
-        public void Run()
+        public void Start()
         {
             this.Listen(this.OnReceive);
         }
@@ -51,7 +51,7 @@ namespace TestMicroservice
     }
     
     [ApplicationType]
-    public class HttpSimpleUrlGenerator : IPublisher, IRunnable
+    public class HttpSimpleUrlGenerator : IPublisher, IStartable
     {
         private readonly BasicDataPublisher _publisher;
 
@@ -64,7 +64,7 @@ namespace TestMicroservice
 
         public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher?.PublishRange(dataRange);
 
-        public void Run()
+        public void Start()
         {
             Console.WriteLine("Download something...");
 

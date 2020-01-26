@@ -57,13 +57,13 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Tests.Scanners
                     {
                         AssemblyPath = filesListInDropFolder[0],
                         TypeName = "Type1",
-                        PackageVersion = "20190102.1"
+                        AssemblyVersion = "20190102.1"
                     },
                     new ApplicationTypeInsideAssembly
                     {
                         AssemblyPath = filesListInDropFolder[1],
                         TypeName = "Type2",
-                        PackageVersion = "20190102.1"
+                        AssemblyVersion = "20190102.1"
                     }
                 });
             var options = new DataGeniesOptions();

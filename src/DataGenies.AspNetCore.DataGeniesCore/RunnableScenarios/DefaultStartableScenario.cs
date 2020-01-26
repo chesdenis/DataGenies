@@ -6,9 +6,9 @@ using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
 {
-    public class DefaultRunnableScenario : IRunnable
+    public class DefaultStartableScenario : IStartable
     {
-        private readonly IRunnable component;
+        private readonly IStartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
         private readonly IEnumerable<IConverter> converters;
 
@@ -17,7 +17,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
         private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
-        public DefaultRunnableScenario(IRunnable component,
+        public DefaultStartableScenario(IStartable component,
             IEnumerable<IBehaviour> behaviours,
             IEnumerable<IConverter> converters)
         {
@@ -26,13 +26,13 @@ namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
             this.converters = converters;
         }
          
-        public void Run()
+        public void Start()
         {
             try
             {
                 Array.ForEach(this.BeforeRun(), (t) => t.ExecuteScalar());
 
-                Action resultAction = this.component.Run;
+                Action resultAction = this.component.Start;
 
                 foreach (var behaviour in this.DuringRun())
                 {

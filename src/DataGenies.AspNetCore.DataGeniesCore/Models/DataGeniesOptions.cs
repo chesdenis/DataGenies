@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace DataGenies.AspNetCore.DataGeniesCore
+namespace DataGenies.AspNetCore.DataGeniesCore.Models
 {
     public class DataGeniesOptions
     {
