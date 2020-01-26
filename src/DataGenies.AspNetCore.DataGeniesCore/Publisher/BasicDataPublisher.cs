@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Publisher;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Publisher
 {

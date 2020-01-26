@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Receiver;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Receiver
 {

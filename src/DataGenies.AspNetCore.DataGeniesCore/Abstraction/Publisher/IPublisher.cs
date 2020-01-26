@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstraction
+namespace DataGenies.AspNetCore.DataGeniesCore.Abstraction.Publisher
 {
     public interface IPublisher
     {

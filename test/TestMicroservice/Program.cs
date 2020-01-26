@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Publisher;
 using DataGenies.AspNetCore.DataGeniesCore.Attribute;
 using DataGenies.AspNetCore.DataGeniesCore.Publisher;
 
@@ -25,9 +26,9 @@ namespace TestMicroservice
             this._publisher = publisher;
         }
 
-        public void Publish(byte[] data) => _publisher.Publish(data);
+        public void Publish(byte[] data) => _publisher?.Publish(data);
 
-        public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher.PublishRange(dataRange);
+        public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher?.PublishRange(dataRange);
 
         public void Run()
         {
