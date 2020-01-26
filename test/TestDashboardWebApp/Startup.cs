@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DataGenies.AspNetCore.DataGeniesCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace TestWebApp
+namespace TestDashboardWebApp
 {
     public class Startup
     {
@@ -25,6 +26,8 @@ namespace TestWebApp
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseDataGenies(options => { options.RoutePrefix = "d-g"; });
 
             app.UseRouting();
 
