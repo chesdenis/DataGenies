@@ -10,7 +10,9 @@ namespace DataGenies.AspNetCore.DataGeniesCore
 
         public string DocumentTitle { get; set; } = "DATA Genies";
 
+        public string DropFolderPath { get; set; } = "C:\\GeniesDropFolder";
+
         public Func<Stream> IndexStream { get; set; } = () => typeof(DataGeniesOptions).GetTypeInfo().Assembly
-            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesUI.index.html");
+            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesCore.index.html");
     }
 }

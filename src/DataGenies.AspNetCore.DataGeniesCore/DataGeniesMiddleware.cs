@@ -3,8 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DataGenies.AspNetCore.DataGeniesCore.Attribute;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +21,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore
     public class DataGeniesMiddleware
     {
         private const string EmbeddedFileNamespace =
-            "DataGenies.AspNetCore.DataGeniesUI.node_modules.datagenies_ui_dist";
+            "DataGenies.AspNetCore.DataGeniesCore.node_modules.datagenies_ui_dist";
         
         private readonly DataGeniesOptions _options;
         private readonly StaticFileMiddleware _staticFileMiddleware;
@@ -55,13 +58,40 @@ namespace DataGenies.AspNetCore.DataGeniesCore
                 await RespondWithIndexHtml(httpContext.Response);
                 return;
             }
-            
+
+            if (httpMethod == "GET" && Regex.IsMatch(path, $"^/{_options.RoutePrefix}/ApplicationTypes"))
+            {
+                await RespondWithApplicationTypes(httpContext.Response);
+                return;
+            }
+
             await _staticFileMiddleware.Invoke(httpContext);
+        }
+
+        private async Task RespondWithApplicationTypes(HttpResponse response)
+        {
+            response.ContentType = "application/json;charset=utf-8";
+            
+            var asm = Assembly.LoadFile("C:\\GeniesDropFolder\\TestMicroservice.dll");
+            var types = asm.GetTypes()
+                .Where(w => w.IsClass)
+                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTypeAttribute)))
+                .Select(s =>
+                {
+                    return new
+                    {
+                        Name = s.Name,
+                        Attributes = s.GetCustomAttributes(false).Select(ss => ss.GetType().Name)
+                    };
+                }).ToList();
+            
+            var responseData = JsonSerializer.Serialize(types);
+
+            await response.WriteAsync(responseData, Encoding.UTF8);
         }
 
         private async Task RespondWithIndexHtml(HttpResponse response)
         {
-            response.StatusCode = 200;
             response.ContentType = "text/html;charset=utf-8";
 
             using (var stream = _options.IndexStream())
@@ -80,7 +110,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore
         private void RespondWithRedirect(HttpResponse response, string location)
         {
              response.StatusCode = 301;
-                        response.Headers["Location"] = location;
+             response.Headers["Location"] = location;
         }
 
         private StaticFileMiddleware CreateStaticFileMiddleware(

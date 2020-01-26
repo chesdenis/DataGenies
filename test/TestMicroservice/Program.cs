@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Attribute;
 using DataGenies.AspNetCore.DataGeniesCore.Publisher;
 
 namespace TestMicroservice
@@ -14,6 +15,7 @@ namespace TestMicroservice
         }
     }
     
+    [ApplicationType]
     public class HttpSimpleUrlGenerator : IPublisher, IRunnable
     {
         private readonly BasicDataPublisher _publisher;
