@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
-using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Publisher;
-using DataGenies.AspNetCore.DataGeniesCore.Attribute;
-using DataGenies.AspNetCore.DataGeniesCore.Publisher;
+using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
+using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers;
+using DataGenies.AspNetCore.DataGeniesCore.Attributes;
+using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 
 namespace TestMicroservice
 {

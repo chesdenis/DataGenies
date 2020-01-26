@@ -8,10 +8,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
-using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Publisher;
-using DataGenies.AspNetCore.DataGeniesCore.Attribute;
-using DataGenies.AspNetCore.DataGeniesCore.Publisher;
+using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
+using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers;
+using DataGenies.AspNetCore.DataGeniesCore.Attributes;
+using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -75,31 +75,8 @@ namespace DataGenies.AspNetCore.DataGeniesCore
         private async Task RespondWithApplicationTypes(HttpResponse response)
         {
             response.ContentType = "application/json;charset=utf-8";
-            
-            var asm = Assembly.LoadFile("C:\\GeniesDropFolder\\TestMicroservice.dll");
-            var types = asm.GetTypes()
-                .Where(w => w.IsClass)
-                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTypeAttribute)))
-                .ToList();
 
-            var firstType = (IRunnable) Activator.CreateInstance(types[0],
-                new BasicDataPublisher(new FakePublisher(), new List<IConverter>()));
-            
-            firstType.Run();
-            
-            var responseObject = types
-                .Select(s =>
-                {
-                    return new
-                    {
-                        Name = s.Name,
-                        Attributes = s.GetCustomAttributes(false).Select(ss => ss.GetType().Name)
-                    };
-                }).ToList();
-            
-            
-            
-            var responseData = JsonSerializer.Serialize(responseObject);
+            var responseData = JsonSerializer.Serialize(new { });
 
             await response.WriteAsync(responseData, Encoding.UTF8);
         }
