@@ -12,6 +12,7 @@ using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
 using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Attributes;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
+using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,8 @@ namespace DataGenies.AspNetCore.DataGeniesCore
 {
     public class DataGeniesMiddleware
     {
+        private readonly IApplicationTypesScanner _applicationTypesScanner;
+
         private const string EmbeddedFileNamespace =
             "DataGenies.AspNetCore.DataGeniesCore.node_modules.datagenies_ui_dist";
         
@@ -34,9 +37,11 @@ namespace DataGenies.AspNetCore.DataGeniesCore
             RequestDelegate next,
             IWebHostEnvironment webHostEnv,
             ILoggerFactory loggerFactory,
-            DataGeniesOptions options
+            DataGeniesOptions options,
+            IApplicationTypesScanner applicationTypesScanner
         )
         {
+            _applicationTypesScanner = applicationTypesScanner;
             _options = options ?? new DataGeniesOptions();
             _staticFileMiddleware = CreateStaticFileMiddleware(next,webHostEnv,loggerFactory, options);
         }
@@ -76,7 +81,8 @@ namespace DataGenies.AspNetCore.DataGeniesCore
         {
             response.ContentType = "application/json;charset=utf-8";
 
-            var responseData = JsonSerializer.Serialize(new { });
+            var applicationTypes = _applicationTypesScanner.ScanTypes();
+            var responseData = JsonSerializer.Serialize(applicationTypes);
 
             await response.WriteAsync(responseData, Encoding.UTF8);
         }
