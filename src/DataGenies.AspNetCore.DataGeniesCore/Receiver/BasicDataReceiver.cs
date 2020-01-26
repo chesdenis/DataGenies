@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
+namespace DataGenies.AspNetCore.DataGeniesCore.Receiver
 {
     public class BasicDataReceiver : IReceiver
     {

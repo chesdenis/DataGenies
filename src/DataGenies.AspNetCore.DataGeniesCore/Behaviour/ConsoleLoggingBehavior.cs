@@ -1,7 +1,8 @@
 ﻿using System;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Behaviour;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Behaviours
+namespace DataGenies.AspNetCore.DataGeniesCore.Behaviour
 {
     public class ConsoleLoggingBehavior : GenericBehaviour
     {

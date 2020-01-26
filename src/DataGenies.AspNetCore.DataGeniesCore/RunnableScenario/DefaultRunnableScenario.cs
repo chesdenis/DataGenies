@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction;
+using DataGenies.AspNetCore.DataGeniesCore.Abstraction.Behaviour;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
+namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenario
 {
     public class DefaultRunnableScenario : IRunnable
     {

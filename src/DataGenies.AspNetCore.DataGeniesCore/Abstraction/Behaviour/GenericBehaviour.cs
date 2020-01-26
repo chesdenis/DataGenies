@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions
+namespace DataGenies.AspNetCore.DataGeniesCore.Abstraction.Behaviour
 {
     public abstract class GenericBehaviour : IBehaviour
     {
