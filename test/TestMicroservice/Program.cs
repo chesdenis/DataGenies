@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Receivers;
 using DataGenies.AspNetCore.DataGeniesCore.Attributes;
+using DataGenies.AspNetCore.DataGeniesCore.Components;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 

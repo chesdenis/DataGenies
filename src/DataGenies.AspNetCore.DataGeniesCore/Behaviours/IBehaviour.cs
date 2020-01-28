@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours
+namespace DataGenies.AspNetCore.DataGeniesCore.Behaviours
 {
     public interface IBehaviour
     {

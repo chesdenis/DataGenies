@@ -1,4 +1,4 @@
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions
+namespace DataGenies.AspNetCore.DataGeniesCore.Converters
 {
     public interface IConverter
     {

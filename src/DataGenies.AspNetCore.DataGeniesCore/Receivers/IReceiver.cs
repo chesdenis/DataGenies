@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions.Receivers
+namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
 {
     public interface IReceiver
     {

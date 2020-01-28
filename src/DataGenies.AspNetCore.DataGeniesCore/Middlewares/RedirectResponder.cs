@@ -23,12 +23,15 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
         public async Task Respond(HttpContext httpContext, string path)
         {
             // Use relative redirect to support proxy environments
-            var response = httpContext.Response;
-            var relativeRedirectPath = path.EndsWith("/")
-                ? "index.html"
-                : $"{path.Split('/').Last()}/index.html";
-            response.StatusCode = 301;
-            response.Headers["Location"] = relativeRedirectPath;
+            await Task.Run(()=>
+            {
+                var response = httpContext.Response;
+                var relativeRedirectPath = path.EndsWith("/")
+                    ? "index.html"
+                    : $"{path.Split('/').Last()}/index.html";
+                response.StatusCode = 301;
+                response.Headers["Location"] = relativeRedirectPath;
+            });
         }
     }
 }

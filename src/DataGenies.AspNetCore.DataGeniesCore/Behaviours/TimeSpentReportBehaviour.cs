@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Behaviours
 {

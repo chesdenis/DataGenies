@@ -1,5 +1,4 @@
 ﻿using System;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Behaviours
 {

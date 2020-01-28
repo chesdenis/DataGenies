@@ -1,4 +1,4 @@
-﻿namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours
+﻿namespace DataGenies.AspNetCore.DataGeniesCore.Behaviours
 {
     public enum BehaviourType
     {

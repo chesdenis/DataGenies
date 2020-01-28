@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Abstractions.Publishers
+namespace DataGenies.AspNetCore.DataGeniesCore.Publishers
 {
     public class FakePublisher : IPublisher
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Behaviours;
+using DataGenies.AspNetCore.DataGeniesCore.Behaviours;
+using DataGenies.AspNetCore.DataGeniesCore.Converters;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
+namespace DataGenies.AspNetCore.DataGeniesCore.Components
 {
-    public class DefaultStartableScenario : IStartable
+    public class DefaultComponent : IStartable
     {
         private readonly IStartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
@@ -17,7 +17,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.RunnableScenarios
         private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
-        public DefaultStartableScenario(IStartable component,
+        public DefaultComponent(IStartable component,
             IEnumerable<IBehaviour> behaviours,
             IEnumerable<IConverter> converters)
         {

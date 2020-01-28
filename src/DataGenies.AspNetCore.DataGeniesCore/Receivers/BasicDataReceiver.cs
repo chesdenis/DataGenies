@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions;
-using DataGenies.AspNetCore.DataGeniesCore.Abstractions.Receivers;
+using DataGenies.AspNetCore.DataGeniesCore.Converters;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
 {
