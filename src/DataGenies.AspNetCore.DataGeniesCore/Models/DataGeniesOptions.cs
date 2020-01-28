@@ -15,8 +15,5 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models
             Path = "C:\\GeniesDropFolder",
             UseZippedPackages = false
         };
-       
-        public Func<Stream> IndexStream { get; set; } = () => typeof(DataGeniesOptions).GetTypeInfo().Assembly
-            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesCore.index.html");
     }
 }

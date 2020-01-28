@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMicroservice", "test\Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesCore.Tests", "test\DataGenies.AspNetCore.DataGeniesCore.Tests\DataGenies.AspNetCore.DataGeniesCore.Tests.csproj", "{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesUI", "src\DataGenies.AspNetCore.DataGeniesUI\DataGenies.AspNetCore.DataGeniesUI.csproj", "{9314CECA-90F6-4E91-9BBB-206B37A0052A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +36,16 @@ Global
 		{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9314CECA-90F6-4E91-9BBB-206B37A0052A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9314CECA-90F6-4E91-9BBB-206B37A0052A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9314CECA-90F6-4E91-9BBB-206B37A0052A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9314CECA-90F6-4E91-9BBB-206B37A0052A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DEE76808-7FCD-4495-B582-8E4F37918E69} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 		{250C9F5E-C733-4BFF-9B46-96C23E4FC8DD} = {6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}
 		{69CB2036-8342-47C9-B0F2-D571C9C2847D} = {6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}
 		{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B} = {6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}
+		{9314CECA-90F6-4E91-9BBB-206B37A0052A} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 	EndGlobalSection
 EndGlobal

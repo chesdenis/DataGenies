@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
+namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders
 {
     public class RedirectResponder : IDataGeniesMiddlewareResponder
     {

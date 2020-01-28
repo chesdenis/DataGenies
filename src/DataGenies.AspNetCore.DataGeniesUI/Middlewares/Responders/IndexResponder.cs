@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
+namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares.Responders
 {
     public class IndexResponder : IDataGeniesMiddlewareResponder
     {
@@ -27,7 +30,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
             var response = httpContext.Response;
             response.ContentType = "text/html;charset=utf-8";
 
-            using (var stream = _options.IndexStream())
+            using (var stream = IndexStream())
             {
                 // Inject arguments before writing to response
                 var htmlBuilder = new StringBuilder(new StreamReader(stream).ReadToEnd());
@@ -39,7 +42,10 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
                 await response.WriteAsync(htmlBuilder.ToString(), Encoding.UTF8);
             }
         }
-        
+
+        private static Func<Stream> IndexStream { get; } = () => typeof(IndexResponder).GetTypeInfo().Assembly
+            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesUI.ClientAppBundle.index.html");
+
         private IDictionary<string, string> GetIndexArguments()
         {
             return new Dictionary<string, string>()

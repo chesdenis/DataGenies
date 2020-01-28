@@ -6,7 +6,7 @@ using DataGenies.AspNetCore.DataGeniesCore.Models;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.AspNetCore.Http;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
+namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders
 {
     public class GetApplicationTypesResponder : IDataGeniesMiddlewareResponder
     {

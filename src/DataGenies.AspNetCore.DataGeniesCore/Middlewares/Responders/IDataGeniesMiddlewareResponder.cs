@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares
+namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders
 {
     public interface IDataGeniesMiddlewareResponder
     {
