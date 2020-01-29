@@ -33,8 +33,6 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Extensions
             services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
             
             services.AddTransient<IDataGeniesMiddlewareResponder, IndexResponder>();
-            
-            services.AddTransient<DataGeniesOptions>();
         }
     }
 }

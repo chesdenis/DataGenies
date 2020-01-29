@@ -20,7 +20,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares
         private readonly IEnumerable<IDataGeniesMiddlewareResponder> _responders;
 
         private const string EmbeddedFileNamespace =
-            "DataGenies.AspNetCore.DataGeniesUI.ClientAppBundle";
+            "DataGenies.AspNetCore.DataGeniesUI.ClientApp.dist";
 
         private readonly DataGeniesOptions _options;
         private readonly StaticFileMiddleware _staticFileMiddleware;

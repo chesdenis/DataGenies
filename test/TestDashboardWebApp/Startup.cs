@@ -31,8 +31,8 @@ namespace TestDashboardWebApp
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDataGeniesCore(options => { options.RoutePrefix = "/data-genies/core"; });
-            app.UseDataGeniesUI(options => { options.RoutePrefix = "/data-genies/ui"; });
+            app.UseDataGeniesCore();
+            app.UseDataGeniesUI();
 
             app.UseRouting();
 

@@ -8,4 +8,14 @@
       <ProjectReference Include="..\DataGenies.AspNetCore.DataGeniesCore\DataGenies.AspNetCore.DataGeniesCore.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="ClientApp\index.html" />
+      <None Remove="ClientApp\dist\like_button.js" />
+      <EmbeddedResource Include="ClientApp\dist\like_button.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="App" />
+    </ItemGroup>
+
 </Project>

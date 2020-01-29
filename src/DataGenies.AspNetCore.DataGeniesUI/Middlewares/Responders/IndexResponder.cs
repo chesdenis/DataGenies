@@ -44,7 +44,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares.Responders
         }
 
         private static Func<Stream> IndexStream { get; } = () => typeof(IndexResponder).GetTypeInfo().Assembly
-            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesUI.ClientAppBundle.index.html");
+            .GetManifestResourceStream("DataGenies.AspNetCore.DataGeniesUI.ClientApp.index.html");
 
         private IDictionary<string, string> GetIndexArguments()
         {
