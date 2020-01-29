@@ -31,7 +31,8 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Extensions
         {
             services.AddTransient<IFileSystemRepository, FileSystemRepository>();
             services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
-            
+
+            services.AddTransient<IDataGeniesMiddlewareResponder, RedirectResponder>();
             services.AddTransient<IDataGeniesMiddlewareResponder, IndexResponder>();
         }
     }

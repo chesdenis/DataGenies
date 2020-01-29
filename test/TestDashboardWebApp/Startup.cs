@@ -31,7 +31,7 @@ namespace TestDashboardWebApp
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseDataGeniesCore();
+            //app.UseDataGeniesCore();
             app.UseDataGeniesUI();
 
             app.UseRouting();

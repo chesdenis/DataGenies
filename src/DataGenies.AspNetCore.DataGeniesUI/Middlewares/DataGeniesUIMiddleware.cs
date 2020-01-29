@@ -46,6 +46,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares
             if (responder != null)
             {
                 await responder.Respond(httpContext, path);
+                return;
             }
 
             await _staticFileMiddleware.Invoke(httpContext);
@@ -61,7 +62,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares
             var staticFileOptions = new StaticFileOptions
             {
                 RequestPath = string.IsNullOrEmpty(_options.RoutePrefix) ? string.Empty : $"/{options.RoutePrefix}",
-                FileProvider = new EmbeddedFileProvider(typeof(DataGeniesMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace)
+                FileProvider = new EmbeddedFileProvider(typeof(DataGeniesUIMiddleware).GetTypeInfo().Assembly, EmbeddedFileNamespace)
             };
             
             return new StaticFileMiddleware(next, webHostEnv, Options.Create<StaticFileOptions>(staticFileOptions), loggerFactory);
