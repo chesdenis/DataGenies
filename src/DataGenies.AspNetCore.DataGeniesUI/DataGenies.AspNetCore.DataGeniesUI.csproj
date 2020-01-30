@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="ClientApp/dist/**/*" Exclude="**/*/*.map;**/*/*.json;**/*/*.md" />
+        <EmbeddedResource Include="ClientApp/dist/**/*" Exclude="**/*/*.json;**/*/*.md" />
     </ItemGroup>
     
     <Target Name="NpmInstall" BeforeTargets="Build">

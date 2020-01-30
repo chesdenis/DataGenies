@@ -39,6 +39,10 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares.Responders
                     htmlBuilder.Replace(entry.Key, entry.Value);
                 }
 
+                htmlBuilder.Replace("<base href=\"/\" />", $"<base href=\"{_options.RoutePrefix}\" />");
+                //htmlBuilder.Replace("<script src=\"", $"<script src=\"{_options.RoutePrefix}/");
+                //htmlBuilder.Replace("<link rel=\"stylesheet\" href=\"",
+                //    $"<link rel=\"stylesheet\" href=\"{_options.RoutePrefix}/");
                 await response.WriteAsync(htmlBuilder.ToString(), Encoding.UTF8);
             }
         }
@@ -50,7 +54,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Middlewares.Responders
         {
             return new Dictionary<string, string>()
             {
-                { "%(DocumentTitle)", _options.DocumentTitle },
+                { "%(DocumentTitle)", _options.DocumentTitle }
             };
         }
     }
