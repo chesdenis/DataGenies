@@ -13,7 +13,15 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
         private readonly InMemoryMqBroker _broker;
         private readonly string _exchangeName;
 
-        private Queue<InMemoryMqMessage> ContextQueue => this._broker.ExchangesAndBoundQueues[_exchangeName];
+        private IEnumerable<Queue<InMemoryMqMessage>> ContextQueues
+        {
+            get
+            {
+                return this._broker.ExchangesAndBoundQueues
+                    .Where(w => w.Item1 == _exchangeName)
+                    .Select(s => s.Item2);
+            }
+        }
 
         public InMemoryPublisher(InMemoryMqBroker broker, string exchangeName)
         {
@@ -25,11 +33,15 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
         
         public void Publish(byte[] data, string routingKey)
         {
-            this.ContextQueue.Enqueue(new InMemoryMqMessage
+            Array.ForEach(this.ContextQueues.ToArray(), queue =>
             {
-                Body = data,
-                RoutingKey = routingKey
+                queue.Enqueue(new InMemoryMqMessage
+                {
+                    Body = data,
+                    RoutingKey = routingKey
+                });
             });
+         
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)

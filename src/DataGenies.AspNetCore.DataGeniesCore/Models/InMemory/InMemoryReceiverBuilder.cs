@@ -15,13 +15,14 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             _broker = broker;
         }
 
-        public ReceiverBuilder WithQueue(string queueName)
+        public InMemoryReceiverBuilder WithQueue(string queueName)
         {
             this.QueueName = queueName;
+            this.RoutingKeys = new[] {"#"};
             return this;
         }
         
-        public ReceiverBuilder WithRoutingKeys(IEnumerable<string> routingKeys)
+        public InMemoryReceiverBuilder WithRoutingKeys(IEnumerable<string> routingKeys)
         {
             this.RoutingKeys = routingKeys;
             return this;

@@ -23,20 +23,21 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
 
         public void Listen(Action<byte[]> onReceive)
         {
-            var relatedQueue = _broker.ExchangesAndBoundQueues.First(f => f.Key == _queueName).Value;
+            var relatedQueue = _broker.ExchangesAndBoundQueues.First(f => f.Item2.Name == _queueName).Item2;
 
             this._isListening = true;
             while (_isListening)
             {
                 Task.Delay(new TimeSpan(0, 0, 1)).Wait();
-                
-                var message = relatedQueue.Dequeue();
 
+                if (!relatedQueue.TryDequeue(out var message)) continue;
+                
                 if (IsMatchForReceiver(message))
                 {
                     onReceive(message.Body);
+                    continue;
                 }
-
+                    
                 relatedQueue.Enqueue(message);
             }
         }

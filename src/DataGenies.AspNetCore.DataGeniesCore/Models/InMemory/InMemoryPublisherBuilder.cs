@@ -14,7 +14,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             _broker = broker;
         }
         
-        public PublisherBuilder WithExchange(string exchangeName)
+        public InMemoryPublisherBuilder WithExchange(string exchangeName)
         {
             this.ExchangeName = exchangeName;
             return this;
