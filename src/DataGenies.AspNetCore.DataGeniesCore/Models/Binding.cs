@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace DataGenies.AspNetCore.DataGeniesCore.Models
 {
     public partial class Binding
@@ -8,4 +10,5 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models
         public virtual ApplicationInstance ReceiverInstance { get; set; }
         public virtual ApplicationInstance PublisherInstance { get; set; }
     }
+ 
 }

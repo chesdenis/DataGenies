@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Converters;
 
@@ -27,6 +28,16 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Publishers
             this.publisher.Publish(data);
         }
 
+        public void Publish(byte[] data, string routingKey)
+        {
+            publisher.Publish(data, routingKey);
+        }
+
+        public void Publish(byte[] data, IEnumerable<string> routingKeys)
+        {
+            publisher.Publish(data, routingKeys);
+        }
+
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
             var dataRangeToPublish = new List<byte[]>();
@@ -44,6 +55,16 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Publishers
             }
              
             this.publisher.PublishRange(dataRangeToPublish);
+        }
+
+        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
+        {
+            publisher.PublishRange(dataRange, routingKey);
+        }
+
+        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
+        {
+            publisher.PublishTuples(tuples);
         }
     }
 }

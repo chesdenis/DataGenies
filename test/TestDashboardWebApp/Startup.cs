@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataGenies.AspNetCore.DataGeniesCore;
 using DataGenies.AspNetCore.DataGeniesCore.Extensions;
+using DataGenies.AspNetCore.DataGeniesCore.Models.Contexts;
+using DataGenies.AspNetCore.DataGeniesCore.Models.InMemory;
 using DataGenies.AspNetCore.DataGeniesUI.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TestDashboardWebApp.TestDataContext;
 
 namespace TestDashboardWebApp
 {
@@ -21,6 +24,9 @@ namespace TestDashboardWebApp
         {
             services.AddDataGeniesCoreServices();
             services.AddDataGeniesUIServices();
+
+            services.AddSingleton<InMemoryDataGeniesDataContext, InMemoryDataGeniesDataContext>();
+            services.AddSingleton<IDataGeniesDataContext>(provider => provider.GetService<InMemoryDataGeniesDataContext>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,6 +46,8 @@ namespace TestDashboardWebApp
             {
                 endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); });
             });
+            
+             
         }
     }
 }

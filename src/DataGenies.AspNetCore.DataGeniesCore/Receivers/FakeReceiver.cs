@@ -11,5 +11,10 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
                 onReceive?.Invoke(new [] {(byte) i});
             }
         }
+
+        public void StopListen()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

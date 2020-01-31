@@ -15,26 +15,16 @@ namespace TestMicroservice
             Console.WriteLine("Hello World!");
         }
     }
-    
-    [ApplicationType]
-    public class HtmlSimpleParser : IReceiver, IPublisher, IStartable
-    {
-        private readonly BasicDataReceiver _receiver;
-        private readonly BasicDataPublisher _publisher;
 
-        public HtmlSimpleParser(BasicDataReceiver receiver, BasicDataPublisher publisher)
+    [ApplicationType]
+    public class HtmlSimpleParser : ApplicationReceiverPublisherType
+    {
+        public HtmlSimpleParser(BasicDataReceiver receiver, BasicDataPublisher publisher) 
+            : base(receiver, publisher)
         {
-            this._receiver = receiver;
-            this._publisher = publisher;
         }
 
-        public void Listen(Action<byte[]> onReceive) => _receiver.Listen(onReceive);
-        
-        public void Publish(byte[] data) => _publisher?.Publish(data);
-
-        public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher?.PublishRange(dataRange);
-
-        public void Start()
+        public override void Start()
         {
             this.Listen(this.OnReceive);
         }
@@ -49,20 +39,13 @@ namespace TestMicroservice
     }
     
     [ApplicationType]
-    public class HttpSimpleUrlGenerator : IPublisher, IStartable
+    public class HttpSimpleUrlGenerator : ApplicationPublisherType
     {
-        private readonly BasicDataPublisher _publisher;
-
-        public HttpSimpleUrlGenerator(BasicDataPublisher publisher) 
+        public HttpSimpleUrlGenerator(BasicDataPublisher publisher) : base(publisher)
         {
-            this._publisher = publisher;
         }
-
-        public void Publish(byte[] data) => _publisher?.Publish(data);
-
-        public void PublishRange(IEnumerable<byte[]> dataRange) => _publisher?.PublishRange(dataRange);
-
-        public void Start()
+        
+        public override void Start()
         {
             Console.WriteLine("Download something...");
 

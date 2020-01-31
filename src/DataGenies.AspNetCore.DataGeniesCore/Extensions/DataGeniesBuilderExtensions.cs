@@ -31,7 +31,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Extensions
             services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
             services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
             
-            services.AddTransient<IDataGeniesMiddlewareResponder, GetApplicationTypesResponder>();
+            services.AddTransient<IDataGeniesMiddlewareResponder, ApplicationTypesResponder>();
 
             services.AddSingleton<DataGeniesOptions>();
         }

@@ -30,5 +30,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
                 onReceive(data);
             });
         }
+
+        public void StopListen() => this.receiver.StopListen();
     }
 }
