@@ -2,7 +2,6 @@
 using DataGenies.AspNetCore.DataGeniesCore.Middlewares;
 using DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
-using DataGenies.AspNetCore.DataGeniesCore.Providers;
 using DataGenies.AspNetCore.DataGeniesCore.Repositories;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.AspNetCore.Builder;

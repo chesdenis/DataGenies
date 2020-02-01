@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates;
 using DataGenies.AspNetCore.DataGeniesCore.Attributes;
 using DataGenies.AspNetCore.DataGeniesCore.Converters;
-using DataGenies.AspNetCore.DataGeniesCore.Models.InMemory;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Receivers;
+using DataGenies.AspNetCore.DataGeniesCore.Roles;
+using DataGenies.AspNetCore.InMemory;
 
 namespace TestMicroservice
 {
@@ -17,23 +17,23 @@ namespace TestMicroservice
         {
             Console.WriteLine("Hello World!");
 
-            var mqBroker = new InMemoryMqBroker();
-            mqBroker.ExchangesAndBoundQueues = new List<Tuple<string, InMemoryQueue>>()
+            var mqBroker = new MqBroker();
+            mqBroker.ExchangesAndBoundQueues = new List<Tuple<string, Queue>>()
             {
-                new Tuple<string, InMemoryQueue>("sampleExchange", new InMemoryQueue(){ Name = "sampleQueue"})
+                new Tuple<string, Queue>("sampleExchange", new Queue(){ Name = "sampleQueue"})
             };
               
             var simpleUrlGenerator = new HttpSimplePageDownloaderGenerator(
-                new BasicDataPublisher(
-                    new InMemoryPublisherBuilder(mqBroker).WithExchange("sampleExchange").Build(),
+                new DataPublisherRole(
+                    new PublisherBuilder(mqBroker).WithExchange("sampleExchange").Build(),
                     new List<IConverter>()));
 
             var simpleParser = new HtmlSimpleParser(
-                new BasicDataReceiver(
-                    new InMemoryReceiverBuilder(mqBroker).WithQueue("sampleQueue").Build(),
+                new DataReceiverRole(
+                    new ReceiverBuilder(mqBroker).WithQueue("sampleQueue").Build(),
                     new List<IConverter>()),
-                new BasicDataPublisher(
-                    new InMemoryPublisherBuilder(mqBroker).WithExchange("sampleExchange2").Build(),
+                new DataPublisherRole(
+                    new PublisherBuilder(mqBroker).WithExchange("sampleExchange2").Build(),
                     new List<IConverter>()));
 
             var t1 = Task.Run(() =>
@@ -62,10 +62,10 @@ namespace TestMicroservice
     }
 
     [ApplicationTemplate]
-    public class HtmlSimpleParser : ApplicationReceiverTemplate
+    public class HtmlSimpleParser : ApplicationReceiverPublisherRole
     {
-        public HtmlSimpleParser(BasicDataReceiver receiver, BasicDataPublisher publisher) 
-            : base(receiver, publisher)
+        public HtmlSimpleParser(DataReceiverRole receiverRole, DataPublisherRole publisherRole) 
+            : base(receiverRole, publisherRole)
         {
         }
 
@@ -84,9 +84,9 @@ namespace TestMicroservice
     }
     
     [ApplicationTemplate]
-    public class HttpSimplePageDownloaderGenerator : ApplicationPublisherTemplate
+    public class HttpSimplePageDownloaderGenerator : ApplicationPublisherRole
     {
-        public HttpSimplePageDownloaderGenerator(BasicDataPublisher publisher) : base(publisher)
+        public HttpSimplePageDownloaderGenerator(DataPublisherRole publisherRole) : base(publisherRole)
         {
         }
         

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
-using DataGenies.AspNetCore.DataGeniesCore.Providers;
 using DataGenies.AspNetCore.DataGeniesCore.Repositories;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

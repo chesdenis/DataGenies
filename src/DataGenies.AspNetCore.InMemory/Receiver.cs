@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
+namespace DataGenies.AspNetCore.InMemory
 {
-    public class InMemoryReceiver : IReceiver
+    public class Receiver : IReceiver
     {
-        private readonly InMemoryMqBroker _broker;
+        private readonly MqBroker _broker;
         private readonly string _queueName;
         private readonly IEnumerable<string> _routingKeys;
 
         private bool _isListening = false;
 
-        public InMemoryReceiver(InMemoryMqBroker broker, string queueName, IEnumerable<string> routingKeys)
+        public Receiver(MqBroker broker, string queueName, IEnumerable<string> routingKeys)
         {
             _broker = broker;
             _queueName = queueName;
@@ -28,8 +27,6 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             this._isListening = true;
             while (_isListening)
             {
-                //Task.Delay(new TimeSpan(0, 0, 0,0, 250)).Wait();
-
                 if (!relatedQueue.TryDequeue(out var message)) continue;
 
                 if (IsMatchForReceiver(message))
@@ -47,7 +44,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             _isListening = false;
         }
 
-        private bool IsMatchForReceiver(InMemoryMqMessage message)
+        private bool IsMatchForReceiver(MqMessage message)
         {
             foreach (var routingKey in this._routingKeys)
             {

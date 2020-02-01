@@ -2,7 +2,7 @@
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Orchestrators
 {
-    public interface IApplicationInstanceOrchestrator
+    public interface IOrchestrator
     {
         Task PrepareTemplatePackage(int applicationInstanceId);
         Task Deploy(int applicationInstanceId);

@@ -7,6 +7,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\src\DataGenies.AspNetCore.DataGeniesCore\DataGenies.AspNetCore.DataGeniesCore.csproj" />
       <ProjectReference Include="..\..\src\DataGenies.AspNetCore.DataGeniesUI\DataGenies.AspNetCore.DataGeniesUI.csproj" />
+      <ProjectReference Include="..\..\src\DataGenies.AspNetCore.InMemory\DataGenies.AspNetCore.InMemory.csproj" />
     </ItemGroup>
 
 </Project>

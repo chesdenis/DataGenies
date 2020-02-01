@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using DataGenies.AspNetCore.DataGeniesCore;
 using DataGenies.AspNetCore.DataGeniesCore.Extensions;
 using DataGenies.AspNetCore.DataGeniesCore.Models.Contexts;
-using DataGenies.AspNetCore.DataGeniesCore.Models.InMemory;
 using DataGenies.AspNetCore.DataGeniesUI.Extensions;
+using DataGenies.AspNetCore.InMemory;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,8 +25,8 @@ namespace TestDashboardWebApp
             services.AddDataGeniesCoreServices();
             services.AddDataGeniesUIServices();
 
-            services.AddSingleton<InMemorySchemaDataContext, InMemorySchemaDataContext>();
-            services.AddSingleton<ISchemaDataContext>(provider => provider.GetService<InMemorySchemaDataContext>());
+            services.AddSingleton<SchemaDataContext, SchemaDataContext>();
+            services.AddSingleton<ISchemaDataContext>(provider => provider.GetService<SchemaDataContext>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

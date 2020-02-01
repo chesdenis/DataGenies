@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
+namespace DataGenies.AspNetCore.InMemory
 {
-    public class InMemoryDbSet<T> : DbSet<T>, IQueryable<T> where T : class
+    public class DbSet<T> : Microsoft.EntityFrameworkCore.DbSet<T>, IQueryable<T> where T : class
     {
         readonly ObservableCollection<T> _data;
         readonly IQueryable _query;
 
-        public InMemoryDbSet()
+        public DbSet()
         {
             _data = new ObservableCollection<T>();
             _query = _data.AsQueryable();

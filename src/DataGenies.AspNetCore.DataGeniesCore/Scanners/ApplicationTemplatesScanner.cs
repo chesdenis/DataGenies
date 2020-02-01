@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
-using DataGenies.AspNetCore.DataGeniesCore.Providers;
 using DataGenies.AspNetCore.DataGeniesCore.Repositories;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Scanners

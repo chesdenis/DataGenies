@@ -1,6 +1,6 @@
-﻿namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
+﻿namespace DataGenies.AspNetCore.InMemory
 {
-    public class InMemoryMqMessage
+    public class MqMessage
     {
         public byte[] Body { get; set; }
 

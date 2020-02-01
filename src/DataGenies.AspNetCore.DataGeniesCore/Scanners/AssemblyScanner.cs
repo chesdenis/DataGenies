@@ -6,7 +6,7 @@ using System.Reflection;
 using DataGenies.AspNetCore.DataGeniesCore.Attributes;
 using DataGenies.AspNetCore.DataGeniesCore.Models;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Providers
+namespace DataGenies.AspNetCore.DataGeniesCore.Scanners
 {
     public class AssemblyScanner : IAssemblyScanner
     {

@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Converters;
+using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Publishers
+namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
-    public class BasicDataPublisher : IPublisher
+    public class DataPublisherRole : IPublisher
     {
         private readonly IPublisher publisher;
         private readonly IEnumerable<IConverter> converters;
          
         private IConverter[] BeforePublish() => this.converters.Where(w => w.Type == ConverterType.BeforePublish).ToArray();
 
-        public BasicDataPublisher(IPublisher publisher, IEnumerable<IConverter> converters)
+        public DataPublisherRole(IPublisher publisher, IEnumerable<IConverter> converters)
         {
             this.publisher = publisher;
             this.converters = converters;

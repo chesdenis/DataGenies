@@ -1,26 +1,29 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates;
 using DataGenies.AspNetCore.DataGeniesCore.Models.Contexts;
+using DataGenies.AspNetCore.DataGeniesCore.Orchestrators;
+using DataGenies.AspNetCore.DataGeniesCore.Roles;
 using DataGenies.AspNetCore.DataGeniesCore.Scanners;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Orchestrators
+namespace DataGenies.AspNetCore.InMemory
 {
-    public class InMemoryApplicationInstanceOrchestrator : IApplicationInstanceOrchestrator
+    public class Orchestrator : IOrchestrator
     {
         private Dictionary<int, IStartable> _instancesInMemory { get; set; }
 
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
+        private readonly MqBroker _mqBroker;
 
-        public InMemoryApplicationInstanceOrchestrator(ISchemaDataContext schemaDataContext, IApplicationTemplatesScanner applicationTemplatesScanner)
+        public Orchestrator(ISchemaDataContext schemaDataContext,
+            IApplicationTemplatesScanner applicationTemplatesScanner, MqBroker mqBroker)
         {
             _schemaDataContext = schemaDataContext;
             _applicationTemplatesScanner = applicationTemplatesScanner;
+            _mqBroker = mqBroker;
 
             _instancesInMemory = new Dictionary<int, IStartable>(); 
         }
@@ -40,14 +43,17 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Orchestrators
             var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
 
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.TypeName, true);
+            if (templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
+            {
+                var typeInstance = (IStartable) Activator.CreateInstance(templateType);
 
-            var typeInstance = (IStartable) Activator.CreateInstance(templateType);
+                _instancesInMemory[applicationInstanceId] = typeInstance;
 
-            _instancesInMemory[applicationInstanceId] = typeInstance;
+            }
 
             return Task.CompletedTask;
         }
-
+        
         public Task Remove(int applicationInstanceId)
         {
             throw new System.NotImplementedException();

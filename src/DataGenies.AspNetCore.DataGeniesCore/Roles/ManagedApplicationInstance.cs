@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Behaviours;
-using DataGenies.AspNetCore.DataGeniesCore.Converters;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
+namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
     public class ManagedApplicationInstance : IStartable
     {
         private readonly IStartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
-        private readonly IEnumerable<IConverter> converters;
 
         private IBehaviour[] BeforeRun() => this.behaviours.Where(w => w.Type == BehaviourType.BeforeRun).ToArray();
         private IBehaviour[] AfterRun() => this.behaviours.Where(w => w.Type == BehaviourType.AfterRun).ToArray();
@@ -18,12 +16,10 @@ namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
         public ManagedApplicationInstance(IStartable component,
-            IEnumerable<IBehaviour> behaviours,
-            IEnumerable<IConverter> converters)
+            IEnumerable<IBehaviour> behaviours)
         {
             this.component = component;
             this.behaviours = behaviours;
-            this.converters = converters;
         }
          
         public void Start()

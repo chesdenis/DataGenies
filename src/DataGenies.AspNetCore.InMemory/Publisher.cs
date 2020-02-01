@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
+namespace DataGenies.AspNetCore.InMemory
 {
-    public class InMemoryPublisher : IPublisher
+    public class Publisher : IPublisher
     {
         private const string _routingKey = "#";
         
-        private readonly InMemoryMqBroker _broker;
+        private readonly MqBroker _broker;
         private readonly string _exchangeName;
 
-        private IEnumerable<ConcurrentQueue<InMemoryMqMessage>> ContextQueues
+        private IEnumerable<ConcurrentQueue<MqMessage>> ContextQueues
         {
             get
             {
@@ -24,7 +23,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             }
         }
 
-        public InMemoryPublisher(InMemoryMqBroker broker, string exchangeName)
+        public Publisher(MqBroker broker, string exchangeName)
         {
             _broker = broker;
             _exchangeName = exchangeName;
@@ -36,7 +35,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
         {
             Array.ForEach(this.ContextQueues.ToArray(), queue =>
             {
-                queue.Enqueue(new InMemoryMqMessage
+                queue.Enqueue(new MqMessage
                 {
                     Body = data,
                     RoutingKey = routingKey

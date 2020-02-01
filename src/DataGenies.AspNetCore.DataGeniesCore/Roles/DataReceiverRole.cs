@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Converters;
+using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
+namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
-    public class BasicDataReceiver : IReceiver
+    public class DataReceiverRole : IReceiver
     {
         private readonly IReceiver receiver;
         private readonly IEnumerable<IConverter> converters;
 
         private IConverter[] AfterReceive() => this.converters.Where(w => w.Type == ConverterType.AfterReceive).ToArray();
         
-        public BasicDataReceiver(IReceiver receiver, IEnumerable<IConverter> converters)
+        public DataReceiverRole(IReceiver receiver, IEnumerable<IConverter> converters)
         {
             this.receiver = receiver;
             this.converters = converters;

@@ -3,57 +3,57 @@ using System.Collections.Generic;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
+namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
-    public abstract class ApplicationReceiverTemplate : IReceiver, IPublisher, IStartable
+    public abstract class ApplicationReceiverPublisherRole : IReceiver, IPublisher, IStartable
     {
-        private readonly BasicDataReceiver _receiver;
-        private readonly BasicDataPublisher _publisher;
+        private readonly DataReceiverRole _receiverRole;
+        private readonly DataPublisherRole _publisherRole;
 
-        protected ApplicationReceiverTemplate(BasicDataReceiver receiver, BasicDataPublisher publisher)
+        protected ApplicationReceiverPublisherRole(DataReceiverRole receiverRole, DataPublisherRole publisherRole)
         {
-            _receiver = receiver;
-            _publisher = publisher;
+            _receiverRole = receiverRole;
+            _publisherRole = publisherRole;
         }
 
         public void Listen(Action<byte[]> onReceive)
         {
-            _receiver.Listen(onReceive);
+            _receiverRole.Listen(onReceive);
         }
 
         public void StopListen()
         {
-            _receiver.StopListen();
+            _receiverRole.StopListen();
         }
 
         public void Publish(byte[] data)
         {
-            _publisher.Publish(data);
+            _publisherRole.Publish(data);
         }
 
         public void Publish(byte[] data, string routingKey)
         {
-            _publisher.Publish(data, routingKey);
+            _publisherRole.Publish(data, routingKey);
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)
         {
-            _publisher.Publish(data, routingKeys);
+            _publisherRole.Publish(data, routingKeys);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
-            _publisher.PublishRange(dataRange);
+            _publisherRole.PublishRange(dataRange);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
         {
-            _publisher.PublishRange(dataRange, routingKey);
+            _publisherRole.PublishRange(dataRange, routingKey);
         }
 
         public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
         {
-            _publisher.PublishTuples(tuples);
+            _publisherRole.PublishTuples(tuples);
         }
 
         public abstract void Start();

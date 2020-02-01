@@ -2,45 +2,45 @@
 using System.Collections.Generic;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
+namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
-    public abstract class ApplicationPublisherTemplate : IPublisher, IStartable
+    public abstract class ApplicationPublisherRole : IPublisher, IStartable
     {
-        private readonly BasicDataPublisher _publisher;
+        private readonly DataPublisherRole _publisherRole;
 
-        public ApplicationPublisherTemplate(BasicDataPublisher publisher)
+        public ApplicationPublisherRole(DataPublisherRole publisherRole)
         {
-            _publisher = publisher;
+            _publisherRole = publisherRole;
         }
 
         public void Publish(byte[] data)
         {
-            _publisher.Publish(data);
+            _publisherRole.Publish(data);
         }
 
         public void Publish(byte[] data, string routingKey)
         {
-            _publisher.Publish(data, routingKey);
+            _publisherRole.Publish(data, routingKey);
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)
         {
-            _publisher.Publish(data, routingKeys);
+            _publisherRole.Publish(data, routingKeys);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
-            _publisher.PublishRange(dataRange);
+            _publisherRole.PublishRange(dataRange);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
         {
-            _publisher.PublishRange(dataRange, routingKey);
+            _publisherRole.PublishRange(dataRange, routingKey);
         }
 
         public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
         {
-            _publisher.PublishTuples(tuples);
+            _publisherRole.PublishTuples(tuples);
         }
 
         public abstract void Start();
