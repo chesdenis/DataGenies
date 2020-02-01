@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesCore", "src\DataGenies.AspNetCore.DataGeniesCore\DataGenies.AspNetCore.DataGeniesCore.csproj", "{DEE76808-7FCD-4495-B582-8E4F37918E69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.Core", "src\DataGenies.Core\DataGenies.Core.csproj", "{DEE76808-7FCD-4495-B582-8E4F37918E69}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F4E1D96-D0F3-44B0-ABD1-6435D364152D}"
 EndProject
@@ -10,11 +10,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDashboardWebApp", "test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMicroservice", "test\TestMicroservice\TestMicroservice.csproj", "{69CB2036-8342-47C9-B0F2-D571C9C2847D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesCore.Tests", "test\DataGenies.AspNetCore.DataGeniesCore.Tests\DataGenies.AspNetCore.DataGeniesCore.Tests.csproj", "{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.Core.Tests", "test\DataGenies.Core.Tests\DataGenies.Core.Tests.csproj", "{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.DataGeniesUI", "src\DataGenies.AspNetCore.DataGeniesUI\DataGenies.AspNetCore.DataGeniesUI.csproj", "{9314CECA-90F6-4E91-9BBB-206B37A0052A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.UI", "src\DataGenies.UI\DataGenies.UI.csproj", "{9314CECA-90F6-4E91-9BBB-206B37A0052A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.AspNetCore.InMemory", "src\DataGenies.AspNetCore.InMemory\DataGenies.AspNetCore.InMemory.csproj", "{289CFC73-02CE-41C7-9DAA-EC0659409A99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.InMemory", "src\DataGenies.InMemory\DataGenies.InMemory.csproj", "{289CFC73-02CE-41C7-9DAA-EC0659409A99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.MessageBrokers", "src\DataGenies.MessageBrokers\DataGenies.MessageBrokers.csproj", "{19978928-0083-40DD-8BF9-FC49C7202F92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.ApplicationPlatforms", "src\DataGenies.ApplicationPlatforms\DataGenies.ApplicationPlatforms.csproj", "{5BFD2387-2273-473F-8EFE-FF8517DB10C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +50,14 @@ Global
 		{289CFC73-02CE-41C7-9DAA-EC0659409A99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{289CFC73-02CE-41C7-9DAA-EC0659409A99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{289CFC73-02CE-41C7-9DAA-EC0659409A99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19978928-0083-40DD-8BF9-FC49C7202F92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19978928-0083-40DD-8BF9-FC49C7202F92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19978928-0083-40DD-8BF9-FC49C7202F92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19978928-0083-40DD-8BF9-FC49C7202F92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DEE76808-7FCD-4495-B582-8E4F37918E69} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
@@ -54,5 +66,7 @@ Global
 		{19C62A3A-DAAA-4E74-BA1A-729BB9D1F96B} = {6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}
 		{9314CECA-90F6-4E91-9BBB-206B37A0052A} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 		{289CFC73-02CE-41C7-9DAA-EC0659409A99} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
+		{19978928-0083-40DD-8BF9-FC49C7202F92} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
+		{5BFD2387-2273-473F-8EFE-FF8517DB10C2} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 	EndGlobalSection
 EndGlobal

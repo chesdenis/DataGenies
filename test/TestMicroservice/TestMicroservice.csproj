@@ -6,8 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\DataGenies.AspNetCore.DataGeniesCore\DataGenies.AspNetCore.DataGeniesCore.csproj" />
-      <ProjectReference Include="..\..\src\DataGenies.AspNetCore.InMemory\DataGenies.AspNetCore.InMemory.csproj" />
+      <ProjectReference Include="..\..\src\DataGenies.Core\DataGenies.Core.csproj" />
+      <ProjectReference Include="..\..\src\DataGenies.InMemory\DataGenies.InMemory.csproj" />
     </ItemGroup>
 
 </Project>

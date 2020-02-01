@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <Folder Include="ClientApp\dist" />
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Don't publish the SPA source files, but do show them in the project files list -->
+        <Content Remove="ClientApp/**/*" />
+        <Compile Remove="ClientApp/**/*" />
+        <None Remove="ClientApp/**/*" />
+        <None Include="ClientApp/**" Exclude="ClientApp/node_modules/**/*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="ClientApp/dist/**/*" Exclude="**/*/*.json;**/*/*.md" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataGenies.Core\DataGenies.Core.csproj" />
+    </ItemGroup>
+    
+    <Target Name="NpmInstall" BeforeTargets="Build">
+        <Exec Command="npm install" EnvironmentVariables="PATH=$(Path.Replace(';', '%3B'))" ContinueOnError="true">
+            <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+        </Exec>
+        <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js/npm is required to build this project. To continue, please install Node.js from https://nodejs.org/ or Visual Studio Installer, and then restart your command prompt or IDE." />
+    </Target>
+</Project>

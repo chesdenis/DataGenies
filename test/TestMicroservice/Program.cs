@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using DataGenies.AspNetCore.DataGeniesCore.Attributes;
-using DataGenies.AspNetCore.DataGeniesCore.Converters;
-using DataGenies.AspNetCore.DataGeniesCore.Publishers;
-using DataGenies.AspNetCore.DataGeniesCore.Receivers;
-using DataGenies.AspNetCore.DataGeniesCore.Roles;
-using DataGenies.AspNetCore.InMemory;
+using DataGenies.Core.Attributes;
+using DataGenies.Core.Converters;
+using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
+using DataGenies.Core.Roles;
+using DataGenies.InMemory;
 
 namespace TestMicroservice
 {
