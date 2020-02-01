@@ -1,4 +1,4 @@
-using DataGenies.AspNetCore.DataGeniesCore.Components;
+using DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
 using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 

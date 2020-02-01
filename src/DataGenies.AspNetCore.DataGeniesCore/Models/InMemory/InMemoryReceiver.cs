@@ -28,16 +28,16 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             this._isListening = true;
             while (_isListening)
             {
-                Task.Delay(new TimeSpan(0, 0, 1)).Wait();
+                //Task.Delay(new TimeSpan(0, 0, 0,0, 250)).Wait();
 
                 if (!relatedQueue.TryDequeue(out var message)) continue;
-                
+
                 if (IsMatchForReceiver(message))
                 {
                     onReceive(message.Body);
                     continue;
                 }
-                    
+
                 relatedQueue.Enqueue(message);
             }
         }

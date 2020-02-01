@@ -6,42 +6,42 @@ using DataGenies.AspNetCore.DataGeniesCore.Repositories;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Scanners
 {
-    public class ApplicationTypesScanner : IApplicationTypesScanner
+    public class ApplicationTemplatesScanner : IApplicationTemplatesScanner
     {
         private readonly DataGeniesOptions _options;
         private readonly IFileSystemRepository _fileSystemRepository;
-        private readonly IAssemblyTypesProvider _assemblyTypesProvider;
+        private readonly IAssemblyScanner _assemblyScanner;
 
-        public ApplicationTypesScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyTypesProvider assemblyTypesProvider)
+        public ApplicationTemplatesScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyScanner assemblyScanner)
         {
             _options = options;
             _fileSystemRepository = fileSystemRepository;
-            _assemblyTypesProvider = assemblyTypesProvider;
+            _assemblyScanner = assemblyScanner;
         }
 
-        public IEnumerable<ApplicationType> ScanTypes()
+        public IEnumerable<ApplicationTemplate> ScanTemplates()
         {
-            return _options.DropFolderOptions.UseZippedPackages ? this.ScanTypesInsideZippedPackages() : this.ScanTypesAsRegularPackages();
+            return _options.DropFolderOptions.UseZippedPackages ? this.ScanTemplatesInsideZippedPackages() : this.ScanTemplatesAsRegularPackages();
         }
 
-        private IEnumerable<ApplicationType> ScanTypesInsideZippedPackages()
+        private IEnumerable<ApplicationTemplate> ScanTemplatesInsideZippedPackages()
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<ApplicationType> ScanTypesAsRegularPackages()
+        private IEnumerable<ApplicationTemplate> ScanTemplatesAsRegularPackages()
         {
             var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
 
             foreach (var assemblyPath in assemblies)
             {
-                var types = this._assemblyTypesProvider.GetApplicationTypes(assemblyPath);
+                var types = this._assemblyScanner.ScanApplicationTemplates(assemblyPath);
 
                 foreach (var appTypeInfo in types)
                 {
-                    yield return new ApplicationType
+                    yield return new ApplicationTemplate
                     {
-                        TypeName = appTypeInfo.TypeName,
+                        TypeName = appTypeInfo.TemplateName,
                         TypeVersion = appTypeInfo.AssemblyVersion,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };

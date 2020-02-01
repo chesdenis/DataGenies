@@ -4,9 +4,9 @@ using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Behaviours;
 using DataGenies.AspNetCore.DataGeniesCore.Converters;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Components
+namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
 {
-    public class DefaultComponent : IStartable
+    public class ManagedApplicationInstance : IStartable
     {
         private readonly IStartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
@@ -17,7 +17,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Components
         private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
-        public DefaultComponent(IStartable component,
+        public ManagedApplicationInstance(IStartable component,
             IEnumerable<IBehaviour> behaviours,
             IEnumerable<IConverter> converters)
         {

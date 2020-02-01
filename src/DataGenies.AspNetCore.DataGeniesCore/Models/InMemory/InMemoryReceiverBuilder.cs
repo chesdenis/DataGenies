@@ -4,7 +4,7 @@ using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
 {
-    public class InMemoryReceiverBuilder : ReceiverBuilder
+    public class InMemoryReceiverBuilder : IReceiverBuilder
     {
         private readonly InMemoryMqBroker _broker;
         protected string QueueName { get; set; }
@@ -28,7 +28,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
             return this;
         }
         
-        public override IReceiver Build()
+        public IReceiver Build()
         {
             return new InMemoryReceiver(_broker, this.QueueName, this.RoutingKeys);
         }

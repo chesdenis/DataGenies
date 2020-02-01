@@ -6,8 +6,8 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models
     {
         public ApplicationInstance()
         {
-            Receivers = new HashSet<Binding>();
-            Publishers = new HashSet<Binding>();
+            IncomingBindings = new HashSet<Binding>();
+            OutcomingBindings = new HashSet<Binding>();
         }
 
         public int InstanceId { get; set; }
@@ -15,9 +15,9 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models
         public string InstanceName { get; set;  }
         public string ConfigJson { get; set;  }
 
-        public virtual ApplicationType Type { get; set;  }
-        public virtual ICollection<Binding> Receivers { get; set; }
+        public virtual ApplicationTemplate Template { get; set;  }
+        public virtual ICollection<Binding> IncomingBindings { get; set; }
         
-        public virtual ICollection<Binding> Publishers { get; set; }
+        public virtual ICollection<Binding> OutcomingBindings { get; set; }
     }
 }

@@ -28,8 +28,8 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Extensions
         public static void AddDataGeniesCoreServices(this IServiceCollection services)
         {
             services.AddTransient<IFileSystemRepository, FileSystemRepository>();
-            services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
-            services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
+            services.AddTransient<IAssemblyScanner, AssemblyScanner>();
+            services.AddTransient<IApplicationTemplatesScanner, ApplicationTemplatesScanner>();
             
             services.AddTransient<IDataGeniesMiddlewareResponder, ApplicationTypesResponder>();
 

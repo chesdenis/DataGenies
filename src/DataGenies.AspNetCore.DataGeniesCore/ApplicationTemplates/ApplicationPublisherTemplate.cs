@@ -1,30 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks.Dataflow;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
-using DataGenies.AspNetCore.DataGeniesCore.Receivers;
 
-namespace DataGenies.AspNetCore.DataGeniesCore.Components
+namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
 {
-    public abstract class ApplicationReceiverPublisherType : IReceiver, IPublisher, IStartable
+    public abstract class ApplicationPublisherTemplate : IPublisher, IStartable
     {
-        private readonly BasicDataReceiver _receiver;
         private readonly BasicDataPublisher _publisher;
 
-        protected ApplicationReceiverPublisherType(BasicDataReceiver receiver, BasicDataPublisher publisher)
+        public ApplicationPublisherTemplate(BasicDataPublisher publisher)
         {
-            _receiver = receiver;
             _publisher = publisher;
-        }
-
-        public void Listen(Action<byte[]> onReceive)
-        {
-            _receiver.Listen(onReceive);
-        }
-
-        public void StopListen()
-        {
-            _receiver.StopListen();
         }
 
         public void Publish(byte[] data)

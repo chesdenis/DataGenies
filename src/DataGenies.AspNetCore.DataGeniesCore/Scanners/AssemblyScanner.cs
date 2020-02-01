@@ -8,28 +8,28 @@ using DataGenies.AspNetCore.DataGeniesCore.Models;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Providers
 {
-    public class AssemblyTypesProvider : IAssemblyTypesProvider
+    public class AssemblyScanner : IAssemblyScanner
     {
         private readonly DataGeniesOptions _options;
 
-        public AssemblyTypesProvider(DataGeniesOptions options)
+        public AssemblyScanner(DataGeniesOptions options)
         {
             _options = options;
         }
         
-        public IEnumerable<ApplicationTypeInsideAssembly> GetApplicationTypes(string assemblyFullPath)
+        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
         {
             var asm = Assembly.LoadFile(assemblyFullPath);
             var types = asm.GetTypes()
                 .Where(w => w.IsClass)
-                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTypeAttribute)));
+                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
 
             foreach (var type in types)
             {
-                yield return new ApplicationTypeInsideAssembly
+                yield return new ApplicationTemplateInfo
                 {
                     AssemblyPath = assemblyFullPath,
-                    TypeName = type.Name,
+                    TemplateName = type.Name,
                     AssemblyVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
                 };
             }

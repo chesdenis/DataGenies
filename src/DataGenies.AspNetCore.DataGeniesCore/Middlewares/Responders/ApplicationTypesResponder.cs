@@ -11,12 +11,12 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders
     public class ApplicationTypesResponder : IDataGeniesMiddlewareResponder
     {
         private readonly DataGeniesOptions _options;
-        private readonly IApplicationTypesScanner _applicationTypesScanner;
+        private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
 
-        public ApplicationTypesResponder(DataGeniesOptions options, IApplicationTypesScanner applicationTypesScanner)
+        public ApplicationTypesResponder(DataGeniesOptions options, IApplicationTemplatesScanner applicationTemplatesScanner)
         {
             _options = options;
-            _applicationTypesScanner = applicationTypesScanner;
+            _applicationTemplatesScanner = applicationTemplatesScanner;
         }
         
         public bool CanExecute(string httpMethod, string path)
@@ -30,7 +30,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Middlewares.Responders
             
             response.ContentType = "application/json;charset=utf-8";
 
-            var applicationTypes = _applicationTypesScanner.ScanTypes();
+            var applicationTypes = _applicationTemplatesScanner.ScanTemplates();
             var responseData = JsonSerializer.Serialize(applicationTypes);
 
             await response.WriteAsync(responseData, Encoding.UTF8);

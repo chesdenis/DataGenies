@@ -1,9 +1,9 @@
 namespace DataGenies.AspNetCore.DataGeniesCore.Models
 {
-    public class ApplicationTypeInsideAssembly
+    public class ApplicationTemplateInfo
     {
         public string AssemblyPath { get; set; }
-        public string TypeName { get; set; }
+        public string TemplateName { get; set; }
         public string AssemblyVersion { get; set; }
     }
 }

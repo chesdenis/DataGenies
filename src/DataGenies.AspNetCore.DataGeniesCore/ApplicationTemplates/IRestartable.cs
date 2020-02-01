@@ -1,4 +1,4 @@
-namespace DataGenies.AspNetCore.DataGeniesCore.Components
+namespace DataGenies.AspNetCore.DataGeniesCore.ApplicationTemplates
 {
     public interface IRestartable : IStartable, IStoppable
     {

@@ -30,7 +30,7 @@ namespace DataGenies.AspNetCore.DataGeniesUI.Extensions
         public static void AddDataGeniesUIServices(this IServiceCollection services)
         {
             services.AddTransient<IFileSystemRepository, FileSystemRepository>();
-            services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
+            services.AddTransient<IAssemblyScanner, AssemblyScanner>();
 
             services.AddTransient<IDataGeniesMiddlewareResponder, RedirectResponder>();
             services.AddTransient<IDataGeniesMiddlewareResponder, IndexResponder>();

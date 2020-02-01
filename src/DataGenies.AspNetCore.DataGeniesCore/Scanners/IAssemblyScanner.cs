@@ -3,8 +3,8 @@ using DataGenies.AspNetCore.DataGeniesCore.Models;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Providers
 {
-    public interface IAssemblyTypesProvider
+    public interface IAssemblyScanner
     {
-        IEnumerable<ApplicationTypeInsideAssembly> GetApplicationTypes(string assemblyFullPath);
+        IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath);
     }
 }

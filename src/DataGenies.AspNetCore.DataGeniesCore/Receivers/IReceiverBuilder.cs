@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Receivers
 {
-    public abstract class ReceiverBuilder
+    public interface IReceiverBuilder
     {
-        public abstract IReceiver Build();
+        public IReceiver Build();
     }
 }

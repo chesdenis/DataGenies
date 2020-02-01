@@ -10,7 +10,7 @@ using NSubstitute;
 namespace DataGenies.AspNetCore.DataGeniesCore.Tests.Scanners
 {
     [TestClass]
-    public class ApplicationTypesScannerTests
+    public class ApplicationTemplatesScannerTests
     {
         [TestMethod]
         public void ShouldNotFailIfNoAnyPackage()
@@ -23,12 +23,12 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Tests.Scanners
             fileSystemRepository.GetFilesInFolder(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(filesListInDropFolder);
             
-            var assemblyTypesProvider = Substitute.For<IAssemblyTypesProvider>();
+            var assemblyTypesProvider = Substitute.For<IAssemblyScanner>();
             var options = new DataGeniesOptions();
             
             // Act
-            var sut = new ApplicationTypesScanner(options, fileSystemRepository, assemblyTypesProvider);
-            var data = sut.ScanTypes().ToList();
+            var sut = new ApplicationTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
+            var data = sut.ScanTemplates().ToList();
 
             // Assert
             Assert.IsNotNull(data);
@@ -49,28 +49,28 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Tests.Scanners
             fileSystemRepository.GetFilesInFolder(Arg.Any<string>(), Arg.Any<string>())
                 .Returns(filesListInDropFolder);
             
-            var assemblyTypesProvider = Substitute.For<IAssemblyTypesProvider>();
-            assemblyTypesProvider.GetApplicationTypes(Arg.Is(filesListInDropFolder[0])).Returns(
-                new List<ApplicationTypeInsideAssembly>
+            var assemblyTypesProvider = Substitute.For<IAssemblyScanner>();
+            assemblyTypesProvider.ScanApplicationTemplates(Arg.Is(filesListInDropFolder[0])).Returns(
+                new List<ApplicationTemplateInfo>
                 {
-                    new ApplicationTypeInsideAssembly
+                    new ApplicationTemplateInfo
                     {
                         AssemblyPath = filesListInDropFolder[0],
-                        TypeName = "Type1",
+                        TemplateName = "Type1",
                         AssemblyVersion = "20190102.1"
                     },
-                    new ApplicationTypeInsideAssembly
+                    new ApplicationTemplateInfo
                     {
                         AssemblyPath = filesListInDropFolder[1],
-                        TypeName = "Type2",
+                        TemplateName = "Type2",
                         AssemblyVersion = "20190102.1"
                     }
                 });
             var options = new DataGeniesOptions();
             
             // Act
-            var sut = new ApplicationTypesScanner(options, fileSystemRepository, assemblyTypesProvider);
-            var data = sut.ScanTypes().ToList();
+            var sut = new ApplicationTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
+            var data = sut.ScanTemplates().ToList();
 
             // Assert
             Assert.IsNotNull(data);

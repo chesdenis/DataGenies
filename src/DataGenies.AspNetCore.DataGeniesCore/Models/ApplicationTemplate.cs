@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Models
 {
-    public class ApplicationType
+    public class ApplicationTemplate
     {
-        public ApplicationType()
+        public ApplicationTemplate()
         {
             ApplicationInstance = new HashSet<ApplicationInstance>();
         }
@@ -19,5 +19,9 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models
 
         public virtual ICollection<ApplicationInstance> ApplicationInstance { get; set; }
 
+        public bool IsMatch(ApplicationTemplate template)
+        {
+            return this.TypeName == template.TypeName && this.TypeVersion == template.TypeVersion;
+        }
     }
 }

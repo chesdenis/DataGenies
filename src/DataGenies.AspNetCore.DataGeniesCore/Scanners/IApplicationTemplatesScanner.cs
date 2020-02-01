@@ -3,8 +3,8 @@ using DataGenies.AspNetCore.DataGeniesCore.Models;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Scanners
 {
-    public interface IApplicationTypesScanner
+    public interface IApplicationTemplatesScanner
     {
-        IEnumerable<ApplicationType> ScanTypes();
+        IEnumerable<ApplicationTemplate> ScanTemplates();
     }
 }

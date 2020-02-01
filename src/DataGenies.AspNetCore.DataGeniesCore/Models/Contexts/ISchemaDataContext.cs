@@ -2,9 +2,9 @@
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Models.Contexts
 {
-    public interface IDataGeniesDataContext
+    public interface ISchemaDataContext
     {
-        IQueryable<ApplicationType> ApplicationTypes { get; }
+        IQueryable<ApplicationTemplate> ApplicationTypes { get; }
         IQueryable<ApplicationInstance> ApplicationInstances { get; }
         IQueryable<Binding> Bindings { get; }
     }

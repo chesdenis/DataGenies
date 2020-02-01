@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.AspNetCore.DataGeniesCore.Publishers;
@@ -13,7 +14,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Models.InMemory
         private readonly InMemoryMqBroker _broker;
         private readonly string _exchangeName;
 
-        private IEnumerable<Queue<InMemoryMqMessage>> ContextQueues
+        private IEnumerable<ConcurrentQueue<InMemoryMqMessage>> ContextQueues
         {
             get
             {
