@@ -37,12 +37,12 @@ namespace DataGenies.InMemory
         {
             var allTemplates = this._applicationTemplatesScanner.ScanTemplates();
             var applicationInstanceInfo =
-                this._schemaDataContext.ApplicationInstances.First(f => f.InstanceId == applicationInstanceId);
+                this._schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
             var applicationTypeInfo = applicationInstanceInfo.Template;
 
             var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
 
-            var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.TypeName, true);
+            var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
             if (templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
             {
                 var typeInstance = (IStartable) Activator.CreateInstance(templateType);

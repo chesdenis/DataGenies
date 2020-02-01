@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DataGenies.Core;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models.Contexts;
 using DataGenies.UI.Extensions;
@@ -12,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TestDashboardWebApp.TestDataContext;
 
 namespace TestDashboardWebApp
 {

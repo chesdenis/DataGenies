@@ -6,7 +6,7 @@ namespace DataGenies.InMemory
 {
     public class SchemaDataContext : ISchemaDataContext
     {
-        public DbSet<ApplicationTemplate> ApplicationTypes { get; }  
+        public DbSet<ApplicationTemplate> ApplicationTemplates { get; }  
         
         public DbSet<ApplicationInstance> ApplicationInstances { get; }  
         
@@ -14,12 +14,12 @@ namespace DataGenies.InMemory
 
         public SchemaDataContext()
         {
-            this.ApplicationTypes = new DbSet<ApplicationTemplate>();
+            this.ApplicationTemplates = new DbSet<ApplicationTemplate>();
             this.ApplicationInstances = new DbSet<ApplicationInstance>();
             this.Bindings = new DbSet<Binding>();
         }
 
-        IQueryable<ApplicationTemplate> ISchemaDataContext.ApplicationTypes => ApplicationTypes;
+        IQueryable<ApplicationTemplate> ISchemaDataContext.ApplicationTemplates => ApplicationTemplates;
 
         IQueryable<ApplicationInstance> ISchemaDataContext.ApplicationInstances => ApplicationInstances;
 

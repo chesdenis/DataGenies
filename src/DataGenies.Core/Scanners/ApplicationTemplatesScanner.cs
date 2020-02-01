@@ -40,8 +40,8 @@ namespace DataGenies.Core.Scanners
                 {
                     yield return new ApplicationTemplate
                     {
-                        TypeName = appTypeInfo.TemplateName,
-                        TypeVersion = appTypeInfo.AssemblyVersion,
+                        Name = appTypeInfo.TemplateName,
+                        Version = appTypeInfo.AssemblyVersion,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };
                 }

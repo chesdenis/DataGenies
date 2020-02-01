@@ -9,9 +9,9 @@ namespace DataGenies.Core.Models
             ApplicationInstance = new HashSet<ApplicationInstance>();
         }
 
-        public int TypeId { get; set; }
-        public string TypeName { get; set; }
-        public string TypeVersion { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Version { get; set; }
 
         public string AssemblyPath { get; set; }
         
@@ -21,7 +21,7 @@ namespace DataGenies.Core.Models
 
         public bool IsMatch(ApplicationTemplate template)
         {
-            return this.TypeName == template.TypeName && this.TypeVersion == template.TypeVersion;
+            return this.Name == template.Name && this.Version == template.Version;
         }
     }
 }

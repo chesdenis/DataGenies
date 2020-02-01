@@ -75,7 +75,7 @@ namespace DataGenies.Core.Tests.Scanners
             Assert.IsNotNull(data);
             Assert.IsTrue(data.Count() == 2);
             Assert.IsTrue(data.Any());
-            Assert.AreEqual("Type1", data.First().TypeName);
+            Assert.AreEqual("Type1", data.First().Name);
             Assert.AreEqual(filesListInDropFolder[0], data.First().AssemblyPath);
         }
     }

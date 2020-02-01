@@ -10,8 +10,8 @@ namespace DataGenies.Core.Models
             OutcomingBindings = new HashSet<Binding>();
         }
 
-        public int InstanceId { get; set; }
-        public int TypeId { get; set; }
+        public int Id { get; set; }
+        public int TemplateId { get; set; }
         public string InstanceName { get; set;  }
         public string ConfigJson { get; set;  }
 
