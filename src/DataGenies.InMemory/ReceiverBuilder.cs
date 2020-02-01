@@ -14,14 +14,14 @@ namespace DataGenies.InMemory
             _broker = broker;
         }
 
-        public ReceiverBuilder WithQueue(string queueName)
+        public IReceiverBuilder WithQueue(string queueName)
         {
             this.QueueName = queueName;
             this.RoutingKeys = new[] {"#"};
             return this;
         }
         
-        public ReceiverBuilder WithRoutingKeys(IEnumerable<string> routingKeys)
+        public IReceiverBuilder WithRoutingKeys(IEnumerable<string> routingKeys)
         {
             this.RoutingKeys = routingKeys;
             return this;

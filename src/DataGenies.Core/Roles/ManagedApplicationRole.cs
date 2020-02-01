@@ -5,9 +5,9 @@ using DataGenies.Core.Behaviours;
 
 namespace DataGenies.Core.Roles
 {
-    public class ManagedApplicationRole : IStartable
+    public class ManagedApplicationRole : IRestartable
     {
-        private readonly IStartable component;
+        private readonly IRestartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
 
         private IBehaviour[] BeforeRun() => this.behaviours.Where(w => w.Type == BehaviourType.BeforeRun).ToArray();
@@ -15,7 +15,7 @@ namespace DataGenies.Core.Roles
         private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
-        public ManagedApplicationRole(IStartable component,
+        public ManagedApplicationRole(IRestartable component,
             IEnumerable<IBehaviour> behaviours)
         {
             this.component = component;
@@ -45,6 +45,11 @@ namespace DataGenies.Core.Roles
             {
                 Array.ForEach(this.AfterRun(), t => t.ExecuteScalar());
             }
+        }
+
+        public void Stop()
+        {
+            this.component.Stop();
         }
     }
 }

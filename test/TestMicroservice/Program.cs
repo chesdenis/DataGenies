@@ -18,7 +18,7 @@ namespace TestMicroservice
             Console.WriteLine("Hello World!");
 
             var mqBroker = new MqBroker();
-            mqBroker.ExchangesAndBoundQueues = new List<Tuple<string, Queue>>()
+            mqBroker.Model = new List<Tuple<string, Queue>>()
             {
                 new Tuple<string, Queue>("sampleExchange", new Queue(){ Name = "sampleQueue"})
             };
@@ -62,7 +62,7 @@ namespace TestMicroservice
     }
 
     [ApplicationTemplate]
-    public class HtmlSimpleParser : ApplicationReceiverPublisherRole
+    public class HtmlSimpleParser : ApplicationReceiverAndPublisherRole
     {
         public HtmlSimpleParser(DataReceiverRole receiverRole, DataPublisherRole publisherRole) 
             : base(receiverRole, publisherRole)
@@ -72,6 +72,11 @@ namespace TestMicroservice
         public override void Start()
         {
             this.Listen(this.OnReceive);
+        }
+
+        public override void Stop()
+        {
+            this.StopListen();
         }
 
         private void OnReceive(byte[] data)
@@ -97,6 +102,11 @@ namespace TestMicroservice
             var someData = Encoding.UTF8.GetBytes(DateTime.Now.Second.ToString());
 
             this.Publish(someData);
+        }
+
+        public override void Stop()
+        {
+            
         }
     }
 

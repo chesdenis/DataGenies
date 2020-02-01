@@ -4,7 +4,7 @@ using DataGenies.Core.Publishers;
 
 namespace DataGenies.Core.Roles
 {
-    public abstract class ApplicationPublisherRole : IPublisher, IStartable
+    public abstract class ApplicationPublisherRole : IPublisher, IRestartable
     {
         private readonly DataPublisherRole _publisherRole;
 
@@ -44,5 +44,6 @@ namespace DataGenies.Core.Roles
         }
 
         public abstract void Start();
+        public abstract void Stop();
     }
 }

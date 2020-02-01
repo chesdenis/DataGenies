@@ -17,7 +17,7 @@ namespace DataGenies.InMemory
         {
             get
             {
-                return this._broker.ExchangesAndBoundQueues
+                return this._broker.Model
                     .Where(w => w.Item1 == _exchangeName)
                     .Select(s => s.Item2);
             }

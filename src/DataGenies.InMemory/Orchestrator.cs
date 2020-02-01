@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using DataGenies.Core.Models.Contexts;
+using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Scanners;
@@ -12,20 +12,21 @@ namespace DataGenies.InMemory
 {
     public class Orchestrator : IOrchestrator
     {
-        private Dictionary<int, IStartable> _instancesInMemory { get; set; }
+        private Dictionary<int, IRestartable> _instancesInMemory { get; set; }
 
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
-        private readonly MqBroker _mqBroker;
-
+        private readonly ManagedApplicationBuilder _managedApplicationBuilder;
+        
         public Orchestrator(ISchemaDataContext schemaDataContext,
-            IApplicationTemplatesScanner applicationTemplatesScanner, MqBroker mqBroker)
+            IApplicationTemplatesScanner applicationTemplatesScanner,
+            ManagedApplicationBuilder managedApplicationBuilder)
         {
             _schemaDataContext = schemaDataContext;
             _applicationTemplatesScanner = applicationTemplatesScanner;
-            _mqBroker = mqBroker;
-
-            _instancesInMemory = new Dictionary<int, IStartable>(); 
+            _managedApplicationBuilder = managedApplicationBuilder;
+           
+            _instancesInMemory = new Dictionary<int, IRestartable>(); 
         }
         
         public Task PrepareTemplatePackage(int applicationInstanceId)
@@ -43,50 +44,60 @@ namespace DataGenies.InMemory
             var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
 
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
-            if (templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
-            {
-                var typeInstance = (IStartable) Activator.CreateInstance(templateType);
 
-                _instancesInMemory[applicationInstanceId] = typeInstance;
-
-            }
-
+            var managedApplication = this._managedApplicationBuilder
+                .UsingApplicationInstance(applicationInstanceInfo)
+                .UsingTemplateType(templateType)
+                .Build(); 
+            
+            _instancesInMemory[applicationInstanceId] = managedApplication;
+            
+            _instancesInMemory[applicationInstanceId].Start();
             return Task.CompletedTask;
         }
         
         public Task Remove(int applicationInstanceId)
         {
-            throw new System.NotImplementedException();
+            _instancesInMemory[applicationInstanceId].Stop();
+            _instancesInMemory.Remove(applicationInstanceId);
+            
+            return  Task.CompletedTask;
         }
 
         public Task Redeploy(int applicationInstanceId)
         {
-            throw new System.NotImplementedException();
+            _instancesInMemory[applicationInstanceId].Stop();
+            _instancesInMemory.Remove(applicationInstanceId);
+
+            Deploy(applicationInstanceId);
+            
+            return  Task.CompletedTask;
         }
 
         public Task Restart(int applicationInstanceId)
         {
-            throw new System.NotImplementedException();
+            _instancesInMemory[applicationInstanceId].Stop();
+            _instancesInMemory[applicationInstanceId].Start();
+            
+            return  Task.CompletedTask;
         }
 
         public Task RestartAll()
         {
-            throw new System.NotImplementedException();
+            foreach (var instanceInMemory in this._instancesInMemory.Keys)
+            {
+                _instancesInMemory[instanceInMemory].Stop();
+                _instancesInMemory[instanceInMemory].Start();
+            }
+            
+            return  Task.CompletedTask;
         }
 
         public Task RemoveAll()
         {
-            throw new System.NotImplementedException();
-        }
-
-        public Task SetupIncomingBinding(int applicationInstanceId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public Task SetupOutcomingBinding(int applicationInstanceId)
-        {
-            throw new System.NotImplementedException();
+            _instancesInMemory.Clear();
+            
+            return  Task.CompletedTask;
         }
     }
 }

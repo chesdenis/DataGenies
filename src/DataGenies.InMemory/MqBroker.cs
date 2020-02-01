@@ -5,6 +5,6 @@ namespace DataGenies.InMemory
 {
     public class MqBroker
     {
-        public IEnumerable<Tuple<string, Queue>> ExchangesAndBoundQueues { get; set; }
+        public IEnumerable<Tuple<string, Queue>> Model { get; set; }
     }
 }

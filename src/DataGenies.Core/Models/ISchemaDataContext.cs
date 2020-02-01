@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace DataGenies.Core.Models.Contexts
+namespace DataGenies.Core.Models
 {
     public interface ISchemaDataContext
     {

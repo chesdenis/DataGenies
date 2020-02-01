@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using DataGenies.Core.Models;
-using DataGenies.Core.Models.Contexts;
 
 namespace DataGenies.InMemory
 {

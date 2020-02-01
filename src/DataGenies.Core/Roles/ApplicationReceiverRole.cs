@@ -3,7 +3,7 @@ using DataGenies.Core.Receivers;
 
 namespace DataGenies.Core.Roles
 {
-    public abstract class ApplicationReceiverRole : IReceiver, IStartable
+    public abstract class ApplicationReceiverRole : IReceiver, IRestartable
     {
         private readonly DataReceiverRole _receiverRole;
 
@@ -23,5 +23,6 @@ namespace DataGenies.Core.Roles
         }
 
         public abstract void Start();
+        public abstract void Stop();
     }
 }

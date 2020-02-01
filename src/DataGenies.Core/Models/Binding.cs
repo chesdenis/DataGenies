@@ -4,11 +4,11 @@ namespace DataGenies.Core.Models
 {
     public partial class Binding
     {
-        public int IncomingApplicationInstanceId { get; set; }
-        public int OutcomingApplicationInstanceId { get; set; }
+        public int ReceiverId { get; set; }
+        public int PublisherId { get; set; }
 
-        public virtual ApplicationInstance IncomingBinding { get; set; }
-        public virtual ApplicationInstance OutcomingBinding { get; set; }
+        public virtual ApplicationInstance ReceiverApplicationInstance { get; set; }
+        public virtual ApplicationInstance PublisherApplicationInstance { get; set; }
     }
  
 }

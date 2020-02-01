@@ -5,12 +5,12 @@ using DataGenies.Core.Receivers;
 
 namespace DataGenies.Core.Roles
 {
-    public abstract class ApplicationReceiverPublisherRole : IReceiver, IPublisher, IStartable
+    public abstract class ApplicationReceiverAndPublisherRole : IReceiver, IPublisher, IRestartable
     {
         private readonly DataReceiverRole _receiverRole;
         private readonly DataPublisherRole _publisherRole;
 
-        protected ApplicationReceiverPublisherRole(DataReceiverRole receiverRole, DataPublisherRole publisherRole)
+        protected ApplicationReceiverAndPublisherRole(DataReceiverRole receiverRole, DataPublisherRole publisherRole)
         {
             _receiverRole = receiverRole;
             _publisherRole = publisherRole;
@@ -57,5 +57,6 @@ namespace DataGenies.Core.Roles
         }
 
         public abstract void Start();
+        public abstract void Stop();
     }
 }

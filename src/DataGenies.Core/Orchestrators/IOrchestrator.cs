@@ -11,7 +11,5 @@ namespace DataGenies.Core.Orchestrators
         Task Restart(int applicationInstanceId);
         Task RestartAll();
         Task RemoveAll();
-        Task SetupIncomingBinding(int applicationInstanceId);
-        Task SetupOutcomingBinding(int applicationInstanceId);
     }
 }

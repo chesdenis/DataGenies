@@ -1,5 +1,5 @@
 using DataGenies.Core.Extensions;
-using DataGenies.Core.Models.Contexts;
+using DataGenies.Core.Models;
 using DataGenies.UI.Extensions;
 using DataGenies.InMemory;
 using Microsoft.AspNetCore.Builder;

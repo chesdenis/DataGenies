@@ -13,7 +13,7 @@ namespace DataGenies.InMemory
             _broker = broker;
         }
         
-        public PublisherBuilder WithExchange(string exchangeName)
+        public IPublisherBuilder WithExchange(string exchangeName)
         {
             this.ExchangeName = exchangeName;
             return this;

@@ -22,7 +22,7 @@ namespace DataGenies.InMemory
 
         public void Listen(Action<byte[]> onReceive)
         {
-            var relatedQueue = _broker.ExchangesAndBoundQueues.First(f => f.Item2.Name == _queueName).Item2;
+            var relatedQueue = _broker.Model.First(f => f.Item2.Name == _queueName).Item2;
 
             this._isListening = true;
             while (_isListening)
