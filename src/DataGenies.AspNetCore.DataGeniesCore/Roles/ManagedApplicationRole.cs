@@ -5,7 +5,7 @@ using DataGenies.AspNetCore.DataGeniesCore.Behaviours;
 
 namespace DataGenies.AspNetCore.DataGeniesCore.Roles
 {
-    public class ManagedApplicationInstance : IStartable
+    public class ManagedApplicationRole : IStartable
     {
         private readonly IStartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
@@ -15,7 +15,7 @@ namespace DataGenies.AspNetCore.DataGeniesCore.Roles
         private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
-        public ManagedApplicationInstance(IStartable component,
+        public ManagedApplicationRole(IStartable component,
             IEnumerable<IBehaviour> behaviours)
         {
             this.component = component;
