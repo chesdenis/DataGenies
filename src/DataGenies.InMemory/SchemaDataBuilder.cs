@@ -75,7 +75,7 @@ namespace DataGenies.InMemory
             return this;
         }
 
-        public SchemaDataBuilder ConfigureBinding(string publisherInstanceName, string receiverInstanceName)
+        public SchemaDataBuilder ConfigureBinding(string publisherInstanceName, string receiverInstanceName, string receiverRoutingKey)
         {
             var publisherInstance = _schemaDataContext.ApplicationInstances.First(f => f.Name == publisherInstanceName);
             var receiverInstance = _schemaDataContext.ApplicationInstances.First(f => f.Name == receiverInstanceName);
@@ -84,6 +84,7 @@ namespace DataGenies.InMemory
             {
                 ReceiverId = receiverInstance.Id,
                 PublisherId = publisherInstance.Id,
+                ReceiverRoutingKey = receiverRoutingKey,
                 ReceiverApplicationInstance = receiverInstance,
                 PublisherApplicationInstance = publisherInstance
             });

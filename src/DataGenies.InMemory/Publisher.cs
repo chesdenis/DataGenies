@@ -12,17 +12,7 @@ namespace DataGenies.InMemory
         
         private readonly MqBroker _broker;
         private readonly string _exchangeName;
-
-        private IEnumerable<ConcurrentQueue<MqMessage>> ContextQueues
-        {
-            get
-            {
-                return this._broker.Model
-                    .Where(w => w.Item1 == _exchangeName)
-                    .Select(s => s.Item2);
-            }
-        }
-
+        
         public Publisher(MqBroker broker, string exchangeName)
         {
             _broker = broker;
@@ -33,7 +23,9 @@ namespace DataGenies.InMemory
         
         public void Publish(byte[] data, string routingKey)
         {
-            Array.ForEach(this.ContextQueues.ToArray(), queue =>
+            var contextQueues = this._broker.Model[_exchangeName][routingKey].ToArray();
+            
+            Array.ForEach(contextQueues, queue =>
             {
                 queue.Enqueue(new MqMessage
                 {

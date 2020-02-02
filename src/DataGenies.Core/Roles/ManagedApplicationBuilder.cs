@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Converters;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
@@ -14,17 +15,21 @@ namespace DataGenies.Core.Roles
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IReceiverBuilder _receiverBuilder;
         private readonly IPublisherBuilder _publisherBuilder;
+        private readonly IMqConfigurator _mqConfigurator;
+        
         private Type _templateType;
         private ApplicationInstance _applicationInstance;
 
         public ManagedApplicationBuilder(
             ISchemaDataContext schemaDataContext, 
             IReceiverBuilder receiverBuilder, 
-            IPublisherBuilder publisherBuilder)
+            IPublisherBuilder publisherBuilder,
+            IMqConfigurator mqConfigurator)
         {
             _schemaDataContext = schemaDataContext;
             _receiverBuilder = receiverBuilder;
             _publisherBuilder = publisherBuilder;
+            _mqConfigurator = mqConfigurator;
         }
 
         public ManagedApplicationBuilder UsingTemplateType(Type templateType)
@@ -43,93 +48,89 @@ namespace DataGenies.Core.Roles
         {
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverAndPublisherRole)))
             {
-                return BuildUsingReceiverAndPublisherRole();
+                var dataPublisherRole = BuildDataPublisherRole();
+                var dataReceiverRole = BuildDataReceiverRole();
+            
+                var application =
+                    (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
+
+               return new ManagedApplicationRole(application, new List<IBehaviour>());
             }
             
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverRole)))
             {
-                return BuildUsingReceiverRole();
+                var dataReceiverRole = BuildDataReceiverRole();
+            
+                var application =
+                    (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
+
+                return new ManagedApplicationRole(application, new List<IBehaviour>());
             }
 
             if (this._templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
             {
-                return BuildUsingPublisherRole();
+                var dataPublisherRole = BuildDataPublisherRole();
+            
+                var application =
+                    (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
+
+                return new ManagedApplicationRole(application, new List<IBehaviour>());
             }
 
             throw new NotImplementedException();
-        }
-
-        private IRestartable BuildUsingReceiverAndPublisherRole()
+        } 
+        
+        private DataReceiverRole BuildDataReceiverRole()
         {
-            var relatedPublishers = _schemaDataContext.Bindings
-                .Where(w => w.ReceiverId == this._applicationInstance.Id)
-                .Select(s => s.PublisherApplicationInstance.Name);
-                
             var receiver = this._receiverBuilder
                 .WithQueue(this._applicationInstance.Name)
-                .WithRoutingKeys(relatedPublishers)
                 .Build();
+
+            ConfigureMqForReceiverRole();
 
             var dataReceiverRole = new DataReceiverRole(receiver, new List<IConverter>());
-                
-            var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstance.Name)
-                .Build();
-
-            var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
-
-            var application = (IRestartable)Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
-
-            var managedApplication = new ManagedApplicationRole(application, new List<IBehaviour>());
-                
-            return managedApplication;
+            return dataReceiverRole;
         }
 
-        private IRestartable BuildUsingPublisherRole()
+        private DataPublisherRole BuildDataPublisherRole()
         {
             var publisher = this._publisherBuilder
                 .WithExchange(this._applicationInstance.Name)
                 .Build();
 
+            ConfigureMqForPublisherRole();
+
+            var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
+            return dataPublisherRole;
+        }
+
+        private void ConfigureMqForPublisherRole()
+        {
             var relatedReceivers = _schemaDataContext.Bindings
-                .Where(w => w.PublisherId == this._applicationInstance.Id)
-                .Select(s => s.ReceiverApplicationInstance.Name);
+                .Where(w => w.PublisherId == this._applicationInstance.Id);
 
-            foreach (var receiverName in relatedReceivers)
+            this._mqConfigurator.EnsureExchange(this._applicationInstance.Name);
+
+            foreach (var receiver in relatedReceivers)
             {
-                this._receiverBuilder
-                    .WithQueue(receiverName)
-                    .WithRoutingKeys(new[] {this._applicationInstance.Name})
-                    .Build();
+                this._mqConfigurator.EnsureQueue(receiver.ReceiverApplicationInstance.Name, this._applicationInstance.Name,
+                    $"{receiver.ReceiverRoutingKey}");
             }
-            
-            var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
-
-            var startable = (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
-                
-            var managedApplication = new ManagedApplicationRole(startable, new List<IBehaviour>());
-
-            return managedApplication;
         }
 
-        private IRestartable BuildUsingReceiverRole()
+        private void ConfigureMqForReceiverRole()
         {
             var relatedPublishers = _schemaDataContext.Bindings
-                .Where(w => w.ReceiverId == this._applicationInstance.Id)
-                .Select(s => s.PublisherApplicationInstance.Name);
+                .Where(w => w.ReceiverId == this._applicationInstance.Id);
 
-            var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstance.Name)
-                .WithRoutingKeys(relatedPublishers)
-                .Build();
-
-            var dataReceiverRole = new DataReceiverRole(receiver, new List<IConverter>());
-
-            var application = (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
-             
-            var managedApplication = new ManagedApplicationRole(application, new List<IBehaviour>());
-
-            return managedApplication;
+            foreach (var publisher in relatedPublishers)
+            {
+                this._mqConfigurator.EnsureExchange(publisher.PublisherApplicationInstance.Name);
+                this._mqConfigurator.EnsureQueue(
+                    this._applicationInstance.Name, 
+                    publisher.PublisherApplicationInstance.Name,
+                    publisher.ReceiverRoutingKey);
+            }
         }
     }
 }

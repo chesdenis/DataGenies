@@ -16,48 +16,6 @@ namespace TestMicroservice
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-
-            var mqBroker = new MqBroker();
-            mqBroker.Model = new List<Tuple<string, Queue>>()
-            {
-                new Tuple<string, Queue>("sampleExchange", new Queue(){ Name = "sampleQueue"})
-            };
-              
-            var simpleUrlGenerator = new HttpSimplePageDownloaderGenerator(
-                new DataPublisherRole(
-                    new PublisherBuilder(mqBroker).WithExchange("sampleExchange").Build(),
-                    new List<IConverter>()));
-
-            var simpleParser = new HtmlSimpleParser(
-                new DataReceiverRole(
-                    new ReceiverBuilder(mqBroker).WithQueue("sampleQueue").Build(),
-                    new List<IConverter>()),
-                new DataPublisherRole(
-                    new PublisherBuilder(mqBroker).WithExchange("sampleExchange2").Build(),
-                    new List<IConverter>()));
-
-            var t1 = Task.Run(() =>
-            {
-                for (int i = 0; i < 1020; i++)
-                {
-                    simpleUrlGenerator.Start();
-                }
-            });
-            var t2 = Task.Run(() => simpleParser.Start());
-            var t3 = Task.Run(async () =>
-            {
-                await Task.Delay(new TimeSpan(0, 0, 30));
-                simpleParser.StopListen();
-            });
-
-            var tasks = new Task[] {t1,t2, t3 };
-
-            Task.WaitAll(tasks);
-            
-            Array.ForEach(tasks, t =>
-            {
-                if (t.IsFaulted) throw t.Exception;
-            });
         }
     }
 

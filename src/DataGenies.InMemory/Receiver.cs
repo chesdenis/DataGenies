@@ -9,52 +9,40 @@ namespace DataGenies.InMemory
     {
         private readonly MqBroker _broker;
         private readonly string _queueName;
-        private readonly IEnumerable<string> _routingKeys;
-
+         
         private bool _isListening = false;
 
-        public Receiver(MqBroker broker, string queueName, IEnumerable<string> routingKeys)
+        public Receiver(MqBroker broker, string queueName)
         {
             _broker = broker;
             _queueName = queueName;
-            _routingKeys = routingKeys;
         }
 
         public void Listen(Action<byte[]> onReceive)
         {
-            var relatedQueue = _broker.Model.First(f => f.Item2.Name == _queueName).Item2;
-
+            var relatedQueue = _broker.Model.Keys
+                .SelectMany(ss => _broker.Model[ss])
+                .SelectMany(ss => ss.Value).First(f => f.Name == _queueName);
+             
             this._isListening = true;
             while (_isListening)
             {
                 if (!relatedQueue.TryDequeue(out var message)) continue;
 
-                if (IsMatchForReceiver(message))
+                try
                 {
                     onReceive(message.Body);
-                    continue;
                 }
-
-                relatedQueue.Enqueue(message);
+                catch (Exception ex)
+                {
+                    relatedQueue.Enqueue(message);
+                }
             }
         }
 
         public void StopListen()
         {
             _isListening = false;
-        }
-
-        private bool IsMatchForReceiver(MqMessage message)
-        {
-            foreach (var routingKey in this._routingKeys)
-            {
-                if (message.RoutingKey.StartsWith(routingKey))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
     }
 }

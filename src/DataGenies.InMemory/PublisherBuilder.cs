@@ -1,4 +1,6 @@
-﻿using DataGenies.Core.Publishers;
+﻿using System;
+using System.Runtime.Versioning;
+using DataGenies.Core.Publishers;
 
 namespace DataGenies.InMemory
 {
