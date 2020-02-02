@@ -23,6 +23,11 @@ namespace DataGenies.InMemory
         
         public void Publish(byte[] data, string routingKey)
         {
+            if (!this._broker.Model[_exchangeName].ContainsKey(routingKey))
+            {
+                return;
+            }
+
             var contextQueues = this._broker.Model[_exchangeName][routingKey].ToArray();
             
             Array.ForEach(contextQueues, queue =>

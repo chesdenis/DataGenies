@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,21 +133,48 @@ namespace DataGenies.Core.Tests.Integration.Roles
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher");
             
-            // Act
-            var appInfo = this._inMemorySchemaContext.ApplicationInstances.First();
-            var managedApp = _managedApplicationBuilder.UsingApplicationInstance(appInfo)
+            _schemaDataBuilder.CreateApplicationTemplate(
+                    "SampleAppReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("SampleAppReceiver");
+             
+            var publisherManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
+                    _inMemorySchemaContext.ApplicationInstances
+                        .First(f => f.Name == "SampleAppPublisher"))
                 .UsingTemplateType(typeof(SampleAppPublisher)).Build();
-
-            managedApp.Start();
             
+            var receiverManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
+                    _inMemorySchemaContext.ApplicationInstances
+                        .First(f => f.Name == "SampleAppReceiver"))
+                .UsingTemplateType(typeof(SampleAppReceiver)).Build();
+            
+            // Act
+            var t1 = Task.Run(() => publisherManagedApp.Start());
+
+            var t2 = Task.Run(() =>
+            {
+                Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                    receiverManagedApp.Stop();
+                });
+
+                receiverManagedApp.Start();
+            });
+            
+            Task.WaitAll(t1, t2);
+             
             // Assert
-            Assert.IsTrue(!_inMemoryMqBroker.Model["SampleAppPublisher"].ContainsKey("#"));
+            Assert.AreEqual("TestString", ((SampleAppPublisher) (publisherManagedApp.GetRootComponent())).State[0]);
+            Assert.IsTrue(((SampleAppReceiver) (receiverManagedApp.GetRootComponent())).State.Count == 0);
         }
         
         
         [ApplicationTemplate]
         private class SampleAppPublisher : ApplicationPublisherRole
         {
+            public readonly List<string> State = new List<string>();
+            
             public SampleAppPublisher(DataPublisherRole publisherRole) : base(publisherRole)
             {
             }
@@ -156,11 +184,36 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 var testData = Encoding.UTF8.GetBytes("TestString");
 
                 this.Publish(testData);
+                
+                State.Add("TestString");
             }
 
             public override void Stop()
             {
                 
+            }
+        }
+        
+        [ApplicationTemplate]
+        private class SampleAppReceiver : ApplicationReceiverRole
+        {
+            public readonly List<string> State = new List<string>();
+            
+            public SampleAppReceiver(DataReceiverRole receiverRole) : base(receiverRole)
+            {
+            }
+
+            public override void Start()
+            {
+                this.Listen((message) =>
+                {
+                    State.Add(Encoding.UTF8.GetString(message));
+                });
+            }
+
+            public override void Stop()
+            {
+                this.StopListen();
             }
         }
     }

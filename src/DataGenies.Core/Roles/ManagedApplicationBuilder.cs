@@ -44,7 +44,7 @@ namespace DataGenies.Core.Roles
             return this;
         }
 
-        public IRestartable Build()
+        public IManagedApplicationRole Build()
         {
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverAndPublisherRole)))
             {

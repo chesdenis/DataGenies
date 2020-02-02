@@ -5,7 +5,7 @@ using DataGenies.Core.Behaviours;
 
 namespace DataGenies.Core.Roles
 {
-    public class ManagedApplicationRole : IRestartable
+    public class ManagedApplicationRole : IManagedApplicationRole
     {
         private readonly IRestartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
@@ -50,6 +50,11 @@ namespace DataGenies.Core.Roles
         public void Stop()
         {
             this.component.Stop();
+        }
+
+        public IRestartable GetRootComponent()
+        {
+            return this.component;
         }
     }
 }
