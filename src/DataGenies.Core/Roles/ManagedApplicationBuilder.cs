@@ -91,6 +91,18 @@ namespace DataGenies.Core.Roles
                 .WithExchange(this._applicationInstance.Name)
                 .Build();
 
+            var relatedReceivers = _schemaDataContext.Bindings
+                .Where(w => w.PublisherId == this._applicationInstance.Id)
+                .Select(s => s.ReceiverApplicationInstance.Name);
+
+            foreach (var receiverName in relatedReceivers)
+            {
+                this._receiverBuilder
+                    .WithQueue(receiverName)
+                    .WithRoutingKeys(new[] {this._applicationInstance.Name})
+                    .Build();
+            }
+            
             var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
 
             var startable = (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);

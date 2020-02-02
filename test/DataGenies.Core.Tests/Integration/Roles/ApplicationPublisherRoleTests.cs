@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Roles;
 using DataGenies.InMemory;
@@ -52,13 +53,12 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 "SampleAppPublisher", 
                 "SampleAppReceiver");
             
-            var applicationInstance = this._inMemorySchemaContext.ApplicationInstances.First();
-            var managedApplication = _managedApplicationBuilder.UsingApplicationInstance(applicationInstance)
-                .UsingTemplateType(typeof(SampleAppPublisher)).Build();
-            
-            
             // Act
-            managedApplication.Start();
+            var appInfo = this._inMemorySchemaContext.ApplicationInstances.First();
+            var managedApp = _managedApplicationBuilder.UsingApplicationInstance(appInfo)
+                .UsingTemplateType(typeof(SampleAppPublisher)).Build();
+
+            managedApp.Start();
             
             // Assert
             var bindingEntries = _inMemoryMqBroker.Model.Where(s => s.Item1 == "SampleAppPublisher").ToArray();
@@ -87,6 +87,24 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 var testData = Encoding.UTF8.GetBytes("TestString");
 
                 this.Publish(testData);
+            }
+
+            public override void Stop()
+            {
+                
+            }
+        }
+        
+        [ApplicationTemplate]
+        private class SampleAppReceiver : ApplicationReceiverRole
+        {
+            public SampleAppReceiver(DataReceiverRole receiverRole) : base(receiverRole)
+            {
+            }
+
+            public override void Start()
+            {
+                
             }
 
             public override void Stop()
