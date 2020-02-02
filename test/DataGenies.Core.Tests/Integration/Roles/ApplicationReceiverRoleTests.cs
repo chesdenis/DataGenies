@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Roles;
+using DataGenies.Core.Tests.Integration.Mocks;
 using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -53,7 +54,7 @@ namespace DataGenies.Core.Tests.Integration.Roles
                     "SampleAppReceiverTemplate", 
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver");
-
+            
             _schemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
@@ -61,17 +62,17 @@ namespace DataGenies.Core.Tests.Integration.Roles
             var publisherManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
                     _inMemorySchemaContext.ApplicationInstances
                         .First(f => f.Name == "SampleAppPublisher"))
-                .UsingTemplateType(typeof(SampleAppPublisher)).Build();
+                .UsingTemplateType(typeof(MockAppTemplateSimplePublisher)).Build();
             
             var receiverManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
                     _inMemorySchemaContext.ApplicationInstances
                         .First(f => f.Name == "SampleAppReceiver"))
-                .UsingTemplateType(typeof(SampleBrokenAppReceiver)).Build();
+                .UsingTemplateType(typeof(MockAppTemplateBrokenReceiver)).Build();
             
             // Act
-            var t1 = new Task(() => publisherManagedApp.Start());
+            var t1 = Task.Run(() => publisherManagedApp.Start());
             
-            var t2 = new Task(() =>
+            var t2 = Task.Run(() =>
             {
                 Task.Run(async () =>
                 {
@@ -82,26 +83,11 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 receiverManagedApp.Start();
             });
             
+            Task.WaitAll(t1, t2);
+            
             // Assert
-            t1.Start();
-            t1.Wait();
-            {
-                var queues = _inMemoryMqBroker.Model["SampleAppPublisher"]["#"];
-                Assert.AreEqual(1, queues.Count);
-            
-                var queue = queues.First();
-                Assert.AreEqual(1, queue.Count);
-            }
-            
-            t2.Start();
-            t2.Wait();
-            {
-                var queues = _inMemoryMqBroker.Model["SampleAppPublisher"]["#"];
-                Assert.AreEqual(1, queues.Count);
-            
-                var queue = queues.First();
-                Assert.AreEqual(1, queue.Count);
-            }
+            Assert.AreEqual("TestString", ((MockBasicAppTemplatePublisher) (publisherManagedApp.GetRootComponent())).GetLastMessageAsString());
+            Assert.AreEqual(0, ((MockBasicAppTemplateReceiver) (receiverManagedApp.GetRootComponent())).GetMessagesCountInState());
         }
         
         [TestMethod]
@@ -117,7 +103,7 @@ namespace DataGenies.Core.Tests.Integration.Roles
                     "SampleAppReceiverTemplate", 
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver");
-
+            
             _schemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
@@ -125,108 +111,32 @@ namespace DataGenies.Core.Tests.Integration.Roles
             var publisherManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
                     _inMemorySchemaContext.ApplicationInstances
                         .First(f => f.Name == "SampleAppPublisher"))
-                .UsingTemplateType(typeof(SampleAppPublisher)).Build();
+                .UsingTemplateType(typeof(MockAppTemplateSimplePublisher)).Build();
             
             var receiverManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
                     _inMemorySchemaContext.ApplicationInstances
                         .First(f => f.Name == "SampleAppReceiver"))
-                .UsingTemplateType(typeof(SampleAppReceiver)).Build();
+                .UsingTemplateType(typeof(MockAppTemplateSimpleReceiver)).Build();
             
             // Act
-            var t1 = new Task(() => publisherManagedApp.Start());
+            var t1 = Task.Run(() => publisherManagedApp.Start());
             
-            var t2 = new Task(() =>
+            var t2 = Task.Run(() =>
             {
                 Task.Run(async () =>
                 {
                     await Task.Delay(1000);
                     receiverManagedApp.Stop();
                 });
-                
+            
                 receiverManagedApp.Start();
             });
             
+            Task.WaitAll(t1, t2);
+             
             // Assert
-            t1.Start();
-            t1.Wait();
-            {
-                var queues = _inMemoryMqBroker.Model["SampleAppPublisher"]["#"];
-                Assert.AreEqual(1, queues.Count);
-            
-                var queue = queues.First();
-                Assert.AreEqual(1, queue.Count);
-            }
-            
-            t2.Start();
-            t2.Wait();
-            {
-                var queues = _inMemoryMqBroker.Model["SampleAppPublisher"]["#"];
-                Assert.AreEqual(1, queues.Count);
-            
-                var queue = queues.First();
-                Assert.AreEqual(0, queue.Count);
-            }
-        }
-        
-        [ApplicationTemplate]
-        private class SampleAppPublisher : ApplicationPublisherRole
-        {
-            public SampleAppPublisher(DataPublisherRole publisherRole) : base(publisherRole)
-            {
-            }
-
-            public override void Start()
-            {
-                var testData = Encoding.UTF8.GetBytes($"TestString");
-                this.Publish(testData);
-            }
-
-            public override void Stop()
-            {
-                
-            }
-        }
-        
-        [ApplicationTemplate]
-        private class SampleAppReceiver : ApplicationReceiverRole
-        {
-            public SampleAppReceiver(DataReceiverRole receiverRole) : base(receiverRole)
-            {
-            }
-
-            public override void Start()
-            {
-                this.Listen((message) =>
-                {
-                   
-                });
-            }
-
-            public override void Stop()
-            {
-                this.StopListen();
-            }
-        }
-        
-        [ApplicationTemplate]
-        private class SampleBrokenAppReceiver : ApplicationReceiverRole
-        {
-            public SampleBrokenAppReceiver(DataReceiverRole receiverRole) : base(receiverRole)
-            {
-            }
-
-            public override void Start()
-            {
-                this.Listen((message) =>
-                {
-                   throw new Exception("Something went wrong");
-                });
-            }
-
-            public override void Stop()
-            {
-                this.StopListen();
-            }
+            Assert.AreEqual("TestString", ((MockBasicAppTemplatePublisher) (publisherManagedApp.GetRootComponent())).GetLastMessageAsString());
+            Assert.AreEqual("TestString", ((MockBasicAppTemplateReceiver) (receiverManagedApp.GetRootComponent())).GetLastMessageAsString());
         }
     }
 }
