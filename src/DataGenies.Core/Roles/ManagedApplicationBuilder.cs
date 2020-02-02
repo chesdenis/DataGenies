@@ -63,17 +63,17 @@ namespace DataGenies.Core.Roles
         {
             var relatedPublishers = _schemaDataContext.Bindings
                 .Where(w => w.ReceiverId == this._applicationInstance.Id)
-                .Select(s => s.PublisherApplicationInstance.InstanceName);
+                .Select(s => s.PublisherApplicationInstance.Name);
                 
             var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstance.InstanceName)
+                .WithQueue(this._applicationInstance.Name)
                 .WithRoutingKeys(relatedPublishers)
                 .Build();
 
             var dataReceiverRole = new DataReceiverRole(receiver, new List<IConverter>());
                 
             var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstance.InstanceName)
+                .WithExchange(this._applicationInstance.Name)
                 .Build();
 
             var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
@@ -88,7 +88,7 @@ namespace DataGenies.Core.Roles
         private IRestartable BuildUsingPublisherRole()
         {
             var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstance.InstanceName)
+                .WithExchange(this._applicationInstance.Name)
                 .Build();
 
             var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
@@ -104,10 +104,10 @@ namespace DataGenies.Core.Roles
         {
             var relatedPublishers = _schemaDataContext.Bindings
                 .Where(w => w.ReceiverId == this._applicationInstance.Id)
-                .Select(s => s.PublisherApplicationInstance.InstanceName);
+                .Select(s => s.PublisherApplicationInstance.Name);
 
             var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstance.InstanceName)
+                .WithQueue(this._applicationInstance.Name)
                 .WithRoutingKeys(relatedPublishers)
                 .Build();
 

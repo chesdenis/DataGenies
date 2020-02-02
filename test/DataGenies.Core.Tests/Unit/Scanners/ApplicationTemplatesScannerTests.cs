@@ -6,7 +6,7 @@ using DataGenies.Core.Scanners;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
-namespace DataGenies.Core.Tests.Scanners
+namespace DataGenies.Core.Tests.Unit.Scanners
 {
     [TestClass]
     public class ApplicationTemplatesScannerTests

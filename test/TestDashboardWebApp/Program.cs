@@ -36,7 +36,7 @@ namespace TestDashboardWebApp
             var sampleAppInstance = new ApplicationInstance
             {
                 Id = 1,
-                InstanceName = "SampleAppInstance",
+                Name = "SampleAppInstance",
                 ConfigJson = "{}",
                 IncomingBindings = new List<Binding>(),
                 OutcomingBindings = new List<Binding>()
