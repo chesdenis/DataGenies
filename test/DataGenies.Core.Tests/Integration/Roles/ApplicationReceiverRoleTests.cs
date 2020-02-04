@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Attributes;
+using DataGenies.Core.Behaviours;
+using DataGenies.Core.Converters;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Tests.Integration.Mocks;
+using DataGenies.Core.Tests.Integration.Mocks.Abstractions;
+using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,9 +40,10 @@ namespace DataGenies.Core.Tests.Integration.Roles
             _inMemorySchemaContext = new SchemaDataContext();
             _schemaDataBuilder = new SchemaDataBuilder(_inMemorySchemaContext);
             _mqConfigurator = new MqConfigurator(_inMemoryMqBroker);
-            
+
             _managedApplicationBuilder =
-                new ManagedApplicationBuilder(_inMemorySchemaContext, receiverBuilder, publisherBuilder, _mqConfigurator);
+                new ManagedApplicationBuilder(_inMemorySchemaContext, receiverBuilder, publisherBuilder,
+                    _mqConfigurator);
         }
         
          [TestMethod]

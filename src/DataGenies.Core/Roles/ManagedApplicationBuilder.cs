@@ -16,7 +16,7 @@ namespace DataGenies.Core.Roles
         private readonly IReceiverBuilder _receiverBuilder;
         private readonly IPublisherBuilder _publisherBuilder;
         private readonly IMqConfigurator _mqConfigurator;
-        
+       
         private Type _templateType;
         private ApplicationInstance _applicationInstance;
 
@@ -46,6 +46,9 @@ namespace DataGenies.Core.Roles
 
         public IManagedApplicationRole Build()
         {
+            var templateBehaviours = this.GetTemplateBehaviours(this._templateType);
+            var templateConverters = this.GetTemplateBehaviours(this._templateType);
+            
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverAndPublisherRole)))
             {
                 var dataPublisherRole = BuildDataPublisherRole();
@@ -54,7 +57,7 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
 
-               return new ManagedApplicationRole(application, new List<IBehaviour>());
+               return new ManagedApplicationRole(application, templateBehaviours);
             }
             
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverRole)))
@@ -64,7 +67,7 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
 
-                return new ManagedApplicationRole(application, new List<IBehaviour>());
+                return new ManagedApplicationRole(application, templateBehaviours);
             }
 
             if (this._templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
@@ -74,12 +77,17 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
 
-                return new ManagedApplicationRole(application, new List<IBehaviour>());
+                return new ManagedApplicationRole(application, templateBehaviours);
             }
 
             throw new NotImplementedException();
-        } 
-        
+        }
+
+        private IEnumerable<IBehaviour> GetTemplateBehaviours(Type templateType)
+        {
+            throw new NotImplementedException();
+        }
+
         private DataReceiverRole BuildDataReceiverRole()
         {
             var receiver = this._receiverBuilder

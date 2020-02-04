@@ -16,6 +16,11 @@ namespace DataGenies.Core.Models
         public string ConfigJson { get; set;  }
 
         public virtual ApplicationTemplate Template { get; set;  }
+
+        public virtual ICollection<ApplicationInstanceBehaviour> Behaviours { get; set; }
+
+        public virtual ICollection<ApplicationInstanceConverter> Converters { get; set; }
+
         public virtual ICollection<Binding> IncomingBindings { get; set; }
         
         public virtual ICollection<Binding> OutcomingBindings { get; set; }

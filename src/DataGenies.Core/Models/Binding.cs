@@ -12,5 +12,4 @@ namespace DataGenies.Core.Models
         public virtual ApplicationInstance ReceiverApplicationInstance { get; set; }
         public virtual ApplicationInstance PublisherApplicationInstance { get; set; }
     }
- 
 }

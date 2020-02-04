@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using DataGenies.Core.Roles;
 
-namespace DataGenies.Core.Tests.Integration.Mocks
+namespace DataGenies.Core.Tests.Integration.Mocks.Abstractions
 {
     public abstract class MockBasicAppTemplateReceiverAndPublisher : ApplicationReceiverAndPublisherRole
     {

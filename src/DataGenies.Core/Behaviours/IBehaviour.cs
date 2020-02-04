@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using DataGenies.Core.Models;
+using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Behaviours
 {
@@ -6,12 +9,16 @@ namespace DataGenies.Core.Behaviours
     {
         BehaviourType Type { get; set; }
 
-        void ExecuteScalar();
+        void DoSomethingBeforeStart();
+        
+        void DoSomethingAfterStart();
 
-        void ExecuteAction(Action action);
+        void DoSomethingDuringRunning(Action action);
 
         Action Wrap(Action<Action> wrapperAction, Action executeAction);
 
-        void ExecuteException(Exception ex = null);
+        void DoSomethingOnException(Exception ex = null);
+
+        Func<IApplicationProperties> GetApplicationProperties { get; set; }
     }
 }

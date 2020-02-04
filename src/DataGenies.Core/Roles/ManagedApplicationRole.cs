@@ -10,9 +10,9 @@ namespace DataGenies.Core.Roles
         private readonly IRestartable component;
         private readonly IEnumerable<IBehaviour> behaviours;
 
-        private IBehaviour[] BeforeRun() => this.behaviours.Where(w => w.Type == BehaviourType.BeforeRun).ToArray();
-        private IBehaviour[] AfterRun() => this.behaviours.Where(w => w.Type == BehaviourType.AfterRun).ToArray();
-        private IBehaviour[] DuringRun() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRun).ToArray();
+        private IBehaviour[] BeforeStart() => this.behaviours.Where(w => w.Type == BehaviourType.BeforeStart).ToArray();
+        private IBehaviour[] AfterStart() => this.behaviours.Where(w => w.Type == BehaviourType.AfterStart).ToArray();
+        private IBehaviour[] DuringRunning() => this.behaviours.Where(w => w.Type == BehaviourType.DuringRunning).ToArray();
         private IBehaviour[] OnException() => this.behaviours.Where(w => w.Type == BehaviourType.OnException).ToArray();
 
         public ManagedApplicationRole(IRestartable component,
@@ -24,29 +24,31 @@ namespace DataGenies.Core.Roles
          
         public void Start()
         {
+            this.PassApplicationPropertiesIntoBehaviours();
+            
             try
             {
-                Array.ForEach(this.BeforeRun(), (t) => t.ExecuteScalar());
+                Array.ForEach(this.BeforeStart(), (t) => t.DoSomethingBeforeStart());
 
                 Action resultAction = this.component.Start;
 
-                foreach (var behaviour in this.DuringRun())
+                foreach (var behaviour in this.DuringRunning())
                 {
-                    resultAction = behaviour.Wrap(behaviour.ExecuteAction, resultAction);
+                    resultAction = behaviour.Wrap(behaviour.DoSomethingDuringRunning, resultAction);
                 }
 
                 resultAction();
             }
             catch (Exception ex)
             {
-                Array.ForEach(this.OnException(), t => t.ExecuteException(ex));
+                Array.ForEach(this.OnException(), t => t.DoSomethingOnException(ex));
             }
             finally
             {
-                Array.ForEach(this.AfterRun(), t => t.ExecuteScalar());
+                Array.ForEach(this.AfterStart(), t => t.DoSomethingBeforeStart());
             }
         }
-
+ 
         public void Stop()
         {
             this.component.Stop();
@@ -55,6 +57,17 @@ namespace DataGenies.Core.Roles
         public IRestartable GetRootComponent()
         {
             return this.component;
+        }
+        
+        private void PassApplicationPropertiesIntoBehaviours()
+        {
+            foreach (var behavior in this.behaviours)
+            {
+                if (this.GetRootComponent() is IApplicationWithProperties application)
+                {
+                    behavior.GetApplicationProperties = () => application.Properties;
+                }
+            }
         }
     }
 }

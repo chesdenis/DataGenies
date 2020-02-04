@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Unicode;
 using DataGenies.Core.Roles;
 
-namespace DataGenies.Core.Tests.Integration.Mocks
+namespace DataGenies.Core.Tests.Integration.Mocks.Abstractions
 {
-    public abstract class MockBasicAppTemplatePublisher : ApplicationPublisherRole
+    public abstract class MockBasicAppTemplateReceiver : ApplicationReceiverRole
     {
         public readonly List<byte[]> State = new List<byte[]>();
-
-        protected MockBasicAppTemplatePublisher(DataPublisherRole publisherRole) : base(publisherRole)
+        
+        protected MockBasicAppTemplateReceiver(DataReceiverRole receiverRole) : base(receiverRole)
         {
         }
-
+        
         public int GetMessagesCountInState()
         {
             return State.Count;

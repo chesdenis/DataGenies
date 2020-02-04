@@ -3,16 +3,16 @@ using System.Linq;
 using System.Text;
 using DataGenies.Core.Roles;
 
-namespace DataGenies.Core.Tests.Integration.Mocks
+namespace DataGenies.Core.Tests.Integration.Mocks.Abstractions
 {
-    public abstract class MockBasicAppTemplateReceiver : ApplicationReceiverRole
+    public abstract class MockBasicAppTemplatePublisher : ApplicationPublisherRole
     {
         public readonly List<byte[]> State = new List<byte[]>();
-        
-        protected MockBasicAppTemplateReceiver(DataReceiverRole receiverRole) : base(receiverRole)
+
+        protected MockBasicAppTemplatePublisher(DataPublisherRole publisherRole) : base(publisherRole)
         {
         }
-        
+
         public int GetMessagesCountInState()
         {
             return State.Count;

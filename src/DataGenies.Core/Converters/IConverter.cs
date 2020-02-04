@@ -1,3 +1,6 @@
+using System;
+using DataGenies.Core.Models;
+
 namespace DataGenies.Core.Converters
 {
     public interface IConverter
@@ -5,5 +8,7 @@ namespace DataGenies.Core.Converters
         ConverterType Type { get; set; }
 
         byte[] Convert(byte[] data);
+
+        Func<IComponentState> GetComponentState();
     }
 }

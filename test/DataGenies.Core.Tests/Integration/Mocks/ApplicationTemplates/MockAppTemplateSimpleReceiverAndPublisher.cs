@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Roles;
+using DataGenies.Core.Tests.Integration.Mocks.Abstractions;
 
-namespace DataGenies.Core.Tests.Integration.Mocks
+namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
     public class MockAppTemplateSimpleReceiverAndPublisher : MockBasicAppTemplateReceiverAndPublisher

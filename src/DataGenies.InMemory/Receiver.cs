@@ -33,7 +33,7 @@ namespace DataGenies.InMemory
                 {
                     onReceive(message.Body);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     relatedQueue.Enqueue(message);
                 }

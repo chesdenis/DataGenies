@@ -2,9 +2,9 @@
 {
     public enum BehaviourType
     {
-        BeforeRun,
-        AfterRun,
-        DuringRun,
+        BeforeStart,
+        AfterStart,
+        DuringRunning,
         OnException
     }
 }
