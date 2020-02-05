@@ -1,15 +1,12 @@
-﻿using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Tests.Integration.Mocks.Abstractions;
-using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    [BehaviourTemplate(typeof(MockSimpleBeforeStartBehaviour))]
     public class MockAppTemplateSimplePublisherWithState : MockBasicAppTemplatePublisherWithState
     {
         public MockAppTemplateSimplePublisherWithState(DataPublisherRole publisherRole) : base(publisherRole)

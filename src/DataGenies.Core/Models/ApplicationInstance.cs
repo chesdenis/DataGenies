@@ -17,9 +17,9 @@ namespace DataGenies.Core.Models
 
         public virtual ApplicationTemplate Template { get; set;  }
 
-        public virtual ICollection<ApplicationInstanceBehaviour> Behaviours { get; set; }
+        public virtual ICollection<Behaviour> Behaviours { get; set; }
 
-        public virtual ICollection<ApplicationInstanceConverter> Converters { get; set; }
+        public virtual ICollection<Converter> Converters { get; set; }
 
         public virtual ICollection<Binding> IncomingBindings { get; set; }
         

@@ -19,6 +19,9 @@ namespace DataGenies.Core.Roles
        
         private Type _templateType;
         private ApplicationInstance _applicationInstance;
+        
+        private readonly List<IBehaviour> _behaviours = new List<IBehaviour>();
+        private readonly List<IConverter> _converters = new List<IConverter>();
 
         public ManagedApplicationBuilder(
             ISchemaDataContext schemaDataContext, 
@@ -30,6 +33,18 @@ namespace DataGenies.Core.Roles
             _receiverBuilder = receiverBuilder;
             _publisherBuilder = publisherBuilder;
             _mqConfigurator = mqConfigurator;
+        }
+
+        public ManagedApplicationBuilder ApplyBehaviour(IBehaviour behaviour)
+        {
+            _behaviours.Add(behaviour);
+            return this;
+        }
+
+        public ManagedApplicationBuilder ApplyConverter(IConverter converter)
+        {
+            _converters.Add(converter);
+            return this;
         }
 
         public ManagedApplicationBuilder UsingTemplateType(Type templateType)
@@ -46,9 +61,6 @@ namespace DataGenies.Core.Roles
 
         public IManagedApplicationRole Build()
         {
-            var templateBehaviours = this.GetTemplateBehaviours(this._templateType);
-            var templateConverters = this.GetTemplateBehaviours(this._templateType);
-            
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverAndPublisherRole)))
             {
                 var dataPublisherRole = BuildDataPublisherRole();
@@ -57,7 +69,7 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
 
-               return new ManagedApplicationRole(application, templateBehaviours);
+               return new ManagedApplicationRole(application, _behaviours);
             }
             
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverRole)))
@@ -67,7 +79,7 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
 
-                return new ManagedApplicationRole(application, templateBehaviours);
+                return new ManagedApplicationRole(application, _behaviours);
             }
 
             if (this._templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
@@ -77,17 +89,12 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
 
-                return new ManagedApplicationRole(application, templateBehaviours);
+                return new ManagedApplicationRole(application, _behaviours);
             }
 
             throw new NotImplementedException();
         }
-
-        private IEnumerable<IBehaviour> GetTemplateBehaviours(Type templateType)
-        {
-            throw new NotImplementedException();
-        }
-
+ 
         private DataReceiverRole BuildDataReceiverRole()
         {
             var receiver = this._receiverBuilder
@@ -96,7 +103,7 @@ namespace DataGenies.Core.Roles
 
             ConfigureMqForReceiverRole();
 
-            var dataReceiverRole = new DataReceiverRole(receiver, new List<IConverter>());
+            var dataReceiverRole = new DataReceiverRole(receiver, _converters);
             return dataReceiverRole;
         }
 
@@ -108,7 +115,7 @@ namespace DataGenies.Core.Roles
 
             ConfigureMqForPublisherRole();
 
-            var dataPublisherRole = new DataPublisherRole(publisher, new List<IConverter>());
+            var dataPublisherRole = new DataPublisherRole(publisher, _converters);
             return dataPublisherRole;
         }
 

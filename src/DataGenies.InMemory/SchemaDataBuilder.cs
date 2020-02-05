@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -9,8 +10,10 @@ namespace DataGenies.InMemory
     {
         private readonly SchemaDataContext _schemaDataContext;
 
-        private ApplicationTemplate _scopeApplicationTemplate;
-        private ApplicationInstance _scopeApplicationInstance;
+        private ApplicationTemplate _scopedApplicationTemplate;
+        private ApplicationInstance _scopedApplicationInstance;
+        private Behaviour _scopedBehaviour;
+        private Converter _scopedConverter;
 
         private string _scopeConfig = "{}";
 
@@ -21,7 +24,7 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder CreateApplicationTemplate(string templateName, string templateVersion)
         {
-            _scopeApplicationTemplate = new ApplicationTemplate
+            _scopedApplicationTemplate = new ApplicationTemplate
             {
                 Id = this._schemaDataContext.ApplicationTemplates.Count() + 1,
                 Name = templateName,
@@ -32,7 +35,7 @@ namespace DataGenies.InMemory
 
             _scopeConfig = "{}";
 
-            _schemaDataContext.ApplicationTemplates.Add(_scopeApplicationTemplate);
+            _schemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplate);
 
             return this;
         }
@@ -45,25 +48,25 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder CreateApplicationInstance(string instanceName)
         {
-            _scopeApplicationInstance = new ApplicationInstance
+            _scopedApplicationInstance = new ApplicationInstance
             {
                 Id = this._schemaDataContext.ApplicationInstances.Count() + 1,
-                TemplateId = this._scopeApplicationTemplate.Id,
+                TemplateId = this._scopedApplicationTemplate.Id,
                 Name = instanceName,
                 ConfigJson = _scopeConfig,
-                Template = _scopeApplicationTemplate
+                Template = _scopedApplicationTemplate
             };
             
             _scopeConfig = "{}";
 
-            _schemaDataContext.ApplicationInstances.Add(_scopeApplicationInstance);
+            _schemaDataContext.ApplicationInstances.Add(_scopedApplicationInstance);
 
             return this;
         }
 
         public SchemaDataBuilder UsingExistingApplicationInstance(string instanceName)
         {
-            _scopeApplicationInstance =
+            _scopedApplicationInstance =
                 this._schemaDataContext.ApplicationInstances.First(f => f.Name == instanceName);
 
             return this;
@@ -71,7 +74,7 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder UsingExistedApplicationTemplate(string templateName)
         {
-            _scopeApplicationTemplate = this._schemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
+            _scopedApplicationTemplate = this._schemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
             return this;
         }
 
@@ -90,6 +93,27 @@ namespace DataGenies.InMemory
             });
 
             return this;
+        }
+
+        public SchemaDataBuilder RegisterBehaviour(string behaviourName, string behaviourVersion)
+        {
+            _scopedBehaviour = new Behaviour
+            {
+                Id = _schemaDataContext.Behaviours.Count() + 1,
+                Name = behaviourName,
+                Version = behaviourVersion,
+                AssemblyPath = string.Empty,
+                ApplicationInstances = new List<ApplicationInstance>()
+            };
+            
+            _schemaDataContext.Behaviours.Add(_scopedBehaviour);
+
+            return this;
+        }
+
+        public SchemaDataBuilder ApplyBehaviour(string behaviourName)
+        {
+            throw new NotImplementedException();
         }
 
         public SchemaDataBuilder Save()

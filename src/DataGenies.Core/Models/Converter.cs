@@ -2,9 +2,9 @@
 
 namespace DataGenies.Core.Models
 {
-    public class ApplicationInstanceBehaviour
+    public class Converter
     {
-        public ApplicationInstanceBehaviour()
+        public Converter()
         {
             ApplicationInstances = new HashSet<ApplicationInstance>();
         }
@@ -17,9 +17,9 @@ namespace DataGenies.Core.Models
         
         public virtual ICollection<ApplicationInstance> ApplicationInstances { get; set; }
 
-        public bool IsMatch(ApplicationTemplate template)
+        public bool IsMatch(Converter converter)
         {
-            return this.Name == template.Name && this.Version == template.Version;
+            return this.Name == converter.Name && this.Version == converter.Version;
         }
     }
 }
