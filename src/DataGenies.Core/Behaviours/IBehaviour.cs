@@ -7,7 +7,7 @@ namespace DataGenies.Core.Behaviours
     {
         BehaviourType Type { get; set; }
 
-        void SetStateContainer(IStateContainer stateContainer);
+        void SetContextContainer(IContainer container);
 
         void DoSomethingBeforeStart();
         

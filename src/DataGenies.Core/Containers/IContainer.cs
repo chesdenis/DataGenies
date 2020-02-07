@@ -1,6 +1,6 @@
 ﻿namespace DataGenies.Core.Containers
 {
-    public interface IStateContainer
+    public interface IContainer
     {
         void Register<T>(object instance)
             where T : class;

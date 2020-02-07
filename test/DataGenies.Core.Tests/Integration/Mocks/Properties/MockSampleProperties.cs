@@ -3,7 +3,7 @@ using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Properties
 {
-    public class MockSampleProperties : IApplicationProperties
+    public class MockSampleProperties
     {
         public string PropertyA { get; set; }
 

@@ -4,8 +4,8 @@ using DataGenies.Core.Containers;
 
 namespace DataGenies.Core.Roles
 {
-    public interface IApplicationWithStateContainer
+    public interface IApplicationWithContext
     {
-        IStateContainer StateContainer { get; }
+        IContainer ContextContainer { get; }
     }
 }

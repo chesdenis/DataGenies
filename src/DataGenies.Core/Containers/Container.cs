@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataGenies.Core.Containers
 {
-    public class StateContainer : IStateContainer
+    public class Container : IContainer
     {
         private readonly Dictionary<Type, Dictionary<string, object>> _containerBag =
             new Dictionary<Type, Dictionary<string, object>>();

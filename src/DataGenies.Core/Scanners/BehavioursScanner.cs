@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 using DataGenies.Core.Repositories;
 
@@ -22,7 +25,18 @@ namespace DataGenies.Core.Scanners
         {
             return _options.DropFolderOptions.UseZippedPackages ? this.ScanInsideZippedPackages() : this.ScanAsRegularPackages();
         }
-        
+
+        public IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<Behaviour> behaviours)
+        {
+            var allBehaviours = this.ScanBehaviours();
+            var matchedBehaviours = allBehaviours
+                .Where(w => behaviours.Any(c => c.IsMatch(w)));
+            return (IEnumerable<IBehaviour>)matchedBehaviours
+                .Select(s => 
+                    Activator.CreateInstance(
+                        Assembly.LoadFile(s.AssemblyPath).GetType(s.Name, true)));
+        }
+
         private IEnumerable<Behaviour> ScanInsideZippedPackages()
         {
             throw new NotImplementedException();

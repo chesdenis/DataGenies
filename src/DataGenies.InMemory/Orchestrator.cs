@@ -11,7 +11,7 @@ using DataGenies.Core.Scanners;
 
 namespace DataGenies.InMemory
 {
-    public class Orchestrator : IOrchestrator
+    public class InMemoryOrchestrator : IOrchestrator
     {
         private Dictionary<int, IRestartable> _instancesInMemory { get; set; }
 
@@ -20,7 +20,7 @@ namespace DataGenies.InMemory
         private readonly IApplicationBehavioursScanner _applicationBehavioursScanner;
         private readonly ManagedApplicationBuilder _managedApplicationBuilder;
         
-        public Orchestrator(ISchemaDataContext schemaDataContext,
+        public InMemoryOrchestrator(ISchemaDataContext schemaDataContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
             IApplicationBehavioursScanner applicationBehavioursScanner,
             ManagedApplicationBuilder managedApplicationBuilder)
@@ -42,34 +42,34 @@ namespace DataGenies.InMemory
         {
             var applicationInstanceInfo =
                 this._schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
-
-            // get template type to build managed application
-            var applicationTypeInfo = applicationInstanceInfo.Template;
-            var allTemplates = this._applicationTemplatesScanner.ScanTemplates();
-            var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
-            var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
-
-            var assignedBehaviours = applicationInstanceInfo.Behaviours;
-            var allBehaviours = this._applicationBehavioursScanner.ScanBehaviours();
-            var matchedBehaviours = allBehaviours
-                .Where(w => assignedBehaviours.Any(c => c.IsMatch(w)));
-            var matchedBehaviourInstances = (IEnumerable<IBehaviour>)matchedBehaviours
-                .Select(s => 
-                    Activator.CreateInstance(
-                        Assembly.LoadFile(s.AssemblyPath).GetType(s.Name, true)));
+            
+            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.Template);
+            var behaviours =
+                this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours);
             
             var managedApplication = this._managedApplicationBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
-                .UsingBehaviours(matchedBehaviourInstances)
+                .UsingBehaviours(behaviours)
                 .Build(); 
             
             _instancesInMemory[applicationInstanceId] = managedApplication;
-            
+
+            return Task.CompletedTask;
+        }
+
+        public Task Start(int applicationInstanceId)
+        {
             _instancesInMemory[applicationInstanceId].Start();
             return Task.CompletedTask;
         }
-        
+
+        public Task Stop(int applicationInstanceId)
+        {
+            _instancesInMemory[applicationInstanceId].Stop();
+            return Task.CompletedTask;
+        }
+
         public Task Remove(int applicationInstanceId)
         {
             _instancesInMemory[applicationInstanceId].Stop();
@@ -83,7 +83,7 @@ namespace DataGenies.InMemory
             _instancesInMemory[applicationInstanceId].Stop();
             _instancesInMemory.Remove(applicationInstanceId);
 
-            Deploy(applicationInstanceId);
+            Start(applicationInstanceId);
             
             return  Task.CompletedTask;
         }

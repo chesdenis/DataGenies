@@ -9,11 +9,11 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockAppTemplateSimplePublisherWithState : MockBasicAppTemplatePublisherWithState
     {
-        private MockSampleProperties Properties => this.StateContainer.Resolve<MockSampleProperties>();
+        private MockSampleProperties Properties => this.ContextContainer.Resolve<MockSampleProperties>();
 
         public MockAppTemplateSimplePublisherWithState(DataPublisherRole publisherRole) : base(publisherRole)
         {
-            this.StateContainer.Register<MockSampleProperties>(
+            this.ContextContainer.Register<MockSampleProperties>(
                 new MockSampleProperties
                 {
                     PropertyA = "ABC",

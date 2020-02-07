@@ -7,11 +7,11 @@ namespace DataGenies.Core.Behaviours
 {
     public abstract class GenericBehaviour<T> : IBehaviour
     {
-        protected IStateContainer StateContainer;
+        protected IContainer ContextContainer;
 
-        public void SetStateContainer(IStateContainer stateContainer)
+        public void SetContextContainer(IContainer container)
         {
-            StateContainer = stateContainer;
+            ContextContainer = container;
         }
         
         public abstract BehaviourType Type { get; set; }

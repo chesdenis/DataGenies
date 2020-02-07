@@ -27,7 +27,7 @@ namespace DataGenies.Core.Tests.Unit.Containers
         public void ShouldStoreAndGetContainerByType()
         {
             //Arrange
-            var sut = new StateContainer();
+            var sut = new Container();
             var mockInstance = new MockClass();
             
             //Act
@@ -42,7 +42,7 @@ namespace DataGenies.Core.Tests.Unit.Containers
         public void ShouldStoreAndGetContainerByTypeAndName()
         {
             //Arrange
-            var sut = new StateContainer();
+            var sut = new Container();
             var mockInstanceA = new MockClass();
             var mockInstanceB = new MockClass();
             
@@ -62,7 +62,7 @@ namespace DataGenies.Core.Tests.Unit.Containers
         public void ShouldThrowExceptionIfTypeExistsAndNoNameProvided()
         {
             //Arrange
-            var sut = new StateContainer();
+            var sut = new Container();
             var mockInstance = new MockClass();
             
             //Act
@@ -80,7 +80,7 @@ namespace DataGenies.Core.Tests.Unit.Containers
         public void ShouldThrowExceptionIfTypeWithNameExists()
         {
             //Arrange
-            var sut = new StateContainer();
+            var sut = new Container();
             var mockInstanceA = new MockClass();
              
             //Act

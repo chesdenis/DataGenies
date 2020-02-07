@@ -16,8 +16,8 @@ namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
         
         public override void DoSomethingBeforeStart()
         {
-            SomeData.Add(this.StateContainer.Resolve<MockSampleProperties>().PropertyA);
-            SomeData.Add(this.StateContainer.Resolve<MockSampleProperties>().PropertyB);
+            SomeData.Add(this.ContextContainer.Resolve<MockSampleProperties>().PropertyA);
+            SomeData.Add(this.ContextContainer.Resolve<MockSampleProperties>().PropertyB);
         }
 
         public override void DoSomethingAfterStart()

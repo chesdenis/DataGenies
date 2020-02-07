@@ -20,8 +20,8 @@ namespace DataGenies.Core.Roles
         private Type _templateType;
         private ApplicationInstance _applicationInstance;
         
-        private readonly List<IBehaviour> _behaviours = new List<IBehaviour>();
-        private readonly List<IConverter> _converters = new List<IConverter>();
+        private IEnumerable<IBehaviour> _behaviours = new List<IBehaviour>();
+        private IEnumerable<IConverter> _converters = new List<IConverter>();
 
         public ManagedApplicationBuilder(
             ISchemaDataContext schemaDataContext, 
@@ -37,13 +37,13 @@ namespace DataGenies.Core.Roles
 
         public ManagedApplicationBuilder UsingBehaviours(IEnumerable<IBehaviour> behaviours)
         {
-            _behaviours.AddRange(behaviours);
+            _behaviours = behaviours;
             return this;
         }
 
         public ManagedApplicationBuilder UsingConverters(IEnumerable<IConverter> converters)
         {
-            _converters.AddRange(converters);
+            _converters = converters;
             return this;
         }
 
@@ -69,9 +69,9 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
 
-                if (application is IApplicationWithStateContainer applicationWithState)
+                if (application is IApplicationWithContext applicationWithState)
                 {
-                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetContextContainer(applicationWithState.ContextContainer));
                 }
 
                 return new ManagedApplicationRole(application, _behaviours);
@@ -84,9 +84,9 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
 
-                if (application is IApplicationWithStateContainer applicationWithState)
+                if (application is IApplicationWithContext applicationWithState)
                 {
-                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetContextContainer(applicationWithState.ContextContainer));
                 }
                 
                 return new ManagedApplicationRole(application, _behaviours);
@@ -99,9 +99,9 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
 
-                if (application is IApplicationWithStateContainer applicationWithState)
+                if (application is IApplicationWithContext applicationWithState)
                 {
-                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetContextContainer(applicationWithState.ContextContainer));
                 }
                 
                 return new ManagedApplicationRole(application, _behaviours);

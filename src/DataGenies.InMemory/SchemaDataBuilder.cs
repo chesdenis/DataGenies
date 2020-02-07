@@ -22,12 +22,12 @@ namespace DataGenies.InMemory
             _schemaDataContext = (SchemaDataContext)schemaDataContext;
         }
 
-        public SchemaDataBuilder CreateApplicationTemplate(string templateName, string templateVersion)
+        public SchemaDataBuilder CreateApplicationTemplate(string templateName, string templateVersion, int? id = null)
         {
             _scopedApplicationTemplate = new ApplicationTemplate
             {
-                Id = this._schemaDataContext.ApplicationTemplates.Count() + 1,
-                Name = templateName,
+                Id = id ?? this._schemaDataContext.ApplicationTemplates.Count() + 1,
+                Name = templateName, 
                 Version = templateVersion,
                 ConfigTemplateJson = _scopeConfig,
                 AssemblyPath = string.Empty
@@ -46,15 +46,17 @@ namespace DataGenies.InMemory
             return this;
         }
 
-        public SchemaDataBuilder CreateApplicationInstance(string instanceName)
+        public SchemaDataBuilder CreateApplicationInstance(string instanceName, int? id = null)
         {
             _scopedApplicationInstance = new ApplicationInstance
             {
-                Id = this._schemaDataContext.ApplicationInstances.Count() + 1,
+                Id = id ?? this._schemaDataContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedApplicationTemplate.Id,
                 Name = instanceName,
                 ConfigJson = _scopeConfig,
-                Template = _scopedApplicationTemplate
+                Template = _scopedApplicationTemplate,
+                Behaviours = new List<Behaviour>(),
+                Converters = new List<Converter>()
             };
             
             _scopeConfig = "{}";
@@ -95,25 +97,33 @@ namespace DataGenies.InMemory
             return this;
         }
 
-        public SchemaDataBuilder RegisterBehaviour(string behaviourName, string behaviourVersion)
+        public SchemaDataBuilder RegisterBehaviour(string behaviourName, string behaviourVersion, int? id = null)
         {
             _scopedBehaviour = new Behaviour
             {
-                Id = _schemaDataContext.Behaviours.Count() + 1,
+                Id = id ?? _schemaDataContext.Behaviours.Count() + 1,
                 Name = behaviourName,
                 Version = behaviourVersion,
                 AssemblyPath = string.Empty,
                 ApplicationInstances = new List<ApplicationInstance>()
             };
-            
+
             _schemaDataContext.Behaviours.Add(_scopedBehaviour);
 
             return this;
         }
 
-        public SchemaDataBuilder ApplyBehaviour(string behaviourName)
+        public SchemaDataBuilder ApplyBehaviour(string behaviourName = "")
         {
-            throw new NotImplementedException();
+            if (!string.IsNullOrEmpty(behaviourName))
+            {
+                _scopedBehaviour = _schemaDataContext.Behaviours.First(f => f.Name == behaviourName);
+            }
+
+            _scopedApplicationInstance.Behaviours.Add(_scopedBehaviour);
+            _scopedBehaviour.ApplicationInstances.Add(_scopedApplicationInstance);
+
+            return this;
         }
 
         public SchemaDataBuilder Save()
