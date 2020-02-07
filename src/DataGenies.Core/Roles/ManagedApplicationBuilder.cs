@@ -35,15 +35,15 @@ namespace DataGenies.Core.Roles
             _mqConfigurator = mqConfigurator;
         }
 
-        public ManagedApplicationBuilder ApplyBehaviour(IBehaviour behaviour)
+        public ManagedApplicationBuilder UsingBehaviours(IEnumerable<IBehaviour> behaviours)
         {
-            _behaviours.Add(behaviour);
+            _behaviours.AddRange(behaviours);
             return this;
         }
 
-        public ManagedApplicationBuilder ApplyConverter(IConverter converter)
+        public ManagedApplicationBuilder UsingConverters(IEnumerable<IConverter> converters)
         {
-            _converters.Add(converter);
+            _converters.AddRange(converters);
             return this;
         }
 
@@ -69,7 +69,12 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
 
-               return new ManagedApplicationRole(application, _behaviours);
+                if (application is IApplicationWithStateContainer applicationWithState)
+                {
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                }
+
+                return new ManagedApplicationRole(application, _behaviours);
             }
             
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverRole)))
@@ -79,6 +84,11 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
 
+                if (application is IApplicationWithStateContainer applicationWithState)
+                {
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                }
+                
                 return new ManagedApplicationRole(application, _behaviours);
             }
 
@@ -89,6 +99,11 @@ namespace DataGenies.Core.Roles
                 var application =
                     (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
 
+                if (application is IApplicationWithStateContainer applicationWithState)
+                {
+                    Array.ForEach(_behaviours.ToArray(), b => b.SetStateContainer(applicationWithState.StateContainer));
+                }
+                
                 return new ManagedApplicationRole(application, _behaviours);
             }
 

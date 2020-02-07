@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using DataGenies.Core.Models;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Containers;
 
 namespace DataGenies.Core.Behaviours
 {
     public interface IBehaviour
     {
         BehaviourType Type { get; set; }
+
+        void SetStateContainer(IStateContainer stateContainer);
 
         void DoSomethingBeforeStart();
         
@@ -18,7 +18,5 @@ namespace DataGenies.Core.Behaviours
         Action Wrap(Action<Action> wrapperAction, Action executeAction);
 
         void DoSomethingOnException(Exception ex = null);
-
-        Func<IApplicationProperties> GetApplicationProperties { get; set; }
     }
 }

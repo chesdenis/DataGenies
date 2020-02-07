@@ -60,6 +60,8 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 new ManagedApplicationBuilder(_inMemorySchemaContext, receiverBuilder, publisherBuilder,
                     _mqConfigurator);
             
+            //managedApplicationBuilder.UsingBehaviours(simpleBehaviour);
+            
             var publisherManagedApp = managedApplicationBuilder.UsingApplicationInstance(
                     _inMemorySchemaContext.ApplicationInstances
                         .First(f => f.Name == "SampleAppPublisher"))

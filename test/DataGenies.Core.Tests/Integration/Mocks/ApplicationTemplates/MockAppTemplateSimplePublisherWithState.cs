@@ -9,22 +9,23 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockAppTemplateSimplePublisherWithState : MockBasicAppTemplatePublisherWithState
     {
+        private MockSampleProperties Properties => this.StateContainer.Resolve<MockSampleProperties>();
+
         public MockAppTemplateSimplePublisherWithState(DataPublisherRole publisherRole) : base(publisherRole)
         {
-            this.Properties = new MockSampleProperties
-            {
-                PropertyA = "ABC",
-                PropertyB = "DEF"
-            };
+            this.StateContainer.Register<MockSampleProperties>(
+                new MockSampleProperties
+                {
+                    PropertyA = "ABC",
+                    PropertyB = "DEF"
+                });
         }
 
         public override void Start()
-        {
-            var properties = (MockSampleProperties) this.Properties;
-
+        { 
             var testData = Encoding.UTF8.GetBytes("SamplePhrase");
-            this.Publish(new byte[] {1, 2, 3, 4}, properties.PropertyA);
-            this.Publish(new byte[] {1, 2, 3, 4}, properties.PropertyB);
+            this.Publish(testData, Properties.PropertyA);
+            this.Publish(testData, Properties.PropertyB);
         }
 
         public override void Stop()

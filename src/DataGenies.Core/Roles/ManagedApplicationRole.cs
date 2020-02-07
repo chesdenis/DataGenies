@@ -24,8 +24,6 @@ namespace DataGenies.Core.Roles
          
         public void Start()
         {
-            this.PassApplicationPropertiesIntoBehaviours();
-            
             try
             {
                 Array.ForEach(this.BeforeStart(), (t) => t.DoSomethingBeforeStart());
@@ -57,17 +55,6 @@ namespace DataGenies.Core.Roles
         public IRestartable GetRootComponent()
         {
             return this.component;
-        }
-        
-        private void PassApplicationPropertiesIntoBehaviours()
-        {
-            foreach (var behavior in this.behaviours)
-            {
-                if (this.GetRootComponent() is IApplicationWithProperties application)
-                {
-                    behavior.GetApplicationProperties = () => application.Properties;
-                }
-            }
         }
     }
 }

@@ -1,11 +1,19 @@
 ﻿using System;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Behaviours
 {
-    public abstract class GenericBehaviour : IBehaviour
+    public abstract class GenericBehaviour<T> : IBehaviour
     {
+        protected IStateContainer StateContainer;
+
+        public void SetStateContainer(IStateContainer stateContainer)
+        {
+            StateContainer = stateContainer;
+        }
+        
         public abstract BehaviourType Type { get; set; }
 
         public abstract void DoSomethingBeforeStart();
@@ -16,8 +24,6 @@ namespace DataGenies.Core.Behaviours
 
         public abstract void DoSomethingOnException(Exception ex = null);
         
-        public Func<IApplicationProperties> GetApplicationProperties { get; set; }
-
         public Action Wrap(Action<Action> wrapperAction, Action executeAction)
         {
             return () => wrapperAction(executeAction);

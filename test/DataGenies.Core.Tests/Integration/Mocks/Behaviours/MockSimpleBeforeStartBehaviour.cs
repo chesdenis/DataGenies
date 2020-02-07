@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Roles;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
 {
-    public class MockSimpleBeforeStartBehaviour : GenericBehaviour
-    {
+    [BehaviourTemplate]
+    public class MockSimpleBeforeStartBehaviour : GenericBehaviour<MockSampleProperties>
+    { 
         public override BehaviourType Type { get; set; } = BehaviourType.BeforeStart;
         
         public List<string> SomeData = new List<string>();
         
         public override void DoSomethingBeforeStart()
         {
-            var properties = (MockSampleProperties) GetApplicationProperties();
-            
-            SomeData.Add(properties.PropertyA);
-            SomeData.Add(properties.PropertyB);
+            SomeData.Add(this.StateContainer.Resolve<MockSampleProperties>().PropertyA);
+            SomeData.Add(this.StateContainer.Resolve<MockSampleProperties>().PropertyB);
         }
 
         public override void DoSomethingAfterStart()
@@ -33,5 +34,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

@@ -1,10 +1,11 @@
-﻿using DataGenies.Core.Roles;
+﻿using DataGenies.Core.Containers;
+using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Abstractions
 {
-    public abstract class MockBasicAppTemplatePublisherWithState : ApplicationPublisherRole, IApplicationWithProperties
+    public abstract class MockBasicAppTemplatePublisherWithState : ApplicationPublisherRole, IApplicationWithStateContainer
     {
-        public IApplicationProperties Properties { get; set; }
+        public IStateContainer StateContainer { get; set; } = new StateContainer();
         
         protected MockBasicAppTemplatePublisherWithState(DataPublisherRole publisherRole) 
             : base(publisherRole)
