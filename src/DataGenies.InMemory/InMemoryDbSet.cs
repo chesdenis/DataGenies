@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace DataGenies.InMemory
 {
-    public class DbSet<T> : Microsoft.EntityFrameworkCore.DbSet<T>, IQueryable<T> where T : class
+    public class InMemoryDbSet<T> : Microsoft.EntityFrameworkCore.DbSet<T>, IQueryable<T> where T : class
     {
         readonly ObservableCollection<T> _data;
         readonly IQueryable _query;
 
-        public DbSet()
+        public InMemoryDbSet()
         {
             _data = new ObservableCollection<T>();
             _query = _data.AsQueryable();

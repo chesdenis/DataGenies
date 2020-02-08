@@ -2,7 +2,7 @@
 
 namespace DataGenies.InMemory
 {
-    public class Queue : ConcurrentQueue<MqMessage>
+    public class InMemoryQueue : ConcurrentQueue<MqMessage>
     {
         public string Name { get; set; }
     }

@@ -6,14 +6,14 @@ using DataGenies.Core.Publishers;
 
 namespace DataGenies.InMemory
 {
-    public class Publisher : IPublisher
+    public class InMemoryPublisher : IPublisher
     {
         private const string _routingKey = "#";
         
-        private readonly MqBroker _broker;
+        private readonly InMemoryMqBroker _broker;
         private readonly string _exchangeName;
         
-        public Publisher(MqBroker broker, string exchangeName)
+        public InMemoryPublisher(InMemoryMqBroker broker, string exchangeName)
         {
             _broker = broker;
             _exchangeName = exchangeName;

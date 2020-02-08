@@ -4,11 +4,11 @@ using DataGenies.Core.Configurators;
 
 namespace DataGenies.InMemory
 {
-    public class MqConfigurator : IMqConfigurator
+    public class InMemoryMqConfigurator : IMqConfigurator
     {
-        private readonly MqBroker _broker;
+        private readonly InMemoryMqBroker _broker;
 
-        public MqConfigurator(MqBroker broker)
+        public InMemoryMqConfigurator(InMemoryMqBroker broker)
         {
             _broker = broker;
         }
@@ -27,14 +27,14 @@ namespace DataGenies.InMemory
         {
             if (!_broker.Model[exchangeName].ContainsKey(routingKey))
             {
-                _broker.Model[exchangeName].TryAdd(routingKey, new List<Queue>());
+                _broker.Model[exchangeName].TryAdd(routingKey, new List<InMemoryQueue>());
             }
 
             var relatedQueues = _broker.Model[exchangeName][routingKey];
 
             if (relatedQueues.All(w => w.Name != queueName))
             {
-                relatedQueues.Add(new Queue() {Name = queueName});
+                relatedQueues.Add(new InMemoryQueue() {Name = queueName});
             }
         }
     }

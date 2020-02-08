@@ -56,7 +56,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId)
@@ -64,12 +64,12 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 .ApplyBehaviour();
         
             var receiverId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate",
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
             

@@ -2,11 +2,11 @@
 
 namespace DataGenies.InMemory
 {
-    public class MqBroker
+    public class InMemoryMqBroker
     {
         public InMemoryExchanges Model { get; set; }
 
-        public MqBroker()
+        public InMemoryMqBroker()
         {
             this.Model = new InMemoryExchanges();
         }

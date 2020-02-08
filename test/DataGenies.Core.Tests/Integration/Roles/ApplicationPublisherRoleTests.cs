@@ -33,18 +33,18 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId);
             
             var receiverId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1", receiverId)
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
         
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
             
@@ -77,28 +77,28 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1", publisherId)
                 .CreateApplicationInstance("SampleAppPublisher");
             
             var receiverAId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1", receiverAId)
                 .CreateApplicationInstance("SampleAppReceiverA");
             
             var receiverBId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1", receiverBId)
                 .CreateApplicationInstance("SampleAppReceiverB");
         
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiverA", "#");
             
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiverB", "#");
              
@@ -141,28 +141,28 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherMultipleMessagesDifferentRoutingKeysTemplate", 
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId);
             
             var receiverAId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiverA", receiverAId);
             
             var receiverBId = 3;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiverB", receiverBId);
         
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiverA", "2");
             
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiverB", "3");
             
@@ -206,13 +206,13 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId);
             
             var receiverId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate",
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);

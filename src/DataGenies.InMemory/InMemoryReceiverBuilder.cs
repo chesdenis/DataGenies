@@ -4,12 +4,12 @@ using DataGenies.Core.Receivers;
 
 namespace DataGenies.InMemory
 {
-    public class ReceiverBuilder : IReceiverBuilder
+    public class InMemoryReceiverBuilder : IReceiverBuilder
     {
-        private readonly MqBroker _broker;
+        private readonly InMemoryMqBroker _broker;
         protected string QueueName { get; set; }
 
-        public ReceiverBuilder(MqBroker broker)
+        public InMemoryReceiverBuilder(InMemoryMqBroker broker)
         {
             _broker = broker;
         }
@@ -22,7 +22,7 @@ namespace DataGenies.InMemory
         
         public IReceiver Build()
         {
-            return new Receiver(_broker, this.QueueName);
+            return new InMemoryReceiver(_broker, this.QueueName);
         }
     }
 }

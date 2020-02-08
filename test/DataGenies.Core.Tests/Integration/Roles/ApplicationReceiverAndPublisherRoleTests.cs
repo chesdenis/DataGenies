@@ -13,7 +13,7 @@ namespace DataGenies.Core.Tests.Integration.Roles
     {
        
         [TestInitialize]
-        public void Initialize()
+        public override void Initialize()
         { 
             base.Initialize();
             
@@ -36,28 +36,28 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             // Arrange
             var publisherId = 1;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate",
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId);
 
             var mixedRoleId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverAndPublisherTemplate",
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppReceiverAndPublisher", mixedRoleId);
 
             var receiverId = 3;
-            _schemaDataBuilder.CreateApplicationTemplate(
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate",
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher",
                 "SampleAppReceiverAndPublisher", "#");
             
-            _schemaDataBuilder.ConfigureBinding(
+            InMemorySchemaDataBuilder.ConfigureBinding(
                 "SampleAppReceiverAndPublisher",
                 "SampleAppReceiver", "#");
             
@@ -82,11 +82,11 @@ namespace DataGenies.Core.Tests.Integration.Roles
             var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var mixedRoleComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(mixedRoleId).GetRootComponent();;
+            var mixedRoleComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(mixedRoleId).GetRootComponent();
             var mixedRolePublisherProperties = mixedRoleComponent.ContextContainer.Resolve<MockPublisherProperties>();
             var mixedRoleReceiverProperties = mixedRoleComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
-            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
+            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();
             var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
  
             Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);

@@ -19,8 +19,8 @@ namespace TestDashboardWebApp
             services.AddDataGeniesCoreServices();
             services.AddDataGeniesUIServices();
 
-            services.AddSingleton<SchemaDataContext, SchemaDataContext>();
-            services.AddSingleton<ISchemaDataContext>(provider => provider.GetService<SchemaDataContext>());
+            services.AddSingleton<InMemorySchemaDataContext, InMemorySchemaDataContext>();
+            services.AddSingleton<ISchemaDataContext>(provider => provider.GetService<InMemorySchemaDataContext>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

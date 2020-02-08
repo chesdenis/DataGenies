@@ -23,7 +23,7 @@ namespace TestDashboardWebApp
 
         private static void BuildData()
         {
-            var inMemorySchemaContext = new SchemaDataContext();
+            var inMemorySchemaContext = new InMemorySchemaDataContext();
 
             var sampleAppTemplate = new ApplicationTemplateEntity
             {

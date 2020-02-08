@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DataGenies.InMemory
 {
-    public class InMemoryRoutingKeysWithQueues : ConcurrentDictionary<string, List<Queue>>
+    public class InMemoryRoutingKeysWithQueues : ConcurrentDictionary<string, List<InMemoryQueue>>
     {
         
     }

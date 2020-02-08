@@ -4,13 +4,13 @@ using DataGenies.Core.Publishers;
 
 namespace DataGenies.InMemory
 {
-    public class PublisherBuilder : IPublisherBuilder
+    public class InMemoryPublisherBuilder : IPublisherBuilder
     {
-        private readonly MqBroker _broker;
+        private readonly InMemoryMqBroker _broker;
         
         private string ExchangeName { get; set; }
         
-        public PublisherBuilder(MqBroker broker)
+        public InMemoryPublisherBuilder(InMemoryMqBroker broker)
         {
             _broker = broker;
         }
@@ -23,7 +23,7 @@ namespace DataGenies.InMemory
         
         public IPublisher Build()
         {
-            return new Publisher(_broker, ExchangeName);
+            return new InMemoryPublisher(_broker, ExchangeName);
         }
     }
 }

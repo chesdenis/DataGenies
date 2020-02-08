@@ -5,14 +5,14 @@ using DataGenies.Core.Receivers;
 
 namespace DataGenies.InMemory
 {
-    public class Receiver : IReceiver
+    public class InMemoryReceiver : IReceiver
     {
-        private readonly MqBroker _broker;
+        private readonly InMemoryMqBroker _broker;
         private readonly string _queueName;
          
         private bool _isListening = false;
 
-        public Receiver(MqBroker broker, string queueName)
+        public InMemoryReceiver(InMemoryMqBroker broker, string queueName)
         {
             _broker = broker;
             _queueName = queueName;
