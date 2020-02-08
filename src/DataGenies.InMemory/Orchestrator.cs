@@ -32,7 +32,12 @@ namespace DataGenies.InMemory
            
             _instancesInMemory = new Dictionary<int, IRestartable>(); 
         }
-        
+
+        public ManagedApplicationRole GetManagedApplicationInstance(int applicationInstanceId)
+        {
+            return (ManagedApplicationRole) this._instancesInMemory[applicationInstanceId];
+        }
+
         public Task PrepareTemplatePackage(int applicationInstanceId)
         {
             return Task.CompletedTask;
@@ -43,7 +48,7 @@ namespace DataGenies.InMemory
             var applicationInstanceInfo =
                 this._schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
             
-            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.Template);
+            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
             var behaviours =
                 this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours);
             
@@ -60,48 +65,49 @@ namespace DataGenies.InMemory
 
         public Task Start(int applicationInstanceId)
         {
-            _instancesInMemory[applicationInstanceId].Start();
-            return Task.CompletedTask;
+            return Task.Run(() => _instancesInMemory[applicationInstanceId].Start());
         }
 
         public Task Stop(int applicationInstanceId)
         {
-            _instancesInMemory[applicationInstanceId].Stop();
-            return Task.CompletedTask;
+            return Task.Run(() => _instancesInMemory[applicationInstanceId].Stop());
         }
 
         public Task Remove(int applicationInstanceId)
         {
-            _instancesInMemory[applicationInstanceId].Stop();
-            _instancesInMemory.Remove(applicationInstanceId);
-            
-            return  Task.CompletedTask;
+            return Task.Run(() =>
+            {
+                _instancesInMemory[applicationInstanceId].Stop();
+                _instancesInMemory.Remove(applicationInstanceId);
+            });
         }
 
         public Task Redeploy(int applicationInstanceId)
         {
-            _instancesInMemory[applicationInstanceId].Stop();
-            _instancesInMemory.Remove(applicationInstanceId);
+            return Task.Run(() =>
+            {
+                _instancesInMemory[applicationInstanceId].Stop();
+                _instancesInMemory.Remove(applicationInstanceId);
 
-            Start(applicationInstanceId);
-            
-            return  Task.CompletedTask;
+                Deploy(applicationInstanceId);
+                Start(applicationInstanceId);
+            });
         }
 
         public Task Restart(int applicationInstanceId)
         {
-            _instancesInMemory[applicationInstanceId].Stop();
-            _instancesInMemory[applicationInstanceId].Start();
-            
-            return  Task.CompletedTask;
+            return Task.Run(() =>
+            {
+                _instancesInMemory[applicationInstanceId].Stop();
+                _instancesInMemory[applicationInstanceId].Start();
+            });
         }
 
         public Task RestartAll()
         {
             foreach (var instanceInMemory in this._instancesInMemory.Keys)
             {
-                _instancesInMemory[instanceInMemory].Stop();
-                _instancesInMemory[instanceInMemory].Start();
+                Restart(instanceInMemory);
             }
             
             return  Task.CompletedTask;
@@ -109,8 +115,11 @@ namespace DataGenies.InMemory
 
         public Task RemoveAll()
         {
+            foreach (var instanceInMemory in this._instancesInMemory.Keys)
+            {
+                Stop(instanceInMemory);
+            }
             _instancesInMemory.Clear();
-            
             return  Task.CompletedTask;
         }
     }

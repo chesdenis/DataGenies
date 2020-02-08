@@ -8,7 +8,5 @@ namespace DataGenies.Core.Converters
         ConverterType Type { get; set; }
 
         byte[] Convert(byte[] data);
-
-        Func<IComponentState> GetComponentState();
     }
 }

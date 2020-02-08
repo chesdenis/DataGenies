@@ -8,8 +8,8 @@ namespace DataGenies.Core.Scanners
 {
     public interface IApplicationBehavioursScanner
     {
-        IEnumerable<Behaviour> ScanBehaviours();
+        IEnumerable<BehaviourEntity> ScanBehaviours();
 
-        IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<Behaviour> behaviours);
+        IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<BehaviourEntity> behaviours);
     }
 }

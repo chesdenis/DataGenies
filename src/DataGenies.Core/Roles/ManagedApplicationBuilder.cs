@@ -18,7 +18,7 @@ namespace DataGenies.Core.Roles
         private readonly IMqConfigurator _mqConfigurator;
        
         private Type _templateType;
-        private ApplicationInstance _applicationInstance;
+        private ApplicationInstanceEntity _applicationInstanceEntity;
         
         private IEnumerable<IBehaviour> _behaviours = new List<IBehaviour>();
         private IEnumerable<IConverter> _converters = new List<IConverter>();
@@ -53,9 +53,9 @@ namespace DataGenies.Core.Roles
             return this;
         }
 
-        public ManagedApplicationBuilder UsingApplicationInstance(ApplicationInstance applicationInstance)
+        public ManagedApplicationBuilder UsingApplicationInstance(ApplicationInstanceEntity applicationInstanceEntity)
         {
-            this._applicationInstance = applicationInstance;
+            this._applicationInstanceEntity = applicationInstanceEntity;
             return this;
         }
 
@@ -113,7 +113,7 @@ namespace DataGenies.Core.Roles
         private DataReceiverRole BuildDataReceiverRole()
         {
             var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstance.Name)
+                .WithQueue(this._applicationInstanceEntity.Name)
                 .Build();
 
             ConfigureMqForReceiverRole();
@@ -125,7 +125,7 @@ namespace DataGenies.Core.Roles
         private DataPublisherRole BuildDataPublisherRole()
         {
             var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstance.Name)
+                .WithExchange(this._applicationInstanceEntity.Name)
                 .Build();
 
             ConfigureMqForPublisherRole();
@@ -137,13 +137,13 @@ namespace DataGenies.Core.Roles
         private void ConfigureMqForPublisherRole()
         {
             var relatedReceivers = _schemaDataContext.Bindings
-                .Where(w => w.PublisherId == this._applicationInstance.Id);
+                .Where(w => w.PublisherId == this._applicationInstanceEntity.Id);
 
-            this._mqConfigurator.EnsureExchange(this._applicationInstance.Name);
+            this._mqConfigurator.EnsureExchange(this._applicationInstanceEntity.Name);
 
             foreach (var receiver in relatedReceivers)
             {
-                this._mqConfigurator.EnsureQueue(receiver.ReceiverApplicationInstance.Name, this._applicationInstance.Name,
+                this._mqConfigurator.EnsureQueue(receiver.ReceiverApplicationInstanceEntity.Name, this._applicationInstanceEntity.Name,
                     $"{receiver.ReceiverRoutingKey}");
             }
         }
@@ -151,14 +151,14 @@ namespace DataGenies.Core.Roles
         private void ConfigureMqForReceiverRole()
         {
             var relatedPublishers = _schemaDataContext.Bindings
-                .Where(w => w.ReceiverId == this._applicationInstance.Id);
+                .Where(w => w.ReceiverId == this._applicationInstanceEntity.Id);
 
             foreach (var publisher in relatedPublishers)
             {
-                this._mqConfigurator.EnsureExchange(publisher.PublisherApplicationInstance.Name);
+                this._mqConfigurator.EnsureExchange(publisher.PublisherApplicationInstanceEntity.Name);
                 this._mqConfigurator.EnsureQueue(
-                    this._applicationInstance.Name, 
-                    publisher.PublisherApplicationInstance.Name,
+                    this._applicationInstanceEntity.Name, 
+                    publisher.PublisherApplicationInstanceEntity.Name,
                     publisher.ReceiverRoutingKey);
             }
         }

@@ -21,12 +21,12 @@ namespace DataGenies.Core.Scanners
             _assemblyScanner = assemblyScanner;
         }
         
-        public IEnumerable<Behaviour> ScanBehaviours()
+        public IEnumerable<BehaviourEntity> ScanBehaviours()
         {
             return _options.DropFolderOptions.UseZippedPackages ? this.ScanInsideZippedPackages() : this.ScanAsRegularPackages();
         }
 
-        public IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<Behaviour> behaviours)
+        public IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<BehaviourEntity> behaviours)
         {
             var allBehaviours = this.ScanBehaviours();
             var matchedBehaviours = allBehaviours
@@ -37,12 +37,12 @@ namespace DataGenies.Core.Scanners
                         Assembly.LoadFile(s.AssemblyPath).GetType(s.Name, true)));
         }
 
-        private IEnumerable<Behaviour> ScanInsideZippedPackages()
+        private IEnumerable<BehaviourEntity> ScanInsideZippedPackages()
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<Behaviour> ScanAsRegularPackages()
+        private IEnumerable<BehaviourEntity> ScanAsRegularPackages()
         {
             var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
 
@@ -52,7 +52,7 @@ namespace DataGenies.Core.Scanners
 
                 foreach (var appTypeInfo in types)
                 {
-                    yield return new Behaviour
+                    yield return new BehaviourEntity
                     {
                         Name = appTypeInfo.TemplateName,
                         Version = appTypeInfo.AssemblyVersion,

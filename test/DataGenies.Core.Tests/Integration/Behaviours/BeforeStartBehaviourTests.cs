@@ -1,100 +1,100 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
+using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
-namespace DataGenies.Core.Tests.Integration.Roles
+namespace DataGenies.Core.Tests.Integration.Behaviours
 {
     [TestClass]
-    public class ApplicationReceiverAndPublisherRoleTests : BaseIntegrationTest
+    public class BeforeStartBehaviourTests : BaseIntegrationTest
     {
-       
+        private MockSimpleBeforeStartBehaviour _beforeStartBehaviour;
+        
         [TestInitialize]
-        public void Initialize()
-        { 
+        public override void Initialize()
+        {
             base.Initialize();
             
             _applicationTemplatesScanner.FindType(
                     Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherTemplate"))
                 .Returns(typeof(MockSimplePublisher));
-            
-            _applicationTemplatesScanner.FindType(
-                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverAndPublisherTemplate"))
-                .Returns(typeof(MockSimpleReceiverAndPublisher));
-            
             _applicationTemplatesScanner.FindType(
                     Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverTemplate"))
                 .Returns(typeof(MockSimpleReceiver));
-           
+            
+            _beforeStartBehaviour = new MockSimpleBeforeStartBehaviour();
+            
+            _applicationBehavioursScanner.GetBehavioursInstances(
+                    Arg.Any<IEnumerable<BehaviourEntity>>())
+                .Returns((cb) =>
+                {
+                    var retVal = new List<IBehaviour>();
+                    var behavioursEntities = cb.Arg<IEnumerable<BehaviourEntity>>();
+            
+                    foreach (var behaviourEntity in behavioursEntities)
+                    {
+                        switch (behaviourEntity.Name)
+                        {
+                            case "SampleBehaviour":
+                                retVal.Add(_beforeStartBehaviour);
+                                break;
+                        }
+                    }
+                    
+                    return retVal;
+                });
         }
-
+        
         [TestMethod]
-        public void ReceiverAndPublisherRoleShouldReceiveMessagesAndPushThey()
+        public void SimpleBeforeStartBehaviourShouldHasAccessToComponentPropertiesIfTheyExist()
         {
             // Arrange
             var publisherId = 1;
             _schemaDataBuilder.CreateApplicationTemplate(
-                    "SampleAppPublisherTemplate",
+                    "SampleAppPublisherTemplate", 
                     "2019.1.1")
-                .CreateApplicationInstance("SampleAppPublisher", publisherId);
-
-            var mixedRoleId = 2;
-            _schemaDataBuilder.CreateApplicationTemplate(
-                    "SampleAppReceiverAndPublisherTemplate",
-                    "2019.1.1")
-                .CreateApplicationInstance("SampleAppReceiverAndPublisher", mixedRoleId);
-
-            var receiverId = 3;
+                .CreateApplicationInstance("SampleAppPublisher", publisherId)
+                .RegisterBehaviour("SampleBehaviour", "2019.1.1")
+                .ApplyBehaviour();
+        
+            var receiverId = 2;
             _schemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate",
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
             _schemaDataBuilder.ConfigureBinding(
-                "SampleAppPublisher",
-                "SampleAppReceiverAndPublisher", "#");
-            
-            _schemaDataBuilder.ConfigureBinding(
-                "SampleAppReceiverAndPublisher",
+                "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
             
             _orchestrator.Deploy(publisherId);
-            _orchestrator.Deploy(mixedRoleId);
             _orchestrator.Deploy(receiverId);
-           
-            
+        
             // Act
             _orchestrator.Start(publisherId);
-            _orchestrator.Start(mixedRoleId);
             _orchestrator.Start(receiverId);
             
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
-                await _orchestrator.Stop(mixedRoleId);
                 await _orchestrator.Stop(receiverId);
             }).Wait();
-            
+             
             // Assert
             var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var mixedRoleComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(mixedRoleId).GetRootComponent();;
-            var mixedRolePublisherProperties = mixedRoleComponent.ContextContainer.Resolve<MockPublisherProperties>();
-            var mixedRoleReceiverProperties = mixedRoleComponent.ContextContainer.Resolve<MockReceiverProperties>();
-            
             var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
             var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
- 
-            Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);
             
-            Assert.AreEqual("TestString", mixedRoleReceiverProperties.ReceivedMessages[0]);
-            Assert.AreEqual("TestString-changed!", mixedRolePublisherProperties.PublishedMessages[0]);
-            
-            Assert.AreEqual("TestString-changed!", receiverProperties.ReceivedMessages[0]);
+            Assert.AreEqual("PrefixTestString", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual("PrefixTestString", receiverProperties.ReceivedMessages[0]);
         }
     }
 }

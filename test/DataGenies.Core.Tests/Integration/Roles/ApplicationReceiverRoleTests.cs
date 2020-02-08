@@ -1,147 +1,118 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DataGenies.Core.Attributes;
-using DataGenies.Core.Behaviours;
-using DataGenies.Core.Converters;
+﻿using System.Threading.Tasks;
+using DataGenies.Core.Models;
 using DataGenies.Core.Roles;
-using DataGenies.Core.Tests.Integration.Mocks;
-using DataGenies.Core.Tests.Integration.Mocks.Abstractions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
-using DataGenies.InMemory;
+using DataGenies.Core.Tests.Integration.Mocks.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration.Roles
 {
     [TestClass]
-    public class ApplicationReceiverRoleTests
-    {
-        private MqBroker _inMemoryMqBroker;
-
-        private MqConfigurator _mqConfigurator;
-        
-        private SchemaDataContext _inMemorySchemaContext;
-
-        private SchemaDataBuilder _schemaDataBuilder;
-
-        private ManagedApplicationBuilder _managedApplicationBuilder;
-        
-        
+    public class ApplicationReceiverRoleTests: BaseIntegrationTest
+    { 
         [TestInitialize]
-        public void Initialize()
+        public override void Initialize()
         {
-            _inMemoryMqBroker = new MqBroker();
+            base.Initialize();
             
-            var receiverBuilder = new ReceiverBuilder(_inMemoryMqBroker);
-            var publisherBuilder = new PublisherBuilder(_inMemoryMqBroker);
-            
-            _inMemorySchemaContext = new SchemaDataContext();
-            _schemaDataBuilder = new SchemaDataBuilder(_inMemorySchemaContext);
-            _mqConfigurator = new MqConfigurator(_inMemoryMqBroker);
-
-            _managedApplicationBuilder =
-                new ManagedApplicationBuilder(_inMemorySchemaContext, receiverBuilder, publisherBuilder,
-                    _mqConfigurator);
+            _applicationTemplatesScanner.FindType(
+                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherTemplate"))
+                .Returns(typeof(MockSimplePublisher));
+            _applicationTemplatesScanner.FindType(
+                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverTemplate"))
+                .Returns(typeof(MockSimpleReceiver));
+            _applicationTemplatesScanner.FindType(
+                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppBrokenReceiverTemplate"))
+                .Returns(typeof(MockBrokenReceiver));
         }
-        
+         
          [TestMethod]
         public void BrokenReceiverRoleShouldNotAckMessages()
         {
             // Arrange
+            var publisherId = 1;
             _schemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1")
-                .CreateApplicationInstance("SampleAppPublisher");
+                .CreateApplicationInstance("SampleAppPublisher", publisherId);
             
+            var receiverId = 2;
             _schemaDataBuilder.CreateApplicationTemplate(
-                    "SampleAppReceiverTemplate", 
+                    "SampleAppBrokenReceiverTemplate", 
                     "2018.1.1")
-                .CreateApplicationInstance("SampleAppReceiver");
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
             _schemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
-            
-            var publisherManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
-                    _inMemorySchemaContext.ApplicationInstances
-                        .First(f => f.Name == "SampleAppPublisher"))
-                .UsingTemplateType(typeof(MockAppTemplateSimplePublisher)).Build();
-            
-            var receiverManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
-                    _inMemorySchemaContext.ApplicationInstances
-                        .First(f => f.Name == "SampleAppReceiver"))
-                .UsingTemplateType(typeof(MockAppTemplateBrokenReceiver)).Build();
-            
+
+            _orchestrator.Deploy(publisherId);
+            _orchestrator.Deploy(receiverId);
+             
             // Act
-            var t1 = Task.Run(() => publisherManagedApp.Start());
+            _orchestrator.Start(publisherId);
+            _orchestrator.Start(receiverId);
             
-            var t2 = Task.Run(() =>
+            Task.Run(async () =>
             {
-                Task.Run(async () =>
-                {
-                    await Task.Delay(1000);
-                    receiverManagedApp.Stop();
-                });
-                
-                receiverManagedApp.Start();
-            });
-            
-            Task.WaitAll(t1, t2);
+                await Task.Delay(1000);
+                await _orchestrator.Stop(receiverId);
+            }).Wait();
             
             // Assert
-            Assert.AreEqual("TestString", ((MockBasicAppTemplatePublisher) (publisherManagedApp.GetRootComponent())).GetLastMessageAsString());
-            Assert.AreEqual(0, ((MockBasicAppTemplateReceiver) (receiverManagedApp.GetRootComponent())).GetMessagesCountInState());
+            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
+            
+            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
+            var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
+ 
+            Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual(0, receiverProperties.ReceivedMessages.Count);
         }
         
         [TestMethod]
         public void ReceiverRoleShouldReceiveMessagesFromPublisher()
         {
             // Arrange
+            var publisherId = 1;
             _schemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppPublisherTemplate", 
                     "2019.1.1")
-                .CreateApplicationInstance("SampleAppPublisher");
+                .CreateApplicationInstance("SampleAppPublisher", publisherId);
             
+            var receiverId = 2;
             _schemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate", 
                     "2018.1.1")
-                .CreateApplicationInstance("SampleAppReceiver");
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
             _schemaDataBuilder.ConfigureBinding(
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
-            
-            var publisherManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
-                    _inMemorySchemaContext.ApplicationInstances
-                        .First(f => f.Name == "SampleAppPublisher"))
-                .UsingTemplateType(typeof(MockAppTemplateSimplePublisher)).Build();
-            
-            var receiverManagedApp = _managedApplicationBuilder.UsingApplicationInstance(
-                    _inMemorySchemaContext.ApplicationInstances
-                        .First(f => f.Name == "SampleAppReceiver"))
-                .UsingTemplateType(typeof(MockAppTemplateSimpleReceiver)).Build();
-            
+             
+            _orchestrator.Deploy(publisherId);
+            _orchestrator.Deploy(receiverId);
+             
             // Act
-            var t1 = Task.Run(() => publisherManagedApp.Start());
+            _orchestrator.Start(publisherId);
+            _orchestrator.Start(receiverId);
             
-            var t2 = Task.Run(() =>
+            Task.Run(async () =>
             {
-                Task.Run(async () =>
-                {
-                    await Task.Delay(1000);
-                    receiverManagedApp.Stop();
-                });
-            
-                receiverManagedApp.Start();
-            });
-            
-            Task.WaitAll(t1, t2);
+                await Task.Delay(1000);
+                await _orchestrator.Stop(receiverId);
+            }).Wait();
              
             // Assert
-            Assert.AreEqual("TestString", ((MockBasicAppTemplatePublisher) (publisherManagedApp.GetRootComponent())).GetLastMessageAsString());
-            Assert.AreEqual("TestString", ((MockBasicAppTemplateReceiver) (receiverManagedApp.GetRootComponent())).GetLastMessageAsString());
+            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
+            
+            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
+            var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
+
+            Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual("TestString", receiverProperties.ReceivedMessages[0]);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace TestDashboardWebApp
         {
             var inMemorySchemaContext = new SchemaDataContext();
 
-            var sampleAppTemplate = new ApplicationTemplate
+            var sampleAppTemplate = new ApplicationTemplateEntity
             {
                 Id = 1,
                 Name = "SampleAppTemplate",
@@ -33,15 +33,15 @@ namespace TestDashboardWebApp
                 AssemblyPath = string.Empty,
                 ConfigTemplateJson = "{}"
             };
-            var sampleAppInstance = new ApplicationInstance
+            var sampleAppInstance = new ApplicationInstanceEntity
             {
                 Id = 1,
                 Name = "SampleAppInstance",
                 ConfigJson = "{}",
-                IncomingBindings = new List<Binding>(),
-                OutcomingBindings = new List<Binding>()
+                IncomingBindings = new List<BindingEntity>(),
+                OutcomingBindings = new List<BindingEntity>()
             };
-            sampleAppInstance.Template = sampleAppTemplate;
+            sampleAppInstance.TemplateEntity = sampleAppTemplate;
             sampleAppInstance.TemplateId = sampleAppTemplate.Id;
 
             inMemorySchemaContext.ApplicationTemplates.Add(sampleAppTemplate);

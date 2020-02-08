@@ -8,33 +8,30 @@ using DataGenies.Core.Tests.Integration.Mocks.Properties;
 namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
 {
     [BehaviourTemplate]
-    public class MockSimpleBeforeStartBehaviour : GenericBehaviour<MockSampleProperties>
+    public class MockSimpleBeforeStartBehaviour : GenericBehaviour<MockBehaviourProperties>
     { 
         public override BehaviourType Type { get; set; } = BehaviourType.BeforeStart;
         
-        public List<string> SomeData = new List<string>();
-        
         public override void DoSomethingBeforeStart()
         {
-            SomeData.Add(this.ContextContainer.Resolve<MockSampleProperties>().PropertyA);
-            SomeData.Add(this.ContextContainer.Resolve<MockSampleProperties>().PropertyB);
+            this.ContextContainer.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
         }
-
+    
         public override void DoSomethingAfterStart()
         {
             throw new NotImplementedException();
         }
-
+    
         public override void DoSomethingDuringRunning(Action action)
         {
             throw new NotImplementedException();
         }
-
+    
         public override void DoSomethingOnException(Exception ex = null)
         {
             throw new NotImplementedException();
         }
-
+    
         
     }
 }

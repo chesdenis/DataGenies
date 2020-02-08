@@ -6,8 +6,8 @@ namespace DataGenies.Core.Scanners
 {
     public interface IApplicationTemplatesScanner
     {
-        IEnumerable<ApplicationTemplate> ScanTemplates();
+        IEnumerable<ApplicationTemplateEntity> ScanTemplates();
 
-        Type FindType(ApplicationTemplate applicationTemplate);
+        Type FindType(ApplicationTemplateEntity applicationTemplateEntity);
     }
 }

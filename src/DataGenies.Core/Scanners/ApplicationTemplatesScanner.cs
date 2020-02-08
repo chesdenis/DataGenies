@@ -20,14 +20,14 @@ namespace DataGenies.Core.Scanners
             _assemblyScanner = assemblyScanner;
         }
 
-        public IEnumerable<ApplicationTemplate> ScanTemplates()
+        public IEnumerable<ApplicationTemplateEntity> ScanTemplates()
         {
             return _options.DropFolderOptions.UseZippedPackages ? this.ScanTemplatesInsideZippedPackages() : this.ScanTemplatesAsRegularPackages();
         }
 
-        public Type FindType(ApplicationTemplate applicationTemplate)
+        public Type FindType(ApplicationTemplateEntity applicationTemplateEntity)
         {
-            var applicationTypeInfo = applicationTemplate;
+            var applicationTypeInfo = applicationTemplateEntity;
             var allTemplates = this.ScanTemplates();
             var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
@@ -35,12 +35,12 @@ namespace DataGenies.Core.Scanners
             return templateType;
         }
 
-        private IEnumerable<ApplicationTemplate> ScanTemplatesInsideZippedPackages()
+        private IEnumerable<ApplicationTemplateEntity> ScanTemplatesInsideZippedPackages()
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<ApplicationTemplate> ScanTemplatesAsRegularPackages()
+        private IEnumerable<ApplicationTemplateEntity> ScanTemplatesAsRegularPackages()
         {
             var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
 
@@ -50,7 +50,7 @@ namespace DataGenies.Core.Scanners
 
                 foreach (var appTypeInfo in types)
                 {
-                    yield return new ApplicationTemplate
+                    yield return new ApplicationTemplateEntity
                     {
                         Name = appTypeInfo.TemplateName,
                         Version = appTypeInfo.AssemblyVersion,

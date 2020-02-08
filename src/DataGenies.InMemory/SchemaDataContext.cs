@@ -5,25 +5,25 @@ namespace DataGenies.InMemory
 {
     public class SchemaDataContext : ISchemaDataContext
     {
-        public DbSet<ApplicationTemplate> ApplicationTemplates { get; }
-        public DbSet<ApplicationInstance> ApplicationInstances { get; }
-        public DbSet<Binding> Bindings { get; }
-        public DbSet<Behaviour> Behaviours { get; }
-        public DbSet<Converter> Converters { get; }
+        public DbSet<ApplicationTemplateEntity> ApplicationTemplates { get; }
+        public DbSet<ApplicationInstanceEntity> ApplicationInstances { get; }
+        public DbSet<BindingEntity> Bindings { get; }
+        public DbSet<BehaviourEntity> Behaviours { get; }
+        public DbSet<ConverterEntity> Converters { get; }
 
         public SchemaDataContext()
         {
-            this.ApplicationTemplates = new DbSet<ApplicationTemplate>();
-            this.ApplicationInstances = new DbSet<ApplicationInstance>();
-            this.Bindings = new DbSet<Binding>();
-            this.Behaviours = new DbSet<Behaviour>();
-            this.Converters = new DbSet<Converter>();
+            this.ApplicationTemplates = new DbSet<ApplicationTemplateEntity>();
+            this.ApplicationInstances = new DbSet<ApplicationInstanceEntity>();
+            this.Bindings = new DbSet<BindingEntity>();
+            this.Behaviours = new DbSet<BehaviourEntity>();
+            this.Converters = new DbSet<ConverterEntity>();
         }
 
-        IQueryable<ApplicationTemplate> ISchemaDataContext.ApplicationTemplates => ApplicationTemplates;
-        IQueryable<ApplicationInstance> ISchemaDataContext.ApplicationInstances => ApplicationInstances;
-        IQueryable<Binding> ISchemaDataContext.Bindings => Bindings;
-        IQueryable<Behaviour> ISchemaDataContext.Behaviours => Behaviours;
-        IQueryable<Converter> ISchemaDataContext.Converters => Converters;
+        IQueryable<ApplicationTemplateEntity> ISchemaDataContext.ApplicationTemplates => ApplicationTemplates;
+        IQueryable<ApplicationInstanceEntity> ISchemaDataContext.ApplicationInstances => ApplicationInstances;
+        IQueryable<BindingEntity> ISchemaDataContext.Bindings => Bindings;
+        IQueryable<BehaviourEntity> ISchemaDataContext.Behaviours => Behaviours;
+        IQueryable<ConverterEntity> ISchemaDataContext.Converters => Converters;
     }
 }

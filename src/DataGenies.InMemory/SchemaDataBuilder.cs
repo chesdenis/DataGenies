@@ -10,10 +10,10 @@ namespace DataGenies.InMemory
     {
         private readonly SchemaDataContext _schemaDataContext;
 
-        private ApplicationTemplate _scopedApplicationTemplate;
-        private ApplicationInstance _scopedApplicationInstance;
-        private Behaviour _scopedBehaviour;
-        private Converter _scopedConverter;
+        private ApplicationTemplateEntity _scopedApplicationTemplateEntity;
+        private ApplicationInstanceEntity _scopedApplicationInstanceEntity;
+        private BehaviourEntity _scopedBehaviourEntity;
+        private ConverterEntity _scopedConverterEntity;
 
         private string _scopeConfig = "{}";
 
@@ -24,7 +24,7 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder CreateApplicationTemplate(string templateName, string templateVersion, int? id = null)
         {
-            _scopedApplicationTemplate = new ApplicationTemplate
+            _scopedApplicationTemplateEntity = new ApplicationTemplateEntity
             {
                 Id = id ?? this._schemaDataContext.ApplicationTemplates.Count() + 1,
                 Name = templateName, 
@@ -35,7 +35,7 @@ namespace DataGenies.InMemory
 
             _scopeConfig = "{}";
 
-            _schemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplate);
+            _schemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplateEntity);
 
             return this;
         }
@@ -48,27 +48,27 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder CreateApplicationInstance(string instanceName, int? id = null)
         {
-            _scopedApplicationInstance = new ApplicationInstance
+            _scopedApplicationInstanceEntity = new ApplicationInstanceEntity
             {
                 Id = id ?? this._schemaDataContext.ApplicationInstances.Count() + 1,
-                TemplateId = this._scopedApplicationTemplate.Id,
+                TemplateId = this._scopedApplicationTemplateEntity.Id,
                 Name = instanceName,
                 ConfigJson = _scopeConfig,
-                Template = _scopedApplicationTemplate,
-                Behaviours = new List<Behaviour>(),
-                Converters = new List<Converter>()
+                TemplateEntity = _scopedApplicationTemplateEntity,
+                Behaviours = new List<BehaviourEntity>(),
+                Converters = new List<ConverterEntity>()
             };
             
             _scopeConfig = "{}";
 
-            _schemaDataContext.ApplicationInstances.Add(_scopedApplicationInstance);
+            _schemaDataContext.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
 
             return this;
         }
 
         public SchemaDataBuilder UsingExistingApplicationInstance(string instanceName)
         {
-            _scopedApplicationInstance =
+            _scopedApplicationInstanceEntity =
                 this._schemaDataContext.ApplicationInstances.First(f => f.Name == instanceName);
 
             return this;
@@ -76,7 +76,7 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder UsingExistedApplicationTemplate(string templateName)
         {
-            _scopedApplicationTemplate = this._schemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
+            _scopedApplicationTemplateEntity = this._schemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
             return this;
         }
 
@@ -85,13 +85,13 @@ namespace DataGenies.InMemory
             var publisherInstance = _schemaDataContext.ApplicationInstances.First(f => f.Name == publisherInstanceName);
             var receiverInstance = _schemaDataContext.ApplicationInstances.First(f => f.Name == receiverInstanceName);
 
-            _schemaDataContext.Bindings.Add(new Binding
+            _schemaDataContext.Bindings.Add(new BindingEntity
             {
                 ReceiverId = receiverInstance.Id,
                 PublisherId = publisherInstance.Id,
                 ReceiverRoutingKey = receiverRoutingKey,
-                ReceiverApplicationInstance = receiverInstance,
-                PublisherApplicationInstance = publisherInstance
+                ReceiverApplicationInstanceEntity = receiverInstance,
+                PublisherApplicationInstanceEntity = publisherInstance
             });
 
             return this;
@@ -99,16 +99,16 @@ namespace DataGenies.InMemory
 
         public SchemaDataBuilder RegisterBehaviour(string behaviourName, string behaviourVersion, int? id = null)
         {
-            _scopedBehaviour = new Behaviour
+            _scopedBehaviourEntity = new BehaviourEntity
             {
                 Id = id ?? _schemaDataContext.Behaviours.Count() + 1,
                 Name = behaviourName,
                 Version = behaviourVersion,
                 AssemblyPath = string.Empty,
-                ApplicationInstances = new List<ApplicationInstance>()
+                ApplicationInstances = new List<ApplicationInstanceEntity>()
             };
 
-            _schemaDataContext.Behaviours.Add(_scopedBehaviour);
+            _schemaDataContext.Behaviours.Add(_scopedBehaviourEntity);
 
             return this;
         }
@@ -117,11 +117,11 @@ namespace DataGenies.InMemory
         {
             if (!string.IsNullOrEmpty(behaviourName))
             {
-                _scopedBehaviour = _schemaDataContext.Behaviours.First(f => f.Name == behaviourName);
+                _scopedBehaviourEntity = _schemaDataContext.Behaviours.First(f => f.Name == behaviourName);
             }
 
-            _scopedApplicationInstance.Behaviours.Add(_scopedBehaviour);
-            _scopedBehaviour.ApplicationInstances.Add(_scopedApplicationInstance);
+            _scopedApplicationInstanceEntity.Behaviours.Add(_scopedBehaviourEntity);
+            _scopedBehaviourEntity.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
 
             return this;
         }

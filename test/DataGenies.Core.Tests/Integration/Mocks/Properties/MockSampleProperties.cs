@@ -1,12 +1,22 @@
-﻿using DataGenies.Core.Containers;
+﻿using System.Collections.Generic;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Properties
 {
-    public class MockSampleProperties
+    public class MockBehaviourProperties
     {
-        public string PropertyA { get; set; }
+        public List<string> HandledMessages { get; set; } = new List<string>();
+    }
 
-        public string PropertyB { get; set; }
+    public class MockReceiverProperties
+    {
+        public List<string> ReceivedMessages { get; set; } = new List<string>();
+    }
+
+    public class MockPublisherProperties
+    {
+        public string ManagedParameter { get; set; }
+        public List<string> PublishedMessages { get; set; } = new List<string>();
     }
 }
