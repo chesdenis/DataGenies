@@ -18,16 +18,19 @@ namespace DataGenies.InMemory
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
         private readonly IApplicationBehavioursScanner _applicationBehavioursScanner;
+        private readonly IApplicationConvertersScanner _applicationConvertersScanner;
         private readonly ManagedApplicationBuilder _managedApplicationBuilder;
         
         public InMemoryOrchestrator(ISchemaDataContext schemaDataContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
             IApplicationBehavioursScanner applicationBehavioursScanner,
+            IApplicationConvertersScanner applicationConvertersScanner,
             ManagedApplicationBuilder managedApplicationBuilder)
         {
             _schemaDataContext = schemaDataContext;
             _applicationTemplatesScanner = applicationTemplatesScanner;
             _applicationBehavioursScanner = applicationBehavioursScanner;
+            _applicationConvertersScanner = applicationConvertersScanner;
             _managedApplicationBuilder = managedApplicationBuilder;
            
             _instancesInMemory = new Dictionary<int, IRestartable>(); 
@@ -51,11 +54,14 @@ namespace DataGenies.InMemory
             var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
             var behaviours =
                 this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours);
+            var converters =
+                this._applicationConvertersScanner.GetConvertersInstances(applicationInstanceInfo.Converters);
             
             var managedApplication = this._managedApplicationBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
                 .UsingBehaviours(behaviours)
+                .UsingConverters(converters)
                 .Build(); 
             
             _instancesInMemory[applicationInstanceId] = managedApplication;

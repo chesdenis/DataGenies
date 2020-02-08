@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using DataGenies.Core.Models;
 
@@ -8,5 +9,7 @@ namespace DataGenies.Core.Scanners
         IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath);
 
         IEnumerable<BehaviourInfo> ScanBehaviours(string assemblyFullPath);
+
+        IEnumerable<ConverterInfo> ScanConverters(string assemblyFullPath);
     }
 }

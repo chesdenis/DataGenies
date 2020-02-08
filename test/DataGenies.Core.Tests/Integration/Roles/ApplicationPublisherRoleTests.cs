@@ -16,14 +16,14 @@ namespace DataGenies.Core.Tests.Integration.Roles
         {
             base.Initialize();
 
-            _applicationTemplatesScanner.FindType(
+            ApplicationTemplatesScanner.FindType(
                     Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherTemplate"))
                 .Returns(typeof(MockSimplePublisher));
-            _applicationTemplatesScanner.FindType(
+            ApplicationTemplatesScanner.FindType(
                     Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverTemplate"))
                 .Returns(typeof(MockSimpleReceiver));
             
-            _applicationTemplatesScanner.FindType(
+            ApplicationTemplatesScanner.FindType(
                     Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherMultipleMessagesDifferentRoutingKeysTemplate"))
                 .Returns(typeof(MockPublisherMultipleMessagesDifferentRoutingKeys));
         }
@@ -48,24 +48,24 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 "SampleAppPublisher", 
                 "SampleAppReceiver", "#");
             
-            _orchestrator.Deploy(publisherId);
-            _orchestrator.Deploy(receiverId);
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverId);
             
             // Act
-            _orchestrator.Start(publisherId);
-            _orchestrator.Start(receiverId);
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverId);
             
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
-                await _orchestrator.Stop(receiverId);
+                await Orchestrator.Stop(receiverId);
             }).Wait();
              
             // Assert
-            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
+            var receiverComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
             var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
             Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);
@@ -102,30 +102,30 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 "SampleAppPublisher", 
                 "SampleAppReceiverB", "#");
              
-            _orchestrator.Deploy(publisherId);
-            _orchestrator.Deploy(receiverAId);
-            _orchestrator.Deploy(receiverBId);
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverAId);
+            Orchestrator.Deploy(receiverBId);
 
             // Act
-            _orchestrator.Start(publisherId);
-            _orchestrator.Start(receiverAId);
-            _orchestrator.Start(receiverBId);
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverAId);
+            Orchestrator.Start(receiverBId);
 
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
-                await _orchestrator.Stop(receiverAId);
-                await _orchestrator.Stop(receiverBId);
+                await Orchestrator.Stop(receiverAId);
+                await Orchestrator.Stop(receiverBId);
             }).Wait();
                 
             // Assert
-            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var receiverAComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverAId).GetRootComponent();;
+            var receiverAComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverAId).GetRootComponent();;
             var receiverAProperties = receiverAComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
-            var receiverBComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverBId).GetRootComponent();;
+            var receiverBComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverBId).GetRootComponent();;
             var receiverBProperties = receiverBComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
             Assert.AreEqual(1, receiverAProperties.ReceivedMessages.Count);
@@ -166,30 +166,30 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 "SampleAppPublisher", 
                 "SampleAppReceiverB", "3");
             
-            _orchestrator.Deploy(publisherId);
-            _orchestrator.Deploy(receiverAId);
-            _orchestrator.Deploy(receiverBId);
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverAId);
+            Orchestrator.Deploy(receiverBId);
 
             // Act
-            _orchestrator.Start(publisherId);
-            _orchestrator.Start(receiverAId);
-            _orchestrator.Start(receiverBId);
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverAId);
+            Orchestrator.Start(receiverBId);
 
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
-                await _orchestrator.Stop(receiverAId);
-                await _orchestrator.Stop(receiverBId);
+                await Orchestrator.Stop(receiverAId);
+                await Orchestrator.Stop(receiverBId);
             }).Wait();
             
             // Assert
-            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var receiverAComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverAId).GetRootComponent();;
+            var receiverAComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverAId).GetRootComponent();;
             var receiverAProperties = receiverAComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
-            var receiverBComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverBId).GetRootComponent();;
+            var receiverBComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverBId).GetRootComponent();;
             var receiverBProperties = receiverBComponent.ContextContainer.Resolve<MockReceiverProperties>();
             
             Assert.AreEqual(10, publisherProperties.PublishedMessages.Count);
@@ -218,24 +218,24 @@ namespace DataGenies.Core.Tests.Integration.Roles
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
                
             // Act
-            _orchestrator.Deploy(publisherId);
-            _orchestrator.Deploy(receiverId);
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverId);
             
             // Act
-            _orchestrator.Start(publisherId);
-            _orchestrator.Start(receiverId);
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverId);
             
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
-                await _orchestrator.Stop(receiverId);
+                await Orchestrator.Stop(receiverId);
             }).Wait();
  
             // Assert
-            var publisherComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
+            var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
             var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
             
-            var receiverComponent = (IApplicationWithContext) _orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
+            var receiverComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
             var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
 
             Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);

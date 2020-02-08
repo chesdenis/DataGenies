@@ -7,41 +7,39 @@ namespace DataGenies.Core.Tests.Integration
 {
     public class BaseIntegrationTest
     {
-        protected InMemoryMqBroker InMemoryInMemoryMqBroker;
+        protected InMemoryMqBroker InMemoryMqBroker;
 
         protected InMemoryMqConfigurator InMemoryMqConfigurator;
         
-        protected InMemorySchemaDataContext InMemoryInMemorySchemaContext;
+        protected InMemorySchemaDataContext InMemorySchemaContext;
         
         protected InMemorySchemaDataBuilder InMemorySchemaDataBuilder;
+
+        protected InMemoryOrchestrator Orchestrator;
         
-        protected ManagedApplicationBuilder _managedApplicationBuilder;
+        protected IApplicationTemplatesScanner ApplicationTemplatesScanner;
         
-        protected InMemoryOrchestrator _orchestrator;
-        
-        protected IApplicationTemplatesScanner _applicationTemplatesScanner;
-        
-        protected IApplicationBehavioursScanner _applicationBehavioursScanner;
+        protected IApplicationBehavioursScanner ApplicationBehavioursScanner;
+        protected IApplicationConvertersScanner ApplicationConvertersScanner;
 
         public virtual void Initialize()
         {
-            InMemoryInMemoryMqBroker = new InMemoryMqBroker();
+            InMemoryMqBroker = new InMemoryMqBroker();
+             
+            ApplicationTemplatesScanner = Substitute.For<IApplicationTemplatesScanner>();
+            ApplicationBehavioursScanner = Substitute.For<IApplicationBehavioursScanner>();
+            ApplicationConvertersScanner = Substitute.For<IApplicationConvertersScanner>();
             
-            var receiverBuilder = new InMemoryReceiverBuilder(InMemoryInMemoryMqBroker);
-            var publisherBuilder = new InMemoryPublisherBuilder(InMemoryInMemoryMqBroker);
+            InMemorySchemaContext = new InMemorySchemaDataContext();
+            InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemorySchemaContext);
+            InMemoryMqConfigurator = new InMemoryMqConfigurator(InMemoryMqBroker);
             
-            _applicationTemplatesScanner = Substitute.For<IApplicationTemplatesScanner>();
-            _applicationBehavioursScanner = Substitute.For<IApplicationBehavioursScanner>();
-            
-            InMemoryInMemorySchemaContext = new InMemorySchemaDataContext();
-            InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemoryInMemorySchemaContext);
-            InMemoryMqConfigurator = new InMemoryMqConfigurator(InMemoryInMemoryMqBroker);
-            
-            _orchestrator = new InMemoryOrchestrator(InMemoryInMemorySchemaContext,
-                _applicationTemplatesScanner,
-                _applicationBehavioursScanner,
-                new ManagedApplicationBuilder(InMemoryInMemorySchemaContext, new InMemoryReceiverBuilder(InMemoryInMemoryMqBroker),
-                    new InMemoryPublisherBuilder(InMemoryInMemoryMqBroker), InMemoryMqConfigurator));
+            Orchestrator = new InMemoryOrchestrator(InMemorySchemaContext,
+                ApplicationTemplatesScanner,
+                ApplicationBehavioursScanner,
+                ApplicationConvertersScanner,
+                new ManagedApplicationBuilder(InMemorySchemaContext, new InMemoryReceiverBuilder(InMemoryMqBroker),
+                    new InMemoryPublisherBuilder(InMemoryMqBroker), InMemoryMqConfigurator));
         }
     }
 }
