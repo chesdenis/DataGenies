@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -16,12 +17,18 @@ namespace DataGenies.Core.Scanners
         {
             _options = options;
         }
-        
-        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
+
+        public virtual IEnumerable<Type> GetAssemblyTypes(string assemblyFullPath)
         {
             var asm = Assembly.LoadFile(assemblyFullPath);
-            var types = asm.GetTypes()
-                .Where(w => w.IsClass)
+            return asm.GetTypes()
+                .Where(w => w.IsClass);
+        }
+
+        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
+        {
+            
+            var types = GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
 
             foreach (var type in types)
@@ -37,8 +44,7 @@ namespace DataGenies.Core.Scanners
 
         public IEnumerable<BehaviourInfo> ScanBehaviours(string assemblyFullPath)
         {
-            var asm = Assembly.LoadFile(assemblyFullPath);
-            var types = asm.GetTypes()
+            var types = GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.IsClass)
                 .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(BehaviourTemplateAttribute)));
 
@@ -55,8 +61,7 @@ namespace DataGenies.Core.Scanners
 
         public IEnumerable<ConverterInfo> ScanConverters(string assemblyFullPath)
         {
-            var asm = Assembly.LoadFile(assemblyFullPath);
-            var types = asm.GetTypes()
+            var types = GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.IsClass)
                 .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ConverterTemplateAttribute)));
 
