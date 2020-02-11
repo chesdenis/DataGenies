@@ -63,11 +63,22 @@ namespace DataGenies.Core.Roles
         {
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverAndPublisherRole)))
             {
-                var dataPublisherRole = BuildDataPublisherRole();
-                var dataReceiverRole = BuildDataReceiverRole();
-            
+                var receiver = this._receiverBuilder
+                    .WithQueue(this._applicationInstanceEntity.Name)
+                    .Build();
+                
+                var publisher = this._publisherBuilder
+                    .WithExchange(this._applicationInstanceEntity.Name)
+                    .Build();
+                
+                ConfigureMqForReceiverRole();
+                ConfigureMqForPublisherRole();
+                
+                var applicationReceiverRole = new ApplicationReceiverRole(receiver, _behaviours, _converters);
+                var applicationPublisherRole = new ApplicationPublisherRole(publisher, _behaviours, _converters);
+                
                 var application =
-                    (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole, dataPublisherRole);
+                    (IRestartable) Activator.CreateInstance(this._templateType, applicationReceiverRole, applicationPublisherRole);
 
                 if (application is IApplicationWithContext applicationWithState)
                 {
@@ -79,10 +90,14 @@ namespace DataGenies.Core.Roles
             
             if (this._templateType.IsSubclassOf(typeof(ApplicationReceiverRole)))
             {
-                var dataReceiverRole = BuildDataReceiverRole();
-            
+                var receiver = this._receiverBuilder
+                    .WithQueue(this._applicationInstanceEntity.Name)
+                    .Build();
+                
+                ConfigureMqForReceiverRole();
+                 
                 var application =
-                    (IRestartable) Activator.CreateInstance(this._templateType, dataReceiverRole);
+                    (IRestartable) Activator.CreateInstance(this._templateType, receiver, _behaviours, _converters);
 
                 if (application is IApplicationWithContext applicationWithState)
                 {
@@ -94,10 +109,14 @@ namespace DataGenies.Core.Roles
 
             if (this._templateType.IsSubclassOf(typeof(ApplicationPublisherRole)))
             {
-                var dataPublisherRole = BuildDataPublisherRole();
-            
+                var publisher = this._publisherBuilder
+                    .WithExchange(this._applicationInstanceEntity.Name)
+                    .Build();
+                
+                ConfigureMqForPublisherRole();
+                 
                 var application =
-                    (IRestartable) Activator.CreateInstance(this._templateType, dataPublisherRole);
+                    (IRestartable) Activator.CreateInstance(this._templateType, publisher, _behaviours, _converters);
 
                 if (application is IApplicationWithContext applicationWithState)
                 {
@@ -109,31 +128,7 @@ namespace DataGenies.Core.Roles
 
             throw new NotImplementedException();
         }
- 
-        private DataReceiverRole BuildDataReceiverRole()
-        {
-            var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstanceEntity.Name)
-                .Build();
-
-            ConfigureMqForReceiverRole();
-
-            var dataReceiverRole = new DataReceiverRole(receiver, _converters);
-            return dataReceiverRole;
-        }
-
-        private DataPublisherRole BuildDataPublisherRole()
-        {
-            var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstanceEntity.Name)
-                .Build();
-
-            ConfigureMqForPublisherRole();
-
-            var dataPublisherRole = new DataPublisherRole(publisher, _converters);
-            return dataPublisherRole;
-        }
-
+  
         private void ConfigureMqForPublisherRole()
         {
             var relatedReceivers = _schemaDataContext.Bindings

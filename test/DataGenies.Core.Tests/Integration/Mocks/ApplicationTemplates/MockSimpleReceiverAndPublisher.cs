@@ -9,18 +9,19 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimpleReceiverAndPublisher : ApplicationReceiverAndPublisherRole, IApplicationWithContext
     {
+        public MockSimpleReceiverAndPublisher(ApplicationReceiverRole receiverRole, ApplicationPublisherRole publisherRole) : base(receiverRole, publisherRole)
+        {
+            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
+            this.ContextContainer.Register<MockReceiverProperties>(new MockReceiverProperties());
+        }
+
         public IContainer ContextContainer { get; set; } = new Container();
         
         private MockPublisherProperties PublisherProperties => this.ContextContainer.Resolve<MockPublisherProperties>();
         
         private MockReceiverProperties ReceiverProperties => this.ContextContainer.Resolve<MockReceiverProperties>();
 
-        public MockSimpleReceiverAndPublisher(DataReceiverRole receiverRole, DataPublisherRole publisherRole) : base(
-            receiverRole, publisherRole)
-        {
-            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
-            this.ContextContainer.Register<MockReceiverProperties>(new MockReceiverProperties());
-        }
+      
 
         public override void Start()
         {

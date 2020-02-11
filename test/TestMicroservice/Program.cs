@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Attributes;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Converters;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
@@ -22,8 +23,8 @@ namespace TestMicroservice
     [ApplicationTemplate]
     public class HtmlSimpleParser : ApplicationReceiverAndPublisherRole
     {
-        public HtmlSimpleParser(DataReceiverRole receiverRole, DataPublisherRole publisherRole) 
-            : base(receiverRole, publisherRole)
+        public HtmlSimpleParser(ApplicationReceiverRole receiverRole, ApplicationPublisherRole publisherRole) : base(
+            receiverRole, publisherRole)
         {
         }
 
@@ -49,10 +50,11 @@ namespace TestMicroservice
     [ApplicationTemplate]
     public class HttpSimplePageDownloaderGenerator : ApplicationPublisherRole
     {
-        public HttpSimplePageDownloaderGenerator(DataPublisherRole publisherRole) : base(publisherRole)
+        public HttpSimplePageDownloaderGenerator(IPublisher publisher, IEnumerable<IBehaviour> behaviours,
+            IEnumerable<IConverter> converters) : base(publisher, behaviours, converters)
         {
         }
-        
+
         public override void Start()
         {
             Console.WriteLine("Download something...");

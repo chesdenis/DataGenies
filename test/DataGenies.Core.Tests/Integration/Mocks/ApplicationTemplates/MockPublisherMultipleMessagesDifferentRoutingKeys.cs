@@ -1,6 +1,10 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using DataGenies.Core.Attributes;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Converters;
+using DataGenies.Core.Publishers;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 
@@ -9,14 +13,16 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockPublisherMultipleMessagesDifferentRoutingKeys :   ApplicationPublisherRole, IApplicationWithContext
     {
+        public MockPublisherMultipleMessagesDifferentRoutingKeys(IPublisher publisher, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters) : base(publisher, behaviours, converters)
+        {
+            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
+        }
+
         public IContainer ContextContainer { get; set; } = new Container();
         
         private MockPublisherProperties Properties => this.ContextContainer.Resolve<MockPublisherProperties>();
         
-        public MockPublisherMultipleMessagesDifferentRoutingKeys(DataPublisherRole publisherRole) : base(publisherRole)
-        {
-            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
-        }
+       
     
         public override void Start()
         {

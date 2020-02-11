@@ -5,17 +5,21 @@ using DataGenies.Core.Receivers;
 
 namespace DataGenies.Core.Roles
 {
-    public abstract class ApplicationReceiverAndPublisherRole : IReceiver, IPublisher, IRestartable
+    public class ApplicationReceiverAndPublisherRole : IReceiver, IPublisher, IRestartable
     {
-        private readonly DataReceiverRole _receiverRole;
-        private readonly DataPublisherRole _publisherRole;
+        private readonly ApplicationReceiverRole _receiverRole;
+        private readonly ApplicationPublisherRole _publisherRole;
 
-        protected ApplicationReceiverAndPublisherRole(DataReceiverRole receiverRole, DataPublisherRole publisherRole)
+
+        public ApplicationReceiverAndPublisherRole(ApplicationReceiverRole receiverRole, ApplicationPublisherRole publisherRole)
         {
             _receiverRole = receiverRole;
             _publisherRole = publisherRole;
         }
-
+        
+        public virtual void Start() => throw new NotImplementedException();
+        public virtual void Stop() => throw new NotImplementedException();
+        
         public void Listen(Action<byte[]> onReceive)
         {
             _receiverRole.Listen(onReceive);
@@ -55,8 +59,5 @@ namespace DataGenies.Core.Roles
         {
             _publisherRole.PublishTuples(tuples);
         }
-
-        public abstract void Start();
-        public abstract void Stop();
     }
 }
