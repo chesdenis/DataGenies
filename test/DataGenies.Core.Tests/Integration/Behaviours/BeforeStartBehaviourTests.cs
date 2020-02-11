@@ -8,6 +8,7 @@ using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
+using NSubstitute.Exceptions;
 
 namespace DataGenies.Core.Tests.Integration.Behaviours
 {
@@ -49,6 +50,8 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     
                     return retVal;
                 });
+            
+       
         }
         
         [TestMethod]

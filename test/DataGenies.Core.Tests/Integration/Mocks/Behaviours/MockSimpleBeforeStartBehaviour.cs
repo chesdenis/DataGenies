@@ -16,20 +16,5 @@ namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
         {
             this.ContextContainer.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
         }
-    
-        public override void DoSomethingAfterStart()
-        {
-            throw new NotImplementedException();
-        }
-    
-        public override void DoSomethingDuringRunning(Action action)
-        {
-            throw new NotImplementedException();
-        }
-    
-        public override void DoSomethingOnException(Exception ex = null)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
