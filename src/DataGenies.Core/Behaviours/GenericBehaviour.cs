@@ -5,7 +5,7 @@ using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Behaviours
 {
-    public abstract class GenericBehaviour<T> : IBehaviour
+    public abstract class GenericBehaviourOld<T> //:// IBehaviour
     {
         protected IContainer ContextContainer;
 
