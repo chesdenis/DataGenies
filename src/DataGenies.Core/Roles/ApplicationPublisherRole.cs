@@ -14,8 +14,7 @@ namespace DataGenies.Core.Roles
         private readonly IEnumerable<IConverter> _converters;
         
         private IConverter[] BeforePublish() => this._converters.Where(w => w.Type == ConverterType.BeforePublish).ToArray();
-
-
+ 
         public ApplicationPublisherRole(IPublisher publisher, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters)
         {
             _publisher = publisher;
