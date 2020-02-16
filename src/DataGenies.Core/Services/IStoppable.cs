@@ -1,4 +1,4 @@
-﻿namespace DataGenies.Core.Roles
+﻿namespace DataGenies.Core.Services
 {
     public interface IStoppable
     {

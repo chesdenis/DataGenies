@@ -5,10 +5,9 @@ using DataGenies.Core.Configurators;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
-using DataGenies.Core.Services;
 using DataGenies.Core.Wrappers;
 
-namespace DataGenies.Core.Roles
+namespace DataGenies.Core.Services
 {
     public class ManagedServiceBuilder
     {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -13,8 +12,7 @@ namespace DataGenies.InMemory
         private ApplicationTemplateEntity _scopedApplicationTemplateEntity;
         private ApplicationInstanceEntity _scopedApplicationInstanceEntity;
         private BehaviourEntity _scopedBehaviourEntity;
-        private ConverterEntity _scopedConverterEntity;
-
+       
         private string _scopeConfig = "{}";
 
         public InMemorySchemaDataBuilder(ISchemaDataContext schemaDataContext)
@@ -55,8 +53,7 @@ namespace DataGenies.InMemory
                 Name = instanceName,
                 ConfigJson = _scopeConfig,
                 TemplateEntity = _scopedApplicationTemplateEntity,
-                Behaviours = new List<BehaviourEntity>(),
-                Converters = new List<ConverterEntity>()
+                Behaviours = new List<BehaviourEntity>()
             };
             
             _scopeConfig = "{}";
@@ -112,36 +109,7 @@ namespace DataGenies.InMemory
 
             return this;
         }
-
-        public InMemorySchemaDataBuilder RegisterConverter(string converterName, string converterVersion, int? id = null)
-        {
-            _scopedConverterEntity = new ConverterEntity()
-            {
-                Id = id ?? _inMemorySchemaDataContext.Behaviours.Count() + 1,
-                Name = converterName,
-                Version = converterVersion,
-                AssemblyPath = string.Empty,
-                ApplicationInstances = new List<ApplicationInstanceEntity>()
-            };
-
-            _inMemorySchemaDataContext.Converters.Add(_scopedConverterEntity);
-
-            return this;
-        }
         
-        public InMemorySchemaDataBuilder ApplyConverter(string converterName = "")
-        {
-            if (!string.IsNullOrEmpty(converterName))
-            {
-                _scopedConverterEntity = _inMemorySchemaDataContext.Converters.First(f => f.Name == converterName);
-            }
-
-            _scopedApplicationInstanceEntity.Converters.Add(_scopedConverterEntity);
-            _scopedConverterEntity.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
-
-            return this;
-        }
-
         public InMemorySchemaDataBuilder ApplyBehaviour(string behaviourName = "")
         {
             if (!string.IsNullOrEmpty(behaviourName))

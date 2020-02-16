@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
-using DataGenies.Core.Roles;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
 using DataGenies.Core.Wrappers;
