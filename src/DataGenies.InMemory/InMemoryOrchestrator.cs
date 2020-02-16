@@ -1,44 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
 using DataGenies.Core.Roles;
 using DataGenies.Core.Scanners;
+using DataGenies.Core.Services;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.InMemory
 {
     public class InMemoryOrchestrator : IOrchestrator
     {
-        private Dictionary<int, IRestartable> _instancesInMemory { get; set; }
+        private Dictionary<int, IManagedService> _instancesInMemory { get; set; }
 
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
         private readonly IApplicationBehavioursScanner _applicationBehavioursScanner;
-        private readonly IApplicationConvertersScanner _applicationConvertersScanner;
-        private readonly ManagedApplicationBuilder _managedApplicationBuilder;
+       
+        private readonly ManagedServiceBuilder _managedServiceBuilder;
         
         public InMemoryOrchestrator(ISchemaDataContext schemaDataContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
             IApplicationBehavioursScanner applicationBehavioursScanner,
-            IApplicationConvertersScanner applicationConvertersScanner,
-            ManagedApplicationBuilder managedApplicationBuilder)
+            ManagedServiceBuilder managedServiceBuilder)
         {
             _schemaDataContext = schemaDataContext;
             _applicationTemplatesScanner = applicationTemplatesScanner;
             _applicationBehavioursScanner = applicationBehavioursScanner;
-            _applicationConvertersScanner = applicationConvertersScanner;
-            _managedApplicationBuilder = managedApplicationBuilder;
+        
+            _managedServiceBuilder = managedServiceBuilder;
            
-            _instancesInMemory = new Dictionary<int, IRestartable>(); 
+            _instancesInMemory = new Dictionary<int, IManagedService>(); 
         }
 
-        public ManagedApplicationRole GetManagedApplicationInstance(int applicationInstanceId)
+        public IManagedService GetManagedApplicationInstance(int applicationInstanceId)
         {
-            return (ManagedApplicationRole) this._instancesInMemory[applicationInstanceId];
+            return this._instancesInMemory[applicationInstanceId];
         }
 
         public Task PrepareTemplatePackage(int applicationInstanceId)
@@ -53,15 +52,31 @@ namespace DataGenies.InMemory
             
             var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
             var behaviours =
-                this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours);
-            var converters =
-                this._applicationConvertersScanner.GetConvertersInstances(applicationInstanceInfo.Converters);
+                this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours).ToList();
+
+            var basicBehaviours = behaviours
+                .Where(w => 
+                    w.BehaviourType == BehaviourType.AfterStart 
+                    | 
+                    w.BehaviourType == BehaviourType.BeforeStart)
+                .OfType<IBasicBehaviour>();
             
-            var managedApplication = this._managedApplicationBuilder
+            var wrapperBehaviours = behaviours
+                .Where(w => 
+                    w.BehaviourType == BehaviourType.Wrapper)
+                .OfType<IWrapperBehaviour>();
+            
+            var onExceptionBehaviours = behaviours
+                .Where(w => 
+                    w.BehaviourType == BehaviourType.Wrapper)
+                .OfType<IBehaviourOnException>();
+          
+            var managedApplication = this._managedServiceBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
-                .UsingBehaviours(behaviours)
-                .UsingConverters(converters)
+                .UsingBasicBehaviours(basicBehaviours)
+                .UsingWrappersBehaviours(wrapperBehaviours)
+                .UsingOnExceptionBehaviours(onExceptionBehaviours)
                 .Build(); 
             
             _instancesInMemory[applicationInstanceId] = managedApplication;

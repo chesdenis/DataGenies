@@ -58,24 +58,7 @@ namespace DataGenies.Core.Scanners
                 };
             }
         }
-
-        public IEnumerable<ConverterInfo> ScanConverters(string assemblyFullPath)
-        {
-            var types = GetAssemblyTypes(assemblyFullPath)
-                .Where(w => w.IsClass)
-                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ConverterTemplateAttribute)));
-
-            foreach (var type in types)
-            {
-                yield return new ConverterInfo()
-                {
-                    AssemblyPath = assemblyFullPath,
-                    ConverterName = type.Name,
-                    AssemblyVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
-                };
-            }
-        }
-
+ 
         private string GetApplicationTypeVersionFromPackagePath(string packagePath)
         {
             var relativePath = packagePath.Replace(this._options.DropFolderOptions.Path, string.Empty);

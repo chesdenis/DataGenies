@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DataGenies.Core.Behaviours;
 
 namespace DataGenies.Core.Models
 {
@@ -11,10 +12,15 @@ namespace DataGenies.Core.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        
         public string Version { get; set; }
 
         public string AssemblyPath { get; set; }
-        
+
+        public BehaviourType BehaviourType { get; set; }
+
+        public BehaviourScope BehaviourScope { get; set; }
+
         public virtual ICollection<ApplicationInstanceEntity> ApplicationInstances { get; set; }
 
         public bool IsMatch(BehaviourEntity behaviourEntity)

@@ -1,36 +1,12 @@
-﻿using System;
-using DataGenies.Core.Containers;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-
-namespace DataGenies.Core.Behaviours
+﻿namespace DataGenies.Core.Behaviours
 {
-    
-
-    public interface IBehaviour_Old
+    public interface IBehaviour
     {
-        BehaviourType Type { get; set; }
-
-        void SetContextContainer(IContainer container);
-
-        void DoSomethingBeforeStart();
-
-        void DoSomethingBeforeStart(byte[] message);
+        string Name { get; set; }
+        string Description { get; set; }
         
-        void DoSomethingAfterStart();
+        BehaviourScope BehaviourScope { get; set; }
 
-        void DoSomethingAfterStart(byte[] message);
-
-        void DoSomethingDuringRunning(Action action);
-
-        void DoSomethingDuringRunning(Action<byte[]> action);
-
-        Action Wrap(Action<Action> wrapperAction, Action executeAction);
-
-        Action<byte[]> Wrap(Action<Action<byte[]>> wrapperAction, Action<byte[]> executeAction);
-
-        void DoSomethingOnException(Exception ex = null);
-
-        void DoSomethingOnException(byte[] message, Exception ex = null);
+        BehaviourType BehaviourType { get; set; }
     }
 }

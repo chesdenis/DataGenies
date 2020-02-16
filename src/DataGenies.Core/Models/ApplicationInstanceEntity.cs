@@ -19,8 +19,6 @@ namespace DataGenies.Core.Models
 
         public virtual ICollection<BehaviourEntity> Behaviours { get; set; }
 
-        public virtual ICollection<ConverterEntity> Converters { get; set; }
-
         public virtual ICollection<BindingEntity> IncomingBindings { get; set; }
         
         public virtual ICollection<BindingEntity> OutcomingBindings { get; set; }

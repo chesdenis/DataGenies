@@ -4,9 +4,7 @@
     {
         BeforeStart,
         AfterStart,
-        StartWrapper,
-        OnMessageReceive,
-        OnMessagePublish,
+        Wrapper,
         OnException
     }
 }
