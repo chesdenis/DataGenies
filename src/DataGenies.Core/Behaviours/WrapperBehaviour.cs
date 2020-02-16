@@ -16,7 +16,17 @@ namespace DataGenies.Core.Behaviours
             return () => wrapperAction(executeAction);
         }
 
+        public Action<T> Wrap<T>(Action<Action<T>> wrapperAction, Action<T> executeAction, T arg)
+        {
+            return (argument) => wrapperAction(executeAction);
+        }
+ 
         public virtual void BehaviourAction(Action action)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void BehaviourAction<T>(Action<T> action, T arg)
         {
             throw new NotImplementedException();
         }

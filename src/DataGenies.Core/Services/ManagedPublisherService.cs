@@ -28,32 +28,32 @@ namespace DataGenies.Core.Services
          
         public void Publish(byte[] data)
         {
-            this.ManagedAction(() => _publisher.Publish(data), BehaviourScope.Message);
+            this.ManagedAction((x) => _publisher.Publish(x), BehaviourScope.Message, data);
         }
 
         public void Publish(byte[] data, string routingKey)
         {
-            this.ManagedAction(() => _publisher.Publish(data, routingKey), BehaviourScope.Message);
+            this.ManagedAction((x) => _publisher.Publish(x, routingKey), BehaviourScope.Message, data);
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)
         {
-            this.ManagedAction(() =>  _publisher.Publish(data, routingKeys), BehaviourScope.Message);
+            this.ManagedAction((x) =>  _publisher.Publish(x, routingKeys), BehaviourScope.Message, data);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
-            this.ManagedAction(() => _publisher.PublishRange(dataRange), BehaviourScope.Message);
+            this.ManagedAction((x) => _publisher.PublishRange(x), BehaviourScope.Message, dataRange);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
         {
-            this.ManagedAction(() =>  _publisher.PublishRange(dataRange, routingKey), BehaviourScope.Message);
+            this.ManagedAction((x) =>  _publisher.PublishRange(x, routingKey), BehaviourScope.Message, dataRange);
         }
 
         public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
         {
-            this.ManagedAction(() =>  _publisher.PublishTuples(tuples), BehaviourScope.Message);
+            this.ManagedAction((x) =>  _publisher.PublishTuples(x), BehaviourScope.Message, tuples);
         }
 
         public virtual void Start()

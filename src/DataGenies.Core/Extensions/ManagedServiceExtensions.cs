@@ -140,5 +140,39 @@ namespace DataGenies.Core.Extensions
                 }
             }
         }
+        
+        public static void ManagedAction<T>(this IManagedService managedService, Action<T> execute, BehaviourScope behaviourScope, T arg)
+        {
+            try
+            {
+                foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
+                {
+                    beforeStart.Execute();
+                }
+
+                Action<T> resultAction = execute;
+
+                foreach (var wrapper in managedService.WrapperBehaviours)
+                {
+                    resultAction = wrapper.Wrap(wrapper.BehaviourAction, resultAction, arg);
+                }
+
+                resultAction(arg);
+            }
+            catch (Exception ex)
+            {
+                foreach (var onException in managedService.BehaviourOnExceptions)
+                {
+                    onException.Execute(ex);
+                }
+            }
+            finally
+            {
+                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
+                {
+                    afterStart.Execute();
+                }
+            }
+        }
     }
 }
