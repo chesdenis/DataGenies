@@ -3,35 +3,35 @@ using System.Collections.Generic;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Converters;
 using DataGenies.Core.Receivers;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockBrokenReceiver : ApplicationReceiverRole, IApplicationWithContext
+    public class MockBrokenReceiver : ManagedReceiverServiceWithContainer
     {
-        public MockBrokenReceiver(IReceiver receiver, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters) : base(receiver, behaviours, converters)
+        public MockBrokenReceiver(IContainer container, IReceiver receiver,
+            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, receiver, basicBehaviours,
+            behaviourOnExceptions, wrapperBehaviours)
         {
-            this.ContextContainer.Register<MockReceiverProperties>(new MockReceiverProperties());
+            this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }
 
-        public IContainer ContextContainer { get; set; } = new Container();
-        
-        private MockReceiverProperties Properties => this.ContextContainer.Resolve<MockReceiverProperties>();
-        
-        
-        public override void Start()
+        private MockReceiverProperties Properties => this.Container.Resolve<MockReceiverProperties>();
+         
+        protected override void OnStart()
         {
             this.Listen((message) =>
             {
                 throw new Exception("Something went wrong");
             });
         }
-
-        public override void Stop()
+ 
+        protected override void OnStop()
         {
             this.StopListen();
         }

@@ -8,7 +8,7 @@ namespace DataGenies.Core.Extensions
 {
     public static class ManagedServiceExtensions
     {
-        public static IContainer ManagedFunction(this IManagedService managedService, Func<IContainer, IContainer> function, IContainer arg)
+        public static IContainer ManagedFunction(this IManagedService managedService, Func<IContainer, IContainer> function, IContainer arg, BehaviourScope behaviourScope)
         {
             var retVal = default(IContainer);
             
@@ -42,7 +42,7 @@ namespace DataGenies.Core.Extensions
             return retVal;
         }
         
-        public static T ManagedFunction<T>(this IManagedService managedService, Func<T> function)
+        public static T ManagedFunction<T>(this IManagedService managedService, Func<T> function, BehaviourScope behaviourScope)
         {
             var retVal = default(T);
             
@@ -73,7 +73,7 @@ namespace DataGenies.Core.Extensions
             return retVal;
         }
         
-        public static void ManagedAction(this IManagedService managedService, Action<IContainer> action, IContainer arg)
+        public static void ManagedAction(this IManagedService managedService, Action<IContainer> action, IContainer arg, BehaviourScope behaviourScope)
         {
             try
             {
@@ -107,7 +107,7 @@ namespace DataGenies.Core.Extensions
             }
         }
 
-        public static void ManagedAction(this IManagedService managedService, Action execute)
+        public static void ManagedAction(this IManagedService managedService, Action execute, BehaviourScope behaviourScope)
         {
             try
             {

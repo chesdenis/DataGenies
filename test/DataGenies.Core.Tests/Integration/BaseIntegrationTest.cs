@@ -1,5 +1,6 @@
-﻿using DataGenies.Core.Roles;
+﻿using DataGenies.Core.Configurators;
 using DataGenies.Core.Scanners;
+using DataGenies.Core.Services;
 using DataGenies.InMemory;
 using NSubstitute;
 
@@ -10,6 +11,8 @@ namespace DataGenies.Core.Tests.Integration
         protected InMemoryMqBroker InMemoryMqBroker;
 
         protected InMemoryMqConfigurator InMemoryMqConfigurator;
+
+        protected IBindingConfigurator BindingConfigurator;
         
         protected InMemorySchemaDataContext InMemorySchemaContext;
         
@@ -20,26 +23,29 @@ namespace DataGenies.Core.Tests.Integration
         protected IApplicationTemplatesScanner ApplicationTemplatesScanner;
         
         protected IApplicationBehavioursScanner ApplicationBehavioursScanner;
-        protected IApplicationConvertersScanner ApplicationConvertersScanner;
-
+        
         public virtual void Initialize()
         {
             InMemoryMqBroker = new InMemoryMqBroker();
              
             ApplicationTemplatesScanner = Substitute.For<IApplicationTemplatesScanner>();
             ApplicationBehavioursScanner = Substitute.For<IApplicationBehavioursScanner>();
-            ApplicationConvertersScanner = Substitute.For<IApplicationConvertersScanner>();
-            
+           
             InMemorySchemaContext = new InMemorySchemaDataContext();
             InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemorySchemaContext);
             InMemoryMqConfigurator = new InMemoryMqConfigurator(InMemoryMqBroker);
             
+            BindingConfigurator = new BindingConfigurator(InMemorySchemaContext, InMemoryMqConfigurator);
+            
             Orchestrator = new InMemoryOrchestrator(InMemorySchemaContext,
                 ApplicationTemplatesScanner,
                 ApplicationBehavioursScanner,
-                ApplicationConvertersScanner,
-                new ManagedApplicationBuilder(InMemorySchemaContext, new InMemoryReceiverBuilder(InMemoryMqBroker),
-                    new InMemoryPublisherBuilder(InMemoryMqBroker), InMemoryMqConfigurator));
+               
+                new ManagedServiceBuilder(
+                    new InMemoryReceiverBuilder(InMemoryMqBroker),
+                    new InMemoryPublisherBuilder(InMemoryMqBroker),
+                    BindingConfigurator
+                    ));
         }
     }
 }

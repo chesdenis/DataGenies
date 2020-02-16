@@ -3,27 +3,27 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Converters;
 using DataGenies.Core.Publishers;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimplePublisher :  ApplicationPublisherRole, IApplicationWithContext
+    public class MockSimplePublisher :  ManagedPublisherServiceWithContainer
     {
-        public MockSimplePublisher(IPublisher publisher, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters) : base(publisher, behaviours, converters)
+        public MockSimplePublisher(IContainer container, IPublisher publisher,
+            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours,
+            behaviourOnExceptions, wrapperBehaviours)
         {
-            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
+            this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }
-
-        public IContainer ContextContainer { get; set; } = new Container();
+ 
+        private MockPublisherProperties Properties => this.Container.Resolve<MockPublisherProperties>();
         
-        private MockPublisherProperties Properties => this.ContextContainer.Resolve<MockPublisherProperties>();
-        
-        
-        public override void Start()
+        protected override void OnStart()
         {
             var testString = $"{this.Properties.ManagedParameter}TestString";
             
@@ -32,10 +32,10 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
             
             Properties.PublishedMessages.Add(testString);
         }
-
-        public override void Stop()
+ 
+        protected override void OnStop()
         {
-                
+            throw new System.NotImplementedException();
         }
     }
 }

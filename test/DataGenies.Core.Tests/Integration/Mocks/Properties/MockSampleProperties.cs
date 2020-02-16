@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using DataGenies.Core.Containers;
-using DataGenies.Core.Roles;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Properties
 {

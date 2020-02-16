@@ -29,15 +29,26 @@ namespace DataGenies.Core.Services
         public void Listen(Action<byte[]> onReceive)
         {
             _receiver.Listen(arg =>
-                this.ManagedAction(() => { onReceive(arg); }));
+                this.ManagedAction(() => { onReceive(arg); }, BehaviourScope.Message));
         }
  
         public void StopListen()
         {
-            this.ManagedAction(() => _receiver.StopListen());
+            this.ManagedAction(() => _receiver.StopListen(), BehaviourScope.Service);
         }
 
-        public abstract void Start();
-        public abstract void Stop();
+        public virtual void Start()
+        {
+            this.ManagedAction(OnStart, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStart();
+
+        public virtual void Stop()
+        {
+            this.ManagedAction(OnStop, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStop();
     }
 }

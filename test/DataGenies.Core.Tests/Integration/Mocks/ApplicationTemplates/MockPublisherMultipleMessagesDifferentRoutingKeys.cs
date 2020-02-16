@@ -3,28 +3,25 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Converters;
 using DataGenies.Core.Publishers;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockPublisherMultipleMessagesDifferentRoutingKeys :   ApplicationPublisherRole, IApplicationWithContext
+    public class MockPublisherMultipleMessagesDifferentRoutingKeys : ManagedPublisherServiceWithContainer
     {
-        public MockPublisherMultipleMessagesDifferentRoutingKeys(IPublisher publisher, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters) : base(publisher, behaviours, converters)
+         
+        public MockPublisherMultipleMessagesDifferentRoutingKeys(IContainer container, IPublisher publisher, IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions, IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours, behaviourOnExceptions, wrapperBehaviours)
         {
-            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
+            this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }
-
-        public IContainer ContextContainer { get; set; } = new Container();
         
-        private MockPublisherProperties Properties => this.ContextContainer.Resolve<MockPublisherProperties>();
+        private MockPublisherProperties Properties => this.Container.Resolve<MockPublisherProperties>();
         
-       
-    
-        public override void Start()
+        protected override void OnStart()
         {
             for (int i = 0; i < 10; i++)
             {
@@ -36,10 +33,12 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
                 Properties.PublishedMessages.Add(testString);
             }
         }
-    
-        public override void Stop()
+ 
+        protected override void OnStop()
         {
-                
+            
         }
+        
+      
     }
 }

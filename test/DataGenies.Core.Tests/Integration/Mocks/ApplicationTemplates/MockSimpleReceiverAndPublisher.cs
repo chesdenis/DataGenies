@@ -1,29 +1,33 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using DataGenies.Core.Attributes;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimpleReceiverAndPublisher : ApplicationReceiverAndPublisherRole, IApplicationWithContext
+    public class MockSimpleReceiverAndPublisher : ManagedReceiverAndPublisherServiceWithContainer
     {
-        public MockSimpleReceiverAndPublisher(ApplicationReceiverRole receiverRole, ApplicationPublisherRole publisherRole) : base(receiverRole, publisherRole)
+        public MockSimpleReceiverAndPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, receiver, basicBehaviours,
+            behaviourOnExceptions, wrapperBehaviours)
         {
-            this.ContextContainer.Register<MockPublisherProperties>(new MockPublisherProperties());
-            this.ContextContainer.Register<MockReceiverProperties>(new MockReceiverProperties());
+            this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
+            this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }
-
-        public IContainer ContextContainer { get; set; } = new Container();
+ 
+        private MockPublisherProperties PublisherProperties => this.Container.Resolve<MockPublisherProperties>();
         
-        private MockPublisherProperties PublisherProperties => this.ContextContainer.Resolve<MockPublisherProperties>();
+        private MockReceiverProperties ReceiverProperties => this.Container.Resolve<MockReceiverProperties>();
         
-        private MockReceiverProperties ReceiverProperties => this.ContextContainer.Resolve<MockReceiverProperties>();
-
-      
-
-        public override void Start()
+        protected override void OnStart()
         {
             this.Listen((message) =>
             {
@@ -33,13 +37,13 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
                 var changedTestData = $"{testData}-changed!";
     
                 var bytes = Encoding.UTF8.GetBytes(changedTestData);
-                this.Publish( bytes);
+                this.Publish(bytes);
                 
                 PublisherProperties.PublishedMessages.Add(changedTestData);
             });
         }
-    
-        public override void Stop()
+ 
+        protected override void OnStop()
         {
             this.StopListen();
         }

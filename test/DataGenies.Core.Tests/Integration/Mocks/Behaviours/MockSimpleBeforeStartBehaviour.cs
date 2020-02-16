@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using DataGenies.Core.Attributes;
+﻿using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
 {
     [BehaviourTemplate]
-    public class MockSimpleBeforeStartBehaviour : GenericBehaviour<MockBehaviourProperties>
-    { 
-        public override BehaviourType Type { get; set; } = BehaviourType.BeforeStart;
-        
-        public override void DoSomethingBeforeStart()
+    public class MockSimpleBeforeStartBehaviour : BehaviorBeforeStart
+    {
+        public override void Execute(IContainer arg)
         {
-            this.ContextContainer.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
+            arg.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
         }
+
+        public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Service;
+        public override BehaviourType BehaviourType { get; set; } = BehaviourType.BeforeStart;
     }
 }

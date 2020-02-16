@@ -3,28 +3,27 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Converters;
 using DataGenies.Core.Receivers;
-using DataGenies.Core.Roles;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimpleReceiver : ApplicationReceiverRole, IApplicationWithContext
+    public class MockSimpleReceiver : ManagedReceiverServiceWithContainer
     {
-        public MockSimpleReceiver(IReceiver receiver, IEnumerable<IBehaviour> behaviours, IEnumerable<IConverter> converters) : base(receiver, behaviours, converters)
+        public MockSimpleReceiver(IContainer container, IReceiver receiver,
+            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, receiver, basicBehaviours,
+            behaviourOnExceptions, wrapperBehaviours)
         {
-            this.ContextContainer.Register<MockReceiverProperties>(new MockReceiverProperties());
+            this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }
-
-        public IContainer ContextContainer { get; set; } = new Container();
         
-        private MockReceiverProperties Properties => this.ContextContainer.Resolve<MockReceiverProperties>();
-
+        private MockReceiverProperties Properties => this.Container.Resolve<MockReceiverProperties>();
         
-        
-        public override void Start()
+        protected override void OnStart()
         {
             this.Listen((message) =>
             {
@@ -32,8 +31,8 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
                     Encoding.UTF8.GetString(message));
             });
         }
-    
-        public override void Stop()
+ 
+        protected override void OnStop()
         {
             this.StopListen();
         }

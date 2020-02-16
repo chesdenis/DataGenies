@@ -34,35 +34,46 @@ namespace DataGenies.Core.Services
 
         public void Publish(byte[] data)
         {
-            this.ManagedAction(container =>_publisher.Publish(data), this.Container);
+            this.ManagedAction(container =>_publisher.Publish(data), this.Container, BehaviourScope.Message);
         }
 
         public void Publish(byte[] data, string routingKey)
         {
-            this.ManagedAction(container => _publisher.Publish(data, routingKey), this.Container);
+            this.ManagedAction(container => _publisher.Publish(data, routingKey), this.Container, BehaviourScope.Message);
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)
         {
-            this.ManagedAction(container => _publisher.Publish(data, routingKeys), this.Container);
+            this.ManagedAction(container => _publisher.Publish(data, routingKeys), this.Container, BehaviourScope.Message);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
-            this.ManagedAction(container => _publisher.PublishRange(dataRange), this.Container);
+            this.ManagedAction(container => _publisher.PublishRange(dataRange), this.Container, BehaviourScope.Message);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
         {
-            this.ManagedAction(container =>  _publisher.PublishRange(dataRange, routingKey), this.Container);
+            this.ManagedAction(container =>  _publisher.PublishRange(dataRange, routingKey), this.Container, BehaviourScope.Message);
         }
 
         public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
         {
-            this.ManagedAction(container => _publisher.PublishTuples(tuples), this.Container);
+            this.ManagedAction(container => _publisher.PublishTuples(tuples), this.Container, BehaviourScope.Message);
         }
 
-        public abstract void Start();
-        public abstract void Stop();
+        public virtual void Start()
+        {
+            this.ManagedAction(OnStart, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStart();
+
+        public virtual void Stop()
+        {
+            this.ManagedAction(OnStop, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStop();
     }
 }

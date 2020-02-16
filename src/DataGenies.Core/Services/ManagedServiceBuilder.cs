@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
@@ -66,7 +67,9 @@ namespace DataGenies.Core.Services
 
         public IManagedService Build()
         {
-            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherService)))
+            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherService)) 
+                ||
+                this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherServiceWithContainer)))
             {
                 var receiver = this._receiverBuilder
                     .WithQueue(this._applicationInstanceEntity.Name)
@@ -75,50 +78,78 @@ namespace DataGenies.Core.Services
                 var publisher = this._publisherBuilder
                     .WithExchange(this._applicationInstanceEntity.Name)
                     .Build();
-                
+
+                var ctorArgs = new List<Object>();
+               
+                if (this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherServiceWithContainer)))
+                {
+                    ctorArgs.Add(new Container());
+                }
+
+                ctorArgs.Add(publisher);
+                ctorArgs.Add(receiver);
+                ctorArgs.Add(_basicBehaviours);
+                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_wrapperBehaviours);
+                 
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, 
-                        publisher, 
-                        receiver, 
-                        _basicBehaviours,
-                        _behaviourOnExceptions, 
-                        _wrapperBehaviours);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
                 return managedService;
             }
             
-            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverService)))
+            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverService))
+            ||
+            this._templateType.IsSubclassOf(typeof(ManagedReceiverServiceWithContainer)))
             {
                 var receiver = this._receiverBuilder
                     .WithQueue(this._applicationInstanceEntity.Name)
                     .Build();
                 
+                var ctorArgs = new List<Object>();
+                
+                if (this._templateType.IsSubclassOf(typeof(ManagedReceiverServiceWithContainer)))
+                {
+                    ctorArgs.Add(new Container());
+                }
+                
+                ctorArgs.Add(receiver);
+                ctorArgs.Add(_basicBehaviours);
+                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_wrapperBehaviours);
+                
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType,
-                        receiver, 
-                        _basicBehaviours,
-                        _behaviourOnExceptions, 
-                        _wrapperBehaviours);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
                 return managedService;
             }
 
-            if (this._templateType.IsSubclassOf(typeof(ManagedPublisherService)))
+            if (this._templateType.IsSubclassOf(typeof(ManagedPublisherService)) 
+                ||
+                this._templateType.IsSubclassOf(typeof(ManagedPublisherServiceWithContainer)) )
             {
                 var publisher = this._publisherBuilder
                     .WithExchange(this._applicationInstanceEntity.Name)
                     .Build();
                 
+                var ctorArgs = new List<Object>();
+                
+                if (this._templateType.IsSubclassOf(typeof(ManagedPublisherServiceWithContainer)))
+                {
+                    ctorArgs.Add(new Container());
+                }
+                
+                ctorArgs.Add(publisher);
+                ctorArgs.Add(_basicBehaviours);
+                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_wrapperBehaviours);
+                
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType,
-                        publisher, 
-                        _basicBehaviours,
-                        _behaviourOnExceptions, 
-                        _wrapperBehaviours);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 

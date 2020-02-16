@@ -28,35 +28,46 @@ namespace DataGenies.Core.Services
          
         public void Publish(byte[] data)
         {
-            this.ManagedAction(() => _publisher.Publish(data));
+            this.ManagedAction(() => _publisher.Publish(data), BehaviourScope.Message);
         }
 
         public void Publish(byte[] data, string routingKey)
         {
-            this.ManagedAction(() => _publisher.Publish(data, routingKey));
+            this.ManagedAction(() => _publisher.Publish(data, routingKey), BehaviourScope.Message);
         }
 
         public void Publish(byte[] data, IEnumerable<string> routingKeys)
         {
-            this.ManagedAction(() =>  _publisher.Publish(data, routingKeys));
+            this.ManagedAction(() =>  _publisher.Publish(data, routingKeys), BehaviourScope.Message);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange)
         {
-            this.ManagedAction(() => _publisher.PublishRange(dataRange));
+            this.ManagedAction(() => _publisher.PublishRange(dataRange), BehaviourScope.Message);
         }
 
         public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
         {
-            this.ManagedAction(() =>  _publisher.PublishRange(dataRange, routingKey));
+            this.ManagedAction(() =>  _publisher.PublishRange(dataRange, routingKey), BehaviourScope.Message);
         }
 
         public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
         {
-            this.ManagedAction(() =>  _publisher.PublishTuples(tuples));
+            this.ManagedAction(() =>  _publisher.PublishTuples(tuples), BehaviourScope.Message);
         }
 
-        public abstract void Start();
-        public abstract void Stop();
+        public virtual void Start()
+        {
+            this.ManagedAction(OnStart, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStart();
+
+        public virtual void Stop()
+        {
+            this.ManagedAction(OnStop, BehaviourScope.Service);
+        }
+
+        protected abstract void OnStop();
     }
 }
