@@ -35,13 +35,17 @@ namespace DataGenies.Core.Services
 
         public void Listen(Action<byte[]> onReceive)
         {
-            _receiver.Listen(arg =>
-                this.ManagedAction(container => { onReceive(arg); }, Container, BehaviourScope.Message));
+            this.ManagedActionWithContainer(container =>
+            {
+                _receiver.Listen(message =>
+                    this.ManagedActionWithMessage(messageOnExecute => { onReceive(messageOnExecute); }, message));
+                
+            }, Container);
         }
 
         public void StopListen()
         {
-            this.ManagedAction(container => _receiver.StopListen(), Container, BehaviourScope.Service);
+            this.ManagedActionWithContainer(container => _receiver.StopListen(), Container);
         }
 
         public virtual void Start()

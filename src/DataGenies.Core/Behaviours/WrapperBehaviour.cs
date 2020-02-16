@@ -1,6 +1,7 @@
 ﻿using System;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
 {
@@ -16,9 +17,16 @@ namespace DataGenies.Core.Behaviours
             return () => wrapperAction(executeAction);
         }
 
-        public Action<T> Wrap<T>(Action<Action<T>> wrapperAction, Action<T> executeAction, T arg)
+        public Action<T> WrapMessageHandling<T>(Action<Action<T>, T> behaviourActionWithMessage,
+            Action<T> executeAction, T mqMessage) where T : MqMessage
         {
-            return (argument) => wrapperAction(executeAction);
+            return (message) => behaviourActionWithMessage(executeAction, message);
+        }
+
+        public Action<T> WrapContainerHandling<T>(Action<Action<T>, T> behaviourActionWithContainer,
+            Action<T> executeAction, T mqMessage) where T : IContainer
+        {
+            return (container) => behaviourActionWithContainer(executeAction, container);
         }
  
         public virtual void BehaviourAction(Action action)
@@ -26,17 +34,12 @@ namespace DataGenies.Core.Behaviours
             throw new NotImplementedException();
         }
 
-        public virtual void BehaviourAction<T>(Action<T> action, T arg)
+        public virtual void BehaviourActionWithMessage<T>(Action<T> action, T message) where T : MqMessage
         {
             throw new NotImplementedException();
         }
 
-        public Action<IContainer> Wrap(WrappedActionWithContainer wrapperAction, Action<IContainer> executeAction)
-        {
-            return (arg) => wrapperAction(executeAction, arg);
-        }
-
-        public virtual void BehaviourAction(Action<IContainer> action, IContainer container)
+        public virtual void BehaviourActionWithContainer<T>(Action<T> action, T container) where T : IContainer
         {
             throw new NotImplementedException();
         }

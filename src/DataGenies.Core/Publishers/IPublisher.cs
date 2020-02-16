@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Publishers
 {
     public interface IPublisher
     {
-        void Publish(byte[] data);
+        void Publish(MqMessage data);
 
-        void Publish(byte[] data, string routingKey);
+        void Publish(MqMessage data, string routingKey);
 
-        void Publish(byte[] data, IEnumerable<string> routingKeys);
+        void Publish(MqMessage data, IEnumerable<string> routingKeys);
         
-        void PublishRange(IEnumerable<byte[]> dataRange);
+        void PublishRange(IEnumerable<MqMessage> dataRange);
 
-        void PublishRange(IEnumerable<byte[]> dataRange, string routingKey);
+        void PublishRange(IEnumerable<MqMessage> dataRange, string routingKey);
 
-        void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples);
+        void PublishTuples(IEnumerable<Tuple<MqMessage, string>> tuples);
     }
 }
