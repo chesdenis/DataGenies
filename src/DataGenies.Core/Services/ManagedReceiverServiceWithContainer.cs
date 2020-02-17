@@ -9,10 +9,8 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverServiceWithContainer : IReceiver, IRestartable, IManagedService
+    public abstract class ManagedReceiverServiceWithContainer : IReceiver, IManagedServiceWithContainer
     {
-        protected readonly IContainer Container;
-        
         private readonly IReceiver _receiver;
         
         public IEnumerable<IBasicBehaviour> BasicBehaviours { get; }
@@ -62,5 +60,6 @@ namespace DataGenies.Core.Services
         }
 
         protected abstract void OnStop();
+        public IContainer Container { get; }
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
 using DataGenies.Core.Scanners;
@@ -34,9 +36,15 @@ namespace DataGenies.InMemory
             _instancesInMemory = new Dictionary<int, IManagedService>(); 
         }
 
-        public IManagedService GetManagedApplicationInstance(int applicationInstanceId)
+        public IContainer GetApplicationInstanceContainer(int applicationInstanceId)
         {
-            return this._instancesInMemory[applicationInstanceId];
+            var applicationInstance = this._instancesInMemory[applicationInstanceId];
+            if (applicationInstance is IManagedServiceWithContainer applicationInstanceWithContainer)
+            {
+                return applicationInstanceWithContainer.Container;
+            }
+
+            throw new NotSupportedException();
         }
 
         public Task PrepareTemplatePackage(int applicationInstanceId)

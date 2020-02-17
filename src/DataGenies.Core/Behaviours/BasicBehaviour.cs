@@ -1,5 +1,6 @@
 ﻿using System;
 using DataGenies.Core.Containers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
 {
@@ -18,6 +19,11 @@ namespace DataGenies.Core.Behaviours
         }
 
         public virtual void Execute(IContainer arg)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void Execute(MqMessage message)
         {
             throw new NotImplementedException();
         }

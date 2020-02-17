@@ -14,27 +14,27 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimplePublisher :  ManagedPublisherServiceWithContainer
     {
-        public MockSimplePublisher(IContainer container, IPublisher publisher,
-            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours,
-            behaviourOnExceptions, wrapperBehaviours)
+        public MockSimplePublisher(
+            IContainer container,
+            IPublisher publisher,
+            IEnumerable<IBasicBehaviour> basicBehaviours, 
+            IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+            IEnumerable<IWrapperBehaviour> wrapperBehaviours) 
+            : base(
+                container, 
+                publisher, 
+                basicBehaviours, 
+                behaviourOnExceptions, 
+                wrapperBehaviours)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }
  
-        private MockPublisherProperties Properties => this.Container.Resolve<MockPublisherProperties>();
+        protected MockPublisherProperties Properties => this.Container.Resolve<MockPublisherProperties>();
         
         protected override void OnStart()
         {
-            var testString = $"{this.Properties.ManagedParameter}TestString";
-            
-            var testData = Encoding.UTF8.GetBytes(testString);
-            this.Publish(new MqMessage()
-            {
-                Body = testData
-            });
-            
-            Properties.PublishedMessages.Add(testString);
+            throw new System.NotImplementedException();
         }
  
         protected override void OnStop()

@@ -25,8 +25,6 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
-                typeof(MockSimpleAfterStartBehaviour),
-                typeof(MockSimpleBeforeStartBehaviour),
                 typeof(MockRevertTextAfterReceiveConverter),
                 typeof(MockRevertTextBeforePublishConverter)
             });
@@ -49,8 +47,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
-                typeof(MockSimpleAfterStartBehaviour),
-                typeof(MockSimpleBeforeStartBehaviour),
+                typeof(MockBehaviour),
                 typeof(MockRevertTextAfterReceiveConverter),
                 typeof(MockRevertTextBeforePublishConverter)
             });
@@ -59,7 +56,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             var applicationTemplates = sut.ScanBehaviours("path to asm");
 
             // Assert
-            Assert.AreEqual(2, applicationTemplates.Count());
+            Assert.AreEqual(1, applicationTemplates.Count());
         }
     }
 }

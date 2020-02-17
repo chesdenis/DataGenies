@@ -1,126 +1,119 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using DataGenies.Core.Behaviours;
+using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
+using DataGenies.Core.Publishers;
+using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Converters;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration.Converters
 {
     [TestClass]
-    public class ConverterTests : BaseIntegrationTest
+    public class WrapperBehavioursTests : BaseIntegrationTest
     {
         [TestInitialize]
         public override void Initialize()
         {
             base.Initialize();
             
-            // ApplicationTemplatesScanner.FindType(
-            //         Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherTemplate"))
-            //     .Returns(typeof(MockSimplePublisher));
-            //
-            // ApplicationTemplatesScanner.FindType(
-            //         Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverAndPublisherTemplate"))
-            //     .Returns(typeof(MockSimpleReceiverAndPublisher));
-            //
-            // ApplicationTemplatesScanner.FindType(
-            //         Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverTemplate"))
-            //     .Returns(typeof(MockSimpleReceiver));
-            //
-            // ApplicationConvertersScanner.GetConvertersInstances( Arg.Any<IEnumerable<ConverterEntity>>())
-            //     .Returns((cb) =>
-            //     {
-            //         var retVal = new List<IConverter>();
-            //         var convertersEntities = cb.Arg<IEnumerable<ConverterEntity>>();
-            //
-            //         foreach (var converterEntity in convertersEntities)
-            //         {
-            //             switch (converterEntity.Name)
-            //             {
-            //                 case "SampleRevertBeforePublishConverter":
-            //                     retVal.Add(new MockRevertTextBeforePublishConverter());
-            //                     break;
-            //                 case "SampleRevertAfterReceiveConverter":
-            //                     retVal.Add(new MockRevertTextAfterReceiveConverter());
-            //                     break;
-            //             }
-            //         }
-            //         
-            //         return retVal;
-            //     });
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MessagePublisher),"SampleAppPublisherTemplate");
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver), "SampleAppReceiverTemplate");
+
+            Behaviours.Add("SampleBehaviour", new ConvertMessagesBehaviour());
         }
 
         [TestMethod]
-        public void ShouldApplyConvertersBeforeAndAfterPublish()
+        public void ConversionBehaviourShouldChangeMessagesBeforePublish()
         {
-            //  // Arrange
-            // var publisherId = 1;
-            // InMemorySchemaDataBuilder.CreateApplicationTemplate(
-            //         "SampleAppPublisherTemplate",
-            //         "2019.1.1")
-            //     .CreateApplicationInstance("SampleAppPublisher", publisherId)
-            //     .RegisterConverter("SampleRevertBeforePublishConverter", "2019.1.1")
-            //     .ApplyConverter();
-            //
-            // var mixedRoleId = 2;
-            // InMemorySchemaDataBuilder.CreateApplicationTemplate(
-            //         "SampleAppReceiverAndPublisherTemplate",
-            //         "2019.1.1")
-            //     .CreateApplicationInstance("SampleAppReceiverAndPublisher", mixedRoleId);
-            //
-            // var receiverId = 3;
-            // InMemorySchemaDataBuilder.CreateApplicationTemplate(
-            //         "SampleAppReceiverTemplate",
-            //         "2018.1.1")
-            //     .CreateApplicationInstance("SampleAppReceiver", receiverId)
-            //     .RegisterConverter("SampleRevertAfterReceiveConverter", "2019.1.1")
-            //     .ApplyConverter();
-            //
-            // InMemorySchemaDataBuilder.ConfigureBinding(
-            //     "SampleAppPublisher",
-            //     "SampleAppReceiverAndPublisher", "#");
-            //
-            // InMemorySchemaDataBuilder.ConfigureBinding(
-            //     "SampleAppReceiverAndPublisher",
-            //     "SampleAppReceiver", "#");
-            //
-            // Orchestrator.Deploy(publisherId);
-            // Orchestrator.Deploy(mixedRoleId);
-            // Orchestrator.Deploy(receiverId);
-            //
-            //
-            // // Act
-            // Orchestrator.Start(publisherId);
-            // Orchestrator.Start(mixedRoleId);
-            // Orchestrator.Start(receiverId);
-            //
-            // Task.Run(async () =>
-            // {
-            //     await Task.Delay(1000);
-            //     await Orchestrator.Stop(mixedRoleId);
-            //     await Orchestrator.Stop(receiverId);
-            // }).Wait();
+             // Arrange
+            var publisherId = 1;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SampleAppPublisherTemplate",
+                    "2019.1.1")
+                .CreateApplicationInstance("SampleAppPublisher", publisherId)
+                .RegisterBehaviour("SampleBehaviour", "2019.1.1")
+                .ApplyBehaviour();
             
+            var receiverId = 2;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SampleAppReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+            
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "SampleAppPublisher",
+                "SampleAppReceiver", "#");
+          
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverId);
+            
+            // Act
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverId);
+            
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await Orchestrator.Stop(receiverId);
+            }).Wait();
+
             // Assert
-            // var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
-            // var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
-            //
-            // var mixedRoleComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(mixedRoleId).GetRootComponent();
-            // var mixedRolePublisherProperties = mixedRoleComponent.ContextContainer.Resolve<MockPublisherProperties>();
-            // var mixedRoleReceiverProperties = mixedRoleComponent.ContextContainer.Resolve<MockReceiverProperties>();
-            //
-            // var receiverComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();
-            // var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
-            //
-            // Assert.AreEqual("TestString", publisherProperties.PublishedMessages[0]);
-            //
-            // Assert.AreEqual(new string("TestString".Reverse().ToArray()), mixedRoleReceiverProperties.ReceivedMessages[0]);
-            // Assert.AreEqual($"{new string("TestString".Reverse().ToArray())}-changed!", mixedRolePublisherProperties.PublishedMessages[0]);
-            //
-            // Assert.AreEqual(new string($"{new string("TestString".Reverse().ToArray())}-changed!".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]);
+            var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
+            var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+
+            Assert.AreEqual(new string("TestString".Reverse().ToArray()), publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual(new string("TestString".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]); 
         }
+        
+        private class MessagePublisher : MockSimplePublisher
+        {
+            public MessagePublisher(IContainer container, IPublisher publisher,
+                IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+                IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours,
+                behaviourOnExceptions, wrapperBehaviours)
+            {
+            }
+
+            protected override void OnStart()
+            {
+                var testString = $"TestString";
+            
+                var testData = Encoding.UTF8.GetBytes(testString);
+                var mqMessage = new MqMessage()
+                {
+                    Body = testData
+                };
+                this.Publish(mqMessage);
+
+                Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
+            }
+        }
+
+        private class ConvertMessagesBehaviour : WrapperBehaviour
+        {
+            public override void BehaviourActionWithMessage<T>(Action<T> action, T message)
+            {
+                var originalString = Encoding.UTF8.GetString(message.Body);
+                var reversedString = new string(originalString.Reverse().ToArray());
+                
+                message.Body = Encoding.UTF8.GetBytes(reversedString);
+
+                action(message);
+            }
+
+            public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Message;
+            public override BehaviourType BehaviourType { get; set; } = BehaviourType.Wrapper;
+        }
+
     }
 }

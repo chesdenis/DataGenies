@@ -1,4 +1,7 @@
-﻿using DataGenies.Core.Configurators;
+﻿using System.Collections.Generic;
+using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
+using DataGenies.Core.Models;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
 using DataGenies.InMemory;
@@ -23,6 +26,8 @@ namespace DataGenies.Core.Tests.Integration
         protected IApplicationTemplatesScanner ApplicationTemplatesScanner;
         
         protected IApplicationBehavioursScanner ApplicationBehavioursScanner;
+
+        protected Dictionary<string, IBehaviour> Behaviours;
         
         public virtual void Initialize()
         {
@@ -46,6 +51,23 @@ namespace DataGenies.Core.Tests.Integration
                     new InMemoryPublisherBuilder(InMemoryMqBroker),
                     BindingConfigurator
                     ));
+            
+            Behaviours = new Dictionary<string, IBehaviour>();
+            
+            ApplicationBehavioursScanner.GetBehavioursInstances(
+                    Arg.Any<IEnumerable<BehaviourEntity>>())
+                .Returns((cb) =>
+                {
+                    var retVal = new List<IBehaviour>();
+                    var behavioursEntities = cb.Arg<IEnumerable<BehaviourEntity>>();
+            
+                    foreach (var behaviourEntity in behavioursEntities)
+                    {
+                        retVal.Add(this.Behaviours[behaviourEntity.Name]);
+                    }
+                    
+                    return retVal;
+                });
         }
     }
 }

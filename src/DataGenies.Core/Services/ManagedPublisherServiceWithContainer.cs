@@ -9,10 +9,8 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedPublisherServiceWithContainer : IPublisher, IRestartable, IManagedService
+    public abstract class ManagedPublisherServiceWithContainer : IPublisher, IManagedServiceWithContainer
     {
-        protected readonly IContainer Container;
-        
         private readonly IPublisher _publisher;
         public IEnumerable<IBasicBehaviour> BasicBehaviours { get; }
         public IEnumerable<IBehaviourOnException> BehaviourOnExceptions { get; }
@@ -62,6 +60,7 @@ namespace DataGenies.Core.Services
         }
 
         protected abstract void OnStop();
-       
+
+        public IContainer Container { get; }
     }
 }

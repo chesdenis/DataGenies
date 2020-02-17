@@ -5,7 +5,7 @@ using DataGenies.Core.Containers;
 namespace DataGenies.Core.Tests.Integration.Mocks.Converters
 {
     [ConverterTemplate]
-    public class MockRevertTextBeforePublishConverter : BehaviorBeforeStart
+    public class MockRevertTextBeforePublishConverter : BasicBehaviour
     {
         public override void Execute(IContainer arg)
         {

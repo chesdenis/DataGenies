@@ -79,8 +79,7 @@ namespace DataGenies.Core.Extensions
             try
             {
                 foreach (var beforeStart in managedService.BasicBehaviours
-                    .OfType<IBehaviorBeforeStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
                     beforeStart.Execute();
                 }
@@ -106,8 +105,7 @@ namespace DataGenies.Core.Extensions
             finally
             {
                 foreach (var afterStart in managedService.BasicBehaviours
-                    .OfType<IBehaviourAfterStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     afterStart.Execute();
                 }
@@ -119,8 +117,7 @@ namespace DataGenies.Core.Extensions
             try
             {
                 foreach (var beforeStart in managedService.BasicBehaviours
-                    .OfType<IBehaviorBeforeStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
                     beforeStart.Execute();
                 }
@@ -145,8 +142,8 @@ namespace DataGenies.Core.Extensions
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                foreach (var afterStart in managedService.BasicBehaviours
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     afterStart.Execute();
                 }
@@ -158,10 +155,9 @@ namespace DataGenies.Core.Extensions
             try
             {
                 foreach (var beforeStart in managedService.BasicBehaviours
-                    .OfType<IBehaviorBeforeStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
-                    beforeStart.Execute();
+                    beforeStart.Execute(arg);
                 }
 
                 Action<T> resultAction = execute;
@@ -179,16 +175,15 @@ namespace DataGenies.Core.Extensions
                 foreach (var onException in managedService.BehaviourOnExceptions
                     .Where(w=>w.BehaviourScope == behaviourScope))
                 {
-                    onException.Execute(ex);
+                    onException.Execute(arg, ex);
                 }
             }
             finally
             {
                 foreach (var afterStart in managedService.BasicBehaviours
-                    .OfType<IBehaviourAfterStart>()
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
-                    afterStart.Execute();
+                    afterStart.Execute(arg);
                 }
             }
         }

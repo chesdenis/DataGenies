@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
@@ -93,7 +94,7 @@ namespace DataGenies.Core.Services
                 ctorArgs.Add(_wrapperBehaviours);
                  
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
@@ -121,7 +122,7 @@ namespace DataGenies.Core.Services
                 ctorArgs.Add(_wrapperBehaviours);
                 
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
@@ -149,7 +150,7 @@ namespace DataGenies.Core.Services
                 ctorArgs.Add(_wrapperBehaviours);
                 
                 var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs);
+                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
                 
                 this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 

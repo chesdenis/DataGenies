@@ -1,58 +1,34 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
-using DataGenies.Core.Models;
+using DataGenies.Core.Containers;
+using DataGenies.Core.Publishers;
+using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
-using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
+using DataGenies.Core.Tests.Integration.Mocks.Properties;
+using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration.Behaviours
 {
     [TestClass]
     public class BeforeStartBehaviourTests : BaseIntegrationTest
     {
-        private MockSimpleBeforeStartBehaviour _beforeStartBehaviour;
-        
         [TestInitialize]
         public override void Initialize()
         {
             base.Initialize();
             
-            ApplicationTemplatesScanner.FindType(
-                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppPublisherTemplate"))
-                .Returns(typeof(MockSimplePublisher));
-            ApplicationTemplatesScanner.FindType(
-                    Arg.Is<ApplicationTemplateEntity>(w => w.Name == "SampleAppReceiverTemplate"))
-                .Returns(typeof(MockSimpleReceiver));
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MessageWithPrefixPublisher),"SampleAppPublisherTemplate");
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver), "SampleAppReceiverTemplate");
             
-            _beforeStartBehaviour = new MockSimpleBeforeStartBehaviour();
-            
-            ApplicationBehavioursScanner.GetBehavioursInstances(
-                    Arg.Any<IEnumerable<BehaviourEntity>>())
-                .Returns((cb) =>
-                {
-                    var retVal = new List<IBehaviour>();
-                    var behavioursEntities = cb.Arg<IEnumerable<BehaviourEntity>>();
-            
-                    foreach (var behaviourEntity in behavioursEntities)
-                    {
-                        switch (behaviourEntity.Name)
-                        {
-                            case "SampleBehaviour":
-                                retVal.Add(_beforeStartBehaviour);
-                                break;
-                        }
-                    }
-                    
-                    return retVal;
-                });
-            
-       
+            Behaviours.Add("SampleBehaviour", new MarkMessagesWithPrefixBehaviour());
         }
         
         [TestMethod]
-        public void SimpleBeforeStartBehaviourShouldHasAccessToComponentPropertiesIfTheyExist()
+        public void BeforeStartBehaviourShouldAffectApplication()
         {
             // Arrange
             var publisherId = 1;
@@ -82,19 +58,50 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             
             Task.Run(async () =>
             {
-                await Task.Delay(1000);
-                await Orchestrator.Stop(receiverId);
+                 await Task.Delay(1000);
+                 await Orchestrator.Stop(receiverId);
             }).Wait();
-             
+
             // Assert
-            // var publisherComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(publisherId).GetRootComponent();
-            // var publisherProperties = publisherComponent.ContextContainer.Resolve<MockPublisherProperties>();
-            //
-            // var receiverComponent = (IApplicationWithContext) Orchestrator.GetManagedApplicationInstance(receiverId).GetRootComponent();;
-            // var receiverProperties = receiverComponent.ContextContainer.Resolve<MockReceiverProperties>();
-            //
-            // Assert.AreEqual("PrefixTestString", publisherProperties.PublishedMessages[0]);
-            // Assert.AreEqual("PrefixTestString", receiverProperties.ReceivedMessages[0]);
+            var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
+            var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+            
+            Assert.AreEqual("PrefixTestString", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual("PrefixTestString", receiverProperties.ReceivedMessages[0]);
+        }
+        
+        private class MessageWithPrefixPublisher : MockSimplePublisher
+        {
+            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher,
+                IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
+                IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours,
+                behaviourOnExceptions, wrapperBehaviours)
+            {
+            }
+
+            protected override void OnStart()
+            {
+                var testString = $"{this.Properties.ManagedParameter}TestString";
+            
+                var testData = Encoding.UTF8.GetBytes(testString);
+                this.Publish(new MqMessage()
+                {
+                    Body = testData
+                });
+            
+                Properties.PublishedMessages.Add(testString);
+            }
+        }
+        
+        private class MarkMessagesWithPrefixBehaviour : BasicBehaviour
+        {
+            public override void Execute(IContainer arg)
+            {
+                arg.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
+            }
+
+            public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Service;
+            public override BehaviourType BehaviourType { get; set; } = BehaviourType.BeforeStart;
         }
     }
 }
