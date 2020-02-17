@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
@@ -28,66 +30,57 @@ namespace DataGenies.Core.Services
             IEnumerable<IBehaviourOnException> behaviourOnExceptions,
             IEnumerable<IWrapperBehaviour> wrapperBehaviours)
         {
+            Container = container;
+            
             _receiver = receiver;
             _publisher = publisher;
             BasicBehaviours = basicBehaviours;
             BehaviourOnExceptions = behaviourOnExceptions;
             WrapperBehaviours = wrapperBehaviours;
         }
-        
-        public void Publish(byte[] data)
-        {
-            this.ManagedAction(container =>_publisher.Publish(data), this.Container, BehaviourScope.Message);
-        }
 
-        public void Publish(byte[] data, string routingKey)
-        {
-            this.ManagedAction(container => _publisher.Publish(data, routingKey), this.Container, BehaviourScope.Message);
-        }
-
-        public void Publish(byte[] data, IEnumerable<string> routingKeys)
-        {
-            this.ManagedAction(container => _publisher.Publish(data, routingKeys), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange)
-        {
-            this.ManagedAction(container => _publisher.PublishRange(dataRange), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
-        {
-            this.ManagedAction(container =>  _publisher.PublishRange(dataRange, routingKey), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
-        {
-            this.ManagedAction(container => _publisher.PublishTuples(tuples), this.Container, BehaviourScope.Message);
-        }
-
-        public void Listen(Action<byte[]> onReceive)
-        {
-            _receiver.Listen(arg =>
-                this.ManagedAction(container => { onReceive(arg); }, Container, BehaviourScope.Message));
-        }
-
-        public void StopListen()
-        {
-            this.ManagedAction(container => _receiver.StopListen(), Container, BehaviourScope.Service);
-        }
 
         public virtual void Start()
         {
-            this.ManagedAction(OnStart, BehaviourScope.Service);
+            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
         }
 
         protected abstract void OnStart();
 
         public virtual void Stop()
         {
-            this.ManagedAction(OnStop, BehaviourScope.Service);
+            this.ManagedActionWithContainer((x) => OnStop(), Container, BehaviourScope.Service);
         }
 
         protected abstract void OnStop();
+        public void Publish(MqMessage data)
+        {
+            this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
+        }
+
+        public void PublishRange(IEnumerable<MqMessage> dataRange)
+        {
+            this.ManagedActionWithContainer((x) =>
+            {
+                foreach (var dataEntry in dataRange)
+                {
+                    this.Publish(dataEntry);
+                }
+            }, Container, BehaviourScope.Service);
+        }
+
+        public void Listen(Action<MqMessage> onReceive)
+        {
+            this.ManagedActionWithContainer((x) =>
+            {
+                _receiver.Listen(arg =>
+                    this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
+            }, Container, BehaviourScope.Service);
+        }
+
+        public void StopListen()
+        {
+            this.ManagedActionWithContainer((x) => _receiver.StopListen(), Container ,BehaviourScope.Service);
+        }
     }
 }

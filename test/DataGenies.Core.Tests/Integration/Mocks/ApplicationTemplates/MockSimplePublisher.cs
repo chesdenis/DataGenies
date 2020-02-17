@@ -7,6 +7,7 @@ using DataGenies.Core.Publishers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
@@ -28,7 +29,10 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
             var testString = $"{this.Properties.ManagedParameter}TestString";
             
             var testData = Encoding.UTF8.GetBytes(testString);
-            this.Publish(testData);
+            this.Publish(new MqMessage()
+            {
+                Body = testData
+            });
             
             Properties.PublishedMessages.Add(testString);
         }

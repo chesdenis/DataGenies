@@ -4,6 +4,7 @@ using DataGenies.Core.Behaviours;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
@@ -26,34 +27,20 @@ namespace DataGenies.Core.Services
             WrapperBehaviours = wrapperBehaviours;
         }
          
-        public void Publish(byte[] data)
+        public void Publish(MqMessage data)
         {
-            this.ManagedAction((x) => _publisher.Publish(x), BehaviourScope.Message, data);
+            this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
         }
 
-        public void Publish(byte[] data, string routingKey)
+        public void PublishRange(IEnumerable<MqMessage> dataRange)
         {
-            this.ManagedAction((x) => _publisher.Publish(x, routingKey), BehaviourScope.Message, data);
-        }
-
-        public void Publish(byte[] data, IEnumerable<string> routingKeys)
-        {
-            this.ManagedAction((x) =>  _publisher.Publish(x, routingKeys), BehaviourScope.Message, data);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange)
-        {
-            this.ManagedAction((x) => _publisher.PublishRange(x), BehaviourScope.Message, dataRange);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
-        {
-            this.ManagedAction((x) =>  _publisher.PublishRange(x, routingKey), BehaviourScope.Message, dataRange);
-        }
-
-        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
-        {
-            this.ManagedAction((x) =>  _publisher.PublishTuples(x), BehaviourScope.Message, tuples);
+            this.ManagedAction(() =>
+            {
+                foreach (var dataEntry in dataRange)
+                {
+                    this.Publish(dataEntry);
+                }
+            }, BehaviourScope.Service);
         }
 
         public virtual void Start()

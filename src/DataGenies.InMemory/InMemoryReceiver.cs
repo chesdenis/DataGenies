@@ -10,7 +10,7 @@ namespace DataGenies.InMemory
         private readonly InMemoryMqBroker _broker;
         private readonly string _queueName;
          
-        private bool _isListening = false;
+        private bool _isListening;
 
         public InMemoryReceiver(InMemoryMqBroker broker, string queueName)
         {
@@ -18,7 +18,7 @@ namespace DataGenies.InMemory
             _queueName = queueName;
         }
 
-        public void Listen(Action<byte[]> onReceive)
+        public void Listen(Action<MqMessage> onReceive)
         {
             var relatedQueue = _broker.Model.Keys
                 .SelectMany(ss => _broker.Model[ss])
@@ -31,7 +31,7 @@ namespace DataGenies.InMemory
 
                 try
                 {
-                    onReceive(message.Body);
+                    onReceive(message);
                 }
                 catch (Exception)
                 {

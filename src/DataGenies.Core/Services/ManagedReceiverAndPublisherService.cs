@@ -5,10 +5,11 @@ using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverAndPublisherService : IPublisher, IReceiver, IManagedService, IRestartable
+    public abstract class ManagedReceiverAndPublisherService : IPublisher, IReceiver, IManagedService
     {
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
@@ -29,48 +30,7 @@ namespace DataGenies.Core.Services
             BehaviourOnExceptions = behaviourOnExceptions;
             WrapperBehaviours = wrapperBehaviours;
         }
-
-        public void Publish(byte[] data)
-        {
-            this.ManagedAction(() =>_publisher.Publish(data), BehaviourScope.Message);
-        }
-
-        public void Publish(byte[] data, string routingKey)
-        {
-            this.ManagedAction(() =>_publisher.Publish(data, routingKey), BehaviourScope.Message);
-        }
-
-        public void Publish(byte[] data, IEnumerable<string> routingKeys)
-        {
-            this.ManagedAction(() =>_publisher.Publish(data, routingKeys), BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange)
-        {
-            this.ManagedAction(() =>_publisher.PublishRange(dataRange), BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
-        {
-            this.ManagedAction(() =>_publisher.PublishRange(dataRange, routingKey), BehaviourScope.Message);
-        }
-
-        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
-        {
-            this.ManagedAction(() =>_publisher.PublishTuples(tuples), BehaviourScope.Message);
-        }
-
-        public void Listen(Action<byte[]> onReceive)
-        {
-            _receiver.Listen(arg =>
-                this.ManagedAction(() => { onReceive(arg); }, BehaviourScope.Message));
-        }
-
-        public void StopListen()
-        {
-            this.ManagedAction(() => _receiver.StopListen(), BehaviourScope.Service);
-        }
-
+        
         public virtual void Start()
         {
             this.ManagedAction(OnStart, BehaviourScope.Service);
@@ -84,5 +44,34 @@ namespace DataGenies.Core.Services
         }
 
         protected abstract void OnStop();
+        public void Listen(Action<MqMessage> onReceive)
+        {
+            this.ManagedAction(() =>
+            {
+                _receiver.Listen(arg =>
+                    this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
+            }, BehaviourScope.Service);
+        }
+
+        public void StopListen()
+        {
+            this.ManagedAction(() => _receiver.StopListen(), BehaviourScope.Service);
+        }
+
+        public void Publish(MqMessage data)
+        {
+            this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
+        }
+
+        public void PublishRange(IEnumerable<MqMessage> dataRange)
+        {
+            this.ManagedAction(() =>
+            {
+                foreach (var dataEntry in dataRange)
+                {
+                    this.Publish(dataEntry);
+                }
+            }, BehaviourScope.Service);
+        }
     }
 }

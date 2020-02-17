@@ -4,6 +4,7 @@ using DataGenies.Core.Behaviours;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
@@ -26,12 +27,16 @@ namespace DataGenies.Core.Services
             WrapperBehaviours = wrapperBehaviours;
         }
 
-        public void Listen(Action<byte[]> onReceive)
+        
+        public void Listen(Action<MqMessage> onReceive)
         {
-            _receiver.Listen(arg =>
-                this.ManagedAction(() => { onReceive(arg); }, BehaviourScope.Message));
+            this.ManagedAction(() =>
+            {
+                _receiver.Listen(arg =>
+                    this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
+            }, BehaviourScope.Service);
         }
- 
+
         public void StopListen()
         {
             this.ManagedAction(() => _receiver.StopListen(), BehaviourScope.Service);

@@ -19,10 +19,11 @@ namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
             var exceptionMessage = new MqExceptionMessage
             {
                 Body = originalMessage.Body,
-                Exception = exception
-            }.ToBytes();
+                Exception = exception,
+                RoutingKey = "Errors"
+            };
             
-            publisher.Publish(exceptionMessage, "Errors");
+            publisher.Publish(exceptionMessage);
         }
 
         public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Message;

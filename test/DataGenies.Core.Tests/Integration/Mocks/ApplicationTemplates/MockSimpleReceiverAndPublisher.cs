@@ -31,13 +31,14 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         {
             this.Listen((message) =>
             {
-                var testData = Encoding.UTF8.GetString(message);
+                var testData = Encoding.UTF8.GetString(message.Body);
                 ReceiverProperties.ReceivedMessages.Add(testData);
                 
                 var changedTestData = $"{testData}-changed!";
     
                 var bytes = Encoding.UTF8.GetBytes(changedTestData);
-                this.Publish(bytes);
+                message.Body = bytes;
+                this.Publish(message);
                 
                 PublisherProperties.PublishedMessages.Add(changedTestData);
             });

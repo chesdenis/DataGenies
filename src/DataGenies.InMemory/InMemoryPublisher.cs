@@ -8,8 +8,6 @@ namespace DataGenies.InMemory
 {
     public class InMemoryPublisher : IPublisher
     {
-        private const string _routingKey = "#";
-        
         private readonly InMemoryMqBroker _broker;
         private readonly string _exchangeName;
         
@@ -18,47 +16,32 @@ namespace DataGenies.InMemory
             _broker = broker;
             _exchangeName = exchangeName;
         }
-
-        public void Publish(byte[] data) => this.Publish(data, _routingKey);
         
-        public void Publish(byte[] data, string routingKey)
+        public void Publish(MqMessage message)
         {
-            if (!this._broker.Model[_exchangeName].ContainsKey(routingKey))
+            if (!this._broker.Model[_exchangeName].ContainsKey(message.RoutingKey))
             {
                 return;
             }
-
-            var contextQueues = this._broker.Model[_exchangeName][routingKey].ToArray();
+            
+            var contextQueues = this._broker.Model[_exchangeName][message.RoutingKey].ToArray();
             
             Array.ForEach(contextQueues, queue =>
             {
                 queue.Enqueue(new MqMessage
                 {
-                    Body = data,
-                    RoutingKey = routingKey
+                    Body = message.Body,
+                    RoutingKey = message.RoutingKey
                 });
             });
-         
         }
 
-        public void Publish(byte[] data, IEnumerable<string> routingKeys)
+        public void PublishRange(IEnumerable<MqMessage> dataRange)
         {
-            Array.ForEach(routingKeys.ToArray(), rk => { this.Publish(data, rk); });
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange)
-        {
-            Array.ForEach(dataRange.ToArray(), data => { this.Publish(data); });
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
-        {
-            Array.ForEach(dataRange.ToArray(), data => { this.Publish(data, routingKey); });
-        }
-
-        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
-        {
-            throw new NotImplementedException();
+            foreach (var dataEntry in dataRange)
+            {
+                this.Publish(dataEntry);
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
             this.Listen((message) =>
             {
                 Properties.ReceivedMessages.Add(
-                    Encoding.UTF8.GetString(message));
+                    Encoding.UTF8.GetString(message.Body));
             });
         }
  

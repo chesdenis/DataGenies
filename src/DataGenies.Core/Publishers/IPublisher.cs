@@ -9,14 +9,6 @@ namespace DataGenies.Core.Publishers
     {
         void Publish(MqMessage data);
 
-        void Publish(MqMessage data, string routingKey);
-
-        void Publish(MqMessage data, IEnumerable<string> routingKeys);
-        
         void PublishRange(IEnumerable<MqMessage> dataRange);
-
-        void PublishRange(IEnumerable<MqMessage> dataRange, string routingKey);
-
-        void PublishTuples(IEnumerable<Tuple<MqMessage, string>> tuples);
     }
 }

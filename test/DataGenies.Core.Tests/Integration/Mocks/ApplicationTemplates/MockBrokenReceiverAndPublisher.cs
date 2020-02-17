@@ -29,7 +29,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         {
             this.Listen((message) =>
             {
-                ReceiverProperties.ReceivedMessages.Add(message.FromBytes<string>());
+                ReceiverProperties.ReceivedMessages.Add(message.Body.FromBytes<string>());
                 throw new Exception("Something went wrong");
             });
         }

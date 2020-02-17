@@ -5,6 +5,7 @@ using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Wrappers;
+using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
@@ -31,49 +32,36 @@ namespace DataGenies.Core.Services
             BehaviourOnExceptions = behaviourOnExceptions;
             WrapperBehaviours = wrapperBehaviours;
         }
-
-        public void Publish(byte[] data)
+        
+        public void Publish(MqMessage data)
         {
-            this.ManagedAction(container =>_publisher.Publish(data), this.Container, BehaviourScope.Message);
+            this.ManagedActionWithMessage(x =>_publisher.Publish(x), data, BehaviourScope.Message);
         }
 
-        public void Publish(byte[] data, string routingKey)
+        public void PublishRange(IEnumerable<MqMessage> dataRange)
         {
-            this.ManagedAction(container => _publisher.Publish(data, routingKey), this.Container, BehaviourScope.Message);
-        }
-
-        public void Publish(byte[] data, IEnumerable<string> routingKeys)
-        {
-            this.ManagedAction(container => _publisher.Publish(data, routingKeys), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange)
-        {
-            this.ManagedAction(container => _publisher.PublishRange(dataRange), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishRange(IEnumerable<byte[]> dataRange, string routingKey)
-        {
-            this.ManagedAction(container =>  _publisher.PublishRange(dataRange, routingKey), this.Container, BehaviourScope.Message);
-        }
-
-        public void PublishTuples(IEnumerable<Tuple<byte[], string>> tuples)
-        {
-            this.ManagedAction(container => _publisher.PublishTuples(tuples), this.Container, BehaviourScope.Message);
+            this.ManagedActionWithContainer((x) =>
+            {
+                foreach (var dataEntry in dataRange)
+                {
+                    this.Publish(dataEntry);
+                }
+            }, Container, BehaviourScope.Service);
         }
 
         public virtual void Start()
         {
-            this.ManagedAction(OnStart, BehaviourScope.Service);
+            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
         }
 
         protected abstract void OnStart();
 
         public virtual void Stop()
         {
-            this.ManagedAction(OnStop, BehaviourScope.Service);
+            this.ManagedActionWithContainer((x)=>OnStop(), Container, BehaviourScope.Service);
         }
 
         protected abstract void OnStop();
+       
     }
 }

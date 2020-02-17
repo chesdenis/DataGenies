@@ -74,18 +74,21 @@ namespace DataGenies.Core.Extensions
         //     return retVal;
         // }
         
-        public static void ManagedAction(this IManagedService managedService, Action execute)
+        public static void ManagedAction(this IManagedService managedService, Action execute, BehaviourScope behaviourScope)
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
+                foreach (var beforeStart in managedService.BasicBehaviours
+                    .OfType<IBehaviorBeforeStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     beforeStart.Execute();
                 }
 
                 Action resultAction = execute;
 
-                foreach (var wrapper in managedService.WrapperBehaviours)
+                foreach (var wrapper in managedService.WrapperBehaviours
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     resultAction = wrapper.Wrap(wrapper.BehaviourAction, resultAction);
                 }
@@ -94,32 +97,38 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions)
+                foreach (var onException in managedService.BehaviourOnExceptions
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     onException.Execute(ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
+                foreach (var afterStart in managedService.BasicBehaviours
+                    .OfType<IBehaviourAfterStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     afterStart.Execute();
                 }
             }
         }
         
-        public static void ManagedActionWithMessage<T>(this IManagedService managedService, Action<T> execute, T arg) where T: MqMessage
+        public static void ManagedActionWithMessage<T>(this IManagedService managedService, Action<T> execute, T arg, BehaviourScope behaviourScope) where T: MqMessage
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
+                foreach (var beforeStart in managedService.BasicBehaviours
+                    .OfType<IBehaviorBeforeStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     beforeStart.Execute();
                 }
 
                 Action<T> resultAction = execute;
 
-                foreach (var wrapper in managedService.WrapperBehaviours)
+                foreach (var wrapper in managedService.WrapperBehaviours
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     resultAction = wrapper.WrapMessageHandling(wrapper.BehaviourActionWithMessage, resultAction, arg);
                 }
@@ -128,32 +137,37 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions)
+                foreach (var onException in managedService.BehaviourOnExceptions
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     onException.Execute(ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
+                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     afterStart.Execute();
                 }
             }
         }
         
-        public static void ManagedActionWithContainer<T>(this IManagedService managedService, Action<T> execute, T arg) where T: IContainer
+        public static void ManagedActionWithContainer<T>(this IManagedService managedService, Action<T> execute, T arg, BehaviourScope behaviourScope) where T: IContainer
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
+                foreach (var beforeStart in managedService.BasicBehaviours
+                    .OfType<IBehaviorBeforeStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     beforeStart.Execute();
                 }
 
                 Action<T> resultAction = execute;
 
-                foreach (var wrapper in managedService.WrapperBehaviours)
+                foreach (var wrapper in managedService.WrapperBehaviours
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     resultAction = wrapper.WrapContainerHandling(wrapper.BehaviourActionWithContainer, resultAction, arg);
                 }
@@ -162,14 +176,17 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions)
+                foreach (var onException in managedService.BehaviourOnExceptions
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     onException.Execute(ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
+                foreach (var afterStart in managedService.BasicBehaviours
+                    .OfType<IBehaviourAfterStart>()
+                    .Where(w=>w.BehaviourScope == behaviourScope))
                 {
                     afterStart.Execute();
                 }
