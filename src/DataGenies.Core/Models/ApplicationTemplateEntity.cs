@@ -6,7 +6,7 @@ namespace DataGenies.Core.Models
     {
         public ApplicationTemplateEntity()
         {
-            ApplicationInstance = new HashSet<ApplicationInstanceEntity>();
+            this.ApplicationInstance = new HashSet<ApplicationInstanceEntity>();
         }
 
         public int Id { get; set; }

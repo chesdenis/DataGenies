@@ -13,11 +13,12 @@ namespace DataGenies.Core.Models
         public int Id { get; set; }
         public int TemplateId { get; set; }
         public string Name { get; set;  }
-        public string ConfigJson { get; set;  }
+        
+        public string ParametersAsJson { get; set;  }
 
         public virtual ApplicationTemplateEntity TemplateEntity { get; set;  }
 
-        public virtual ICollection<BehaviourEntity> Behaviours { get; set; }
+        public virtual ICollection<BehaviourInstanceEntity> Behaviours { get; set; }
 
         public virtual ICollection<BindingEntity> IncomingBindings { get; set; }
         

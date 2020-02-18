@@ -1,4 +1,5 @@
-﻿using DataGenies.Core.Containers;
+﻿using System;
+using DataGenies.Core.Containers;
 using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
@@ -10,5 +11,7 @@ namespace DataGenies.Core.Behaviours
         void Execute(IContainer container);
 
         void Execute(MqMessage message);
+
+        void Execute(Exception exception);
     }
 }

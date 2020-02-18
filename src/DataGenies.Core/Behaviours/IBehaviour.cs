@@ -1,12 +1,19 @@
-﻿namespace DataGenies.Core.Behaviours
+﻿using System;
+using DataGenies.Core.Containers;
+using DataGenies.InMemory;
+
+namespace DataGenies.Core.Behaviours
 {
     public interface IBehaviour
     {
-        string Name { get; set; }
-        string Description { get; set; }
-        
-        BehaviourScope BehaviourScope { get; set; }
+        void Execute();
+    
+        void Execute(IContainer container);
 
-        BehaviourType BehaviourType { get; set; }
+        void Execute(MqMessage message);
+
+        void Execute(Exception exception);
+        
+        void Execute(IContainer arg, Exception exception);
     }
 }

@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.Core", "src\DataGenies.Core\DataGenies.Core.csproj", "{DEE76808-7FCD-4495-B582-8E4F37918E69}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6F4E1D96-D0F3-44B0-ABD1-6435D364152D}"
+ProjectSection(SolutionItems) = preProject
+	src\Settings.StyleCop = src\Settings.StyleCop
+EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}"
 EndProject
