@@ -9,25 +9,20 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedPublisherServiceWithContainer : IPublisher, IManagedServiceWithContainer
+    public abstract class ManagedPublisherServiceWithContainer : ManagedServiceWithContainer, IPublisher 
     {
         private readonly IPublisher _publisher;
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
-
-        protected ManagedPublisherServiceWithContainer(
-            IContainer container,
-            IPublisher publisher, 
-            IEnumerable<BehaviourTemplate> behaviourTemplates,
-            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-        {
-            Container = container;
-            
-            _publisher = publisher;
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
-        }
         
+        protected ManagedPublisherServiceWithContainer(
+            IContainer container, 
+            IPublisher publisher,
+            IEnumerable<BehaviourTemplate> behaviourTemplates, 
+            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) 
+            : base(container, behaviourTemplates, wrapperBehaviours)
+        {
+            _publisher = publisher;
+        }
+
         public void Publish(MqMessage data)
         {
             this.ManagedActionWithMessage(x =>_publisher.Publish(x), data, BehaviourScope.Message);
@@ -43,21 +38,5 @@ namespace DataGenies.Core.Services
                 }
             }, Container, BehaviourScope.Service);
         }
-
-        public virtual void Start()
-        {
-            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStart();
-
-        public virtual void Stop()
-        {
-            this.ManagedActionWithContainer((x)=>OnStop(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStop();
-
-        public IContainer Container { get; }
     }
 }

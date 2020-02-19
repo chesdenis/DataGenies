@@ -1,5 +1,6 @@
 ﻿using System;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Services;
 using DataGenies.Core.Wrappers;
 using DataGenies.InMemory;
 
@@ -7,9 +8,9 @@ namespace DataGenies.Core.Behaviours
 {
     public abstract class WrapperBehaviourTemplate : IWrapperBehaviourTemplate 
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
         public abstract BehaviourScope BehaviourScope { get; set; }
+
+        public IManagedService ManagedService { get; set; }
 
         public Action Wrap(Action<Action> wrapperAction, Action executeAction)
         {

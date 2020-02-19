@@ -1,12 +1,15 @@
 ﻿using System;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Services;
 using DataGenies.InMemory;
 
 namespace DataGenies.Core.Wrappers
 {
     public interface IWrapperBehaviourTemplate
     {
+        public IManagedService ManagedService { get; set; }
+        
         Action Wrap(Action<Action> wrapperAction, Action executeAction);
 
         Action<T> WrapMessageHandling<T>(Action<Action<T>, T> behaviourActionWithMessage,

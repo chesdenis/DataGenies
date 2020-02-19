@@ -8,22 +8,19 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedPublisherService : IPublisher, IManagedService
+    public abstract class ManagedPublisherService : ManagedService, IPublisher 
     {
         private readonly IPublisher _publisher;
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
 
         protected ManagedPublisherService(
-            IPublisher publisher, 
+            IPublisher publisher,
             IEnumerable<BehaviourTemplate> behaviourTemplates,
-            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) 
+            : base(behaviourTemplates, wrapperBehaviours)
         {
             _publisher = publisher;
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
         }
-         
+
         public void Publish(MqMessage data)
         {
             this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
@@ -39,19 +36,5 @@ namespace DataGenies.Core.Services
                 }
             }, BehaviourScope.Service);
         }
-
-        public virtual void Start()
-        {
-            this.ManagedAction(OnStart, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStart();
-
-        public virtual void Stop()
-        {
-            this.ManagedAction(OnStop, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStop();
     }
 }

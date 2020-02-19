@@ -5,21 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
-using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
-using DataGenies.Core.Tests.Integration.Mocks.Converters;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.Core.Wrappers;
 using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration.Converters
 {
     [TestClass]
-    public class WrapperBehavioursTests : BaseIntegrationTest
+    public class WrapperBehaviourTemplatesTests : BaseIntegrationTest
     {
         [TestInitialize]
         public override void Initialize()
@@ -29,7 +25,7 @@ namespace DataGenies.Core.Tests.Integration.Converters
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MessagePublisher),"SampleAppPublisherTemplate");
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver), "SampleAppReceiverTemplate");
     
-            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(ConvertMessagesBehaviour), "SampleBehaviourTemplate");
+            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(ConvertMessagesDuringRunBehaviour), "SampleBehaviourTemplate");
         }
     
         [TestMethod]
@@ -100,7 +96,7 @@ namespace DataGenies.Core.Tests.Integration.Converters
             }
         }
     
-        private class ConvertMessagesBehaviour : WrapperBehaviourTemplate
+        private class ConvertMessagesDuringRunBehaviour : WrapperBehaviourTemplate
         {
             public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Message;
     
@@ -113,6 +109,35 @@ namespace DataGenies.Core.Tests.Integration.Converters
     
                 action(message);
             }
+        }
+        
+        private class HandleErroredMessagesBehavior : BehaviourTemplate
+        {
+            // public override void Execute(MqMessage message, Exception exception)
+            // {
+            //     var exceptionMessage = new MqExceptionMessage
+            //     {
+            //         Body = originalMessage.Body,
+            //         Exception = exception,
+            //         RoutingKey = "Errors"
+            //     };
+            //     
+            // }
+            //
+            // public override void Execute(IContainer arg, Exception exception)
+            // {
+            //     var publisher = arg.Resolve<IPublisher>();
+            //     var originalMessage = arg.Resolve<MqMessage>();
+            //
+            //     var exceptionMessage = new MqExceptionMessage
+            //     {
+            //         Body = originalMessage.Body,
+            //         Exception = exception,
+            //         RoutingKey = "Errors"
+            //     };
+            //
+            //     publisher.Publish(exceptionMessage);
+            // }
         }
     }
 }

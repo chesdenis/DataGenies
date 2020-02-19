@@ -24,10 +24,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
          
         protected override void OnStart()
         {
-            this.Listen((message) =>
-            {
-                throw new Exception("Something went wrong");
-            });
+            throw new Exception("Something went wrong");
         }
  
         protected override void OnStop()

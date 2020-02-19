@@ -1,23 +1,23 @@
 ﻿using System;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Services;
 using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
 {
     public abstract class BehaviourTemplate : IBehaviourTemplate
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        
         public BehaviourScope BehaviourScope { get; set; }
         
         public BehaviourType BehaviourType { get; set; }
+
+        public IManagedService ManagedService { get; set; }
 
         public virtual void Execute()
         {
             throw new NotImplementedException();
         }
-
+        
         public virtual void Execute(IContainer container)
         {
             throw new NotImplementedException();

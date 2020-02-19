@@ -3,6 +3,7 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
@@ -14,7 +15,9 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimpleReceiverAndPublisher : ManagedReceiverAndPublisherServiceWithContainer
     {
-        public MockSimpleReceiverAndPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
+        public MockSimpleReceiverAndPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+            IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
@@ -31,13 +34,11 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
                 var testData = Encoding.UTF8.GetString(message.Body);
                 ReceiverProperties.ReceivedMessages.Add(testData);
                 
-                var changedTestData = $"{testData}-changed!";
-    
-                var bytes = Encoding.UTF8.GetBytes(changedTestData);
+                var bytes = Encoding.UTF8.GetBytes(testData);
                 message.Body = bytes;
                 this.Publish(message);
-                
-                PublisherProperties.PublishedMessages.Add(changedTestData);
+
+                PublisherProperties.PublishedMessages.Add(message.Body.FromBytes<string>());
             });
         }
  

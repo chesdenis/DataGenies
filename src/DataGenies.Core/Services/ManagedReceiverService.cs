@@ -8,21 +8,17 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverService : IReceiver, IRestartable, IManagedService
+    public abstract class ManagedReceiverService : ManagedService, IReceiver
     {
         private readonly IReceiver _receiver;
         
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
-
         protected ManagedReceiverService(
             IReceiver receiver,    
             IEnumerable<BehaviourTemplate> behaviourTemplates,
             IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            : base(behaviourTemplates, wrapperBehaviours)
         {
             _receiver = receiver;
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
         }
 
         
@@ -39,19 +35,5 @@ namespace DataGenies.Core.Services
         {
             this.ManagedAction(() => _receiver.StopListen(), BehaviourScope.Service);
         }
-
-        public virtual void Start()
-        {
-            this.ManagedAction(OnStart, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStart();
-
-        public virtual void Stop()
-        {
-            this.ManagedAction(OnStop, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStop();
     }
 }

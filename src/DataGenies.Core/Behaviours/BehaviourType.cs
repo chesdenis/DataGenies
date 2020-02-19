@@ -3,8 +3,8 @@
     public enum BehaviourType
     {
         Unspecified,
-        BeforeStart,
-        AfterStart,
+        BeforeRun,
+        AfterRun,
         OnException
     }
 }

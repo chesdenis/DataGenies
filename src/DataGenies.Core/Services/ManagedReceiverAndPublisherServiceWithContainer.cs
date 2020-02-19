@@ -11,45 +11,23 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverAndPublisherServiceWithContainer : IPublisher, IReceiver, IManagedService,
-        IRestartable
+    public abstract class ManagedReceiverAndPublisherServiceWithContainer : ManagedServiceWithContainer, IPublisher, IReceiver
     {
-        protected readonly IContainer Container;
-        
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
-        
+      
         protected ManagedReceiverAndPublisherServiceWithContainer(
             IContainer container,
             IPublisher publisher, 
             IReceiver receiver, 
             IEnumerable<BehaviourTemplate> behaviourTemplates,
             IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            : base(container, behaviourTemplates, wrapperBehaviours)
         {
-            Container = container;
-            
             _receiver = receiver;
             _publisher = publisher;
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
         }
-
-
-        public virtual void Start()
-        {
-            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStart();
-
-        public virtual void Stop()
-        {
-            this.ManagedActionWithContainer((x) => OnStop(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStop();
+ 
         public void Publish(MqMessage data)
         {
             this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);

@@ -7,14 +7,13 @@ using DataGenies.Core.Publishers;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.Core.Wrappers;
 using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataGenies.Core.Tests.Integration.Behaviours
 {
     [TestClass]
-    public class BeforeStartBehaviourTests : BaseIntegrationTest
+    public class BehaviourTemplatesTests : BaseIntegrationTest
     {
         [TestInitialize]
         public override void Initialize()
@@ -24,11 +23,11 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MessageWithPrefixPublisher),"SampleAppPublisherTemplate");
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver), "SampleAppReceiverTemplate");
             
-            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(MarkMessagesWithPrefixBehaviour), "SampleBehaviourTemplate");
+            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(BeforeStartChangeManagedParameterBehaviour), "SampleBehaviourTemplate");
         }
         
         [TestMethod]
-        public void BeforeStartBehaviourShouldAffectApplication()
+        public void BeforeRunBehaviourShouldChangeData()
         {
             // Arrange
             var publisherId = 1;
@@ -37,7 +36,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId)
                 .CreateBehaviourTemplate("SampleBehaviourTemplate", "2019.1.1")
-                .CreateBehaviourInstance("SampleBehaviour", BehaviourType.BeforeStart, BehaviourScope.Service)
+                .CreateBehaviourInstance("SampleBehaviour", BehaviourType.BeforeRun, BehaviourScope.Service)
                 .AssignBehaviour();
 
             var receiverId = 2;
@@ -71,6 +70,56 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             Assert.AreEqual("PrefixTestString", receiverProperties.ReceivedMessages[0]);
         }
         
+        [TestMethod]
+        public void AfterStartBehaviourShouldAffectFlow()
+        {
+            // Arrange
+            var publisherId = 1;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SampleAppPublisherTemplate",
+                    "2019.1.1")
+                .CreateApplicationInstance("SampleAppPublisher", publisherId)
+                .CreateBehaviourTemplate("SampleBehaviourTemplate", "2019.1.1")
+                .CreateBehaviourInstance("SampleBehaviour", BehaviourType.BeforeRun, BehaviourScope.Service)
+                .AssignBehaviour();
+
+            var receiverId = 2;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SampleAppReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+            
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "SampleAppPublisher", 
+                "SampleAppReceiver", "#");
+            
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverId);
+        
+            // Act
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverId);
+            
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await Orchestrator.Stop(receiverId);
+            }).Wait();
+
+            // Assert
+            var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
+            var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+            
+            Assert.AreEqual("PrefixTestString", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual("PrefixTestString", receiverProperties.ReceivedMessages[0]);
+        }
+
+        [TestMethod]
+        public void OnExceptionBehaviourShouldApplyAdditionalLogic()
+        {
+            
+        }
+
         private class MessageWithPrefixPublisher : MockSimplePublisher
         {
             public MessageWithPrefixPublisher(IContainer container, IPublisher publisher,
@@ -94,7 +143,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             }
         }
         
-        private class MarkMessagesWithPrefixBehaviour : BehaviourTemplate
+        private class BeforeStartChangeManagedParameterBehaviour : BehaviourTemplate
         {
             public override void Execute(IContainer arg)
             {

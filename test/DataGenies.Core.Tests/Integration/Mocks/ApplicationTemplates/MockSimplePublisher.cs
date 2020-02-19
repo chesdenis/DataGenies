@@ -3,6 +3,7 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
@@ -25,12 +26,12 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         
         protected override void OnStart()
         {
-            throw new System.NotImplementedException();
+            this.Publish(new MqMessage(){ Body = "TestMessage".ToBytes(), RoutingKey = "#"});
         }
  
         protected override void OnStop()
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }

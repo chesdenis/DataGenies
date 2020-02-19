@@ -22,7 +22,6 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             sut.GetAssemblyTypes(Arg.Any<string>()).Returns(new List<Type>()
             {
                 typeof(MockBrokenReceiver),
-                typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
                 // typeof(MockRevertTextAfterReceiveConverter),
@@ -44,7 +43,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             sut.GetAssemblyTypes(Arg.Any<string>()).Returns(new List<Type>()
             {
                 typeof(MockBrokenReceiver),
-                typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
+                //typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
                 typeof(MockBehaviour),

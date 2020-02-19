@@ -9,24 +9,18 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverServiceWithContainer : IReceiver, IManagedServiceWithContainer
+    public abstract class ManagedReceiverServiceWithContainer : ManagedServiceWithContainer, IReceiver
     {
         private readonly IReceiver _receiver;
-        
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
         
         protected ManagedReceiverServiceWithContainer(
             IContainer container,
             IReceiver receiver,    
             IEnumerable<BehaviourTemplate> behaviourTemplates,
             IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            : base(container, behaviourTemplates, wrapperBehaviours)
         {
-            Container = container;
-            
             _receiver = receiver;
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
         }
 
         public void Listen(Action<MqMessage> onReceive)
@@ -43,20 +37,5 @@ namespace DataGenies.Core.Services
         {
             this.ManagedActionWithContainer(container => _receiver.StopListen(), Container, BehaviourScope.Service);
         }
-
-        public virtual void Start()
-        {
-            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStart();
-
-        public virtual void Stop()
-        {
-            this.ManagedActionWithContainer((x) => OnStop(), Container, BehaviourScope.Service);
-        }
-
-        protected abstract void OnStop();
-        public IContainer Container { get; }
     }
 }
