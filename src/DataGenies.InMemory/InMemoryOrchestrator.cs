@@ -61,15 +61,41 @@ namespace DataGenies.InMemory
 
             var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
 
-            var behavioursTypes = applicationInstanceInfo.Behaviours
-                .Select(s => this._behaviourTemplatesScanner.FindType(s.TemplateEntity))
-                .ToArray();
-            var allBehaviours = behavioursTypes.Select(Activator.CreateInstance).ToArray();
-            var behaviours = allBehaviours.Where(w => w.GetType().IsSubclassOf(typeof(BehaviourTemplate)))
-                .Select(s => (BehaviourTemplate)s).ToArray();
-            var wrapperBehaviours = allBehaviours.Where(w => w.GetType().IsSubclassOf(typeof(WrapperBehaviourTemplate)))
-                .Select(s => (WrapperBehaviourTemplate)s).ToArray();
+            var behaviours = applicationInstanceInfo.Behaviours
+                .Select(
+                    s =>
+                    {
+                        var type = this._behaviourTemplatesScanner.FindType(s.TemplateEntity);
+                        var instance = Activator.CreateInstance(type);
 
+                        if (type.IsSubclassOf(typeof(BehaviourTemplate)))
+                        {
+                            var templateInstance = (BehaviourTemplate)instance;
+                            templateInstance.BehaviourScope = s.BehaviourScope;
+                            templateInstance.BehaviourType = s.BehaviourType;
+                            return templateInstance;
+                        }
+
+                        return null;
+                    }).Where(s=> s != null).ToArray();
+            
+            var wrapperBehaviours = applicationInstanceInfo.Behaviours
+                .Select(
+                    s =>
+                    {
+                        var type = this._behaviourTemplatesScanner.FindType(s.TemplateEntity);
+                        var instance = Activator.CreateInstance(type);
+
+                        if (type.IsSubclassOf(typeof(WrapperBehaviourTemplate)))
+                        {
+                            var templateInstance = (WrapperBehaviourTemplate)instance;
+                            templateInstance.BehaviourScope = s.BehaviourScope;
+                            return templateInstance;
+                        }
+
+                        return null;
+                    }).Where(s=> s != null).ToArray();
+             
             var managedApplication = this._managedServiceBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
