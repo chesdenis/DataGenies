@@ -78,7 +78,7 @@ namespace DataGenies.Core.Extensions
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours
+                foreach (var beforeStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
                     beforeStart.Execute();
@@ -96,15 +96,15 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                foreach (var onException in managedService.BehaviourTemplates
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
                     onException.Execute(ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours
+                foreach (var afterStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     afterStart.Execute();
@@ -116,7 +116,7 @@ namespace DataGenies.Core.Extensions
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours
+                foreach (var beforeStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
                     beforeStart.Execute();
@@ -134,15 +134,15 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                foreach (var onException in managedService.BehaviourTemplates
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     onException.Execute(ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours
+                foreach (var afterStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     afterStart.Execute();
@@ -154,7 +154,7 @@ namespace DataGenies.Core.Extensions
         {
             try
             {
-                foreach (var beforeStart in managedService.BasicBehaviours
+                foreach (var beforeStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeStart))
                 {
                     beforeStart.Execute(arg);
@@ -172,15 +172,15 @@ namespace DataGenies.Core.Extensions
             }
             catch (Exception ex)
             {
-                foreach (var onException in managedService.BehaviourOnExceptions
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                foreach (var onException in managedService.BehaviourTemplates
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
                     onException.Execute(arg, ex);
                 }
             }
             finally
             {
-                foreach (var afterStart in managedService.BasicBehaviours
+                foreach (var afterStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterStart))
                 {
                     afterStart.Execute(arg);

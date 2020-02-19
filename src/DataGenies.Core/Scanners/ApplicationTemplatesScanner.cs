@@ -27,9 +27,8 @@ namespace DataGenies.Core.Scanners
 
         public Type FindType(ApplicationTemplateEntity applicationTemplateEntity)
         {
-            var applicationTypeInfo = applicationTemplateEntity;
             var allTemplates = this.ScanTemplates();
-            var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTypeInfo));
+            var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTemplateEntity));
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
 
             return templateType;

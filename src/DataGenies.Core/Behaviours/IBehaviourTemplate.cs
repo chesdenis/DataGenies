@@ -4,7 +4,7 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
 {
-    public interface IBehaviour
+    public interface IBehaviourTemplate
     {
         void Execute();
     
@@ -14,6 +14,8 @@ namespace DataGenies.Core.Behaviours
 
         void Execute(Exception exception);
         
-        void Execute(IContainer arg, Exception exception);
+        void Execute(IContainer container, Exception exception);
+        
+        void Execute(MqMessage message, Exception exception);
     }
 }

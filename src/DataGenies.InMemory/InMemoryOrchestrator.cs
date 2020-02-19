@@ -9,6 +9,7 @@ using DataGenies.Core.Orchestrators;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
 using DataGenies.Core.Wrappers;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DataGenies.InMemory
 {
@@ -18,18 +19,19 @@ namespace DataGenies.InMemory
 
         private readonly ISchemaDataContext _schemaDataContext;
         private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
-        private readonly IApplicationBehavioursScanner _applicationBehavioursScanner;
+        private readonly IBehaviourTemplatesScanner _behaviourTemplatesScanner;
        
         private readonly ManagedServiceBuilder _managedServiceBuilder;
         
         public InMemoryOrchestrator(ISchemaDataContext schemaDataContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
-            IApplicationBehavioursScanner applicationBehavioursScanner,
+            IBehaviourTemplatesScanner behaviourTemplatesScanner,
             ManagedServiceBuilder managedServiceBuilder)
         {
             _schemaDataContext = schemaDataContext;
+            
             _applicationTemplatesScanner = applicationTemplatesScanner;
-            _applicationBehavioursScanner = applicationBehavioursScanner;
+            _behaviourTemplatesScanner = behaviourTemplatesScanner;
         
             _managedServiceBuilder = managedServiceBuilder;
            
@@ -56,36 +58,25 @@ namespace DataGenies.InMemory
         {
             var applicationInstanceInfo =
                 this._schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
-            
-            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
-            var behaviours =
-                this._applicationBehavioursScanner.GetBehavioursInstances(applicationInstanceInfo.Behaviours).ToList();
 
-            var basicBehaviours = behaviours
-                .Where(w => 
-                    w.BehaviourType == BehaviourType.AfterStart 
-                    | 
-                    w.BehaviourType == BehaviourType.BeforeStart)
-                .OfType<IBasicBehaviour>();
-            
-            var wrapperBehaviours = behaviours
-                .Where(w => 
-                    w.BehaviourType == BehaviourType.Wrapper)
-                .OfType<IWrapperBehaviour>();
-            
-            var onExceptionBehaviours = behaviours
-                .Where(w => 
-                    w.BehaviourType == BehaviourType.Wrapper)
-                .OfType<IBehaviourOnException>();
-          
+            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
+
+            var behavioursTypes = applicationInstanceInfo.Behaviours
+                .Select(s => this._behaviourTemplatesScanner.FindType(s.TemplateEntity))
+                .ToArray();
+            var allBehaviours = behavioursTypes.Select(Activator.CreateInstance).ToArray();
+            var behaviours = allBehaviours.Where(w => w.GetType().IsSubclassOf(typeof(BehaviourTemplate)))
+                .Select(s => (BehaviourTemplate)s).ToArray();
+            var wrapperBehaviours = allBehaviours.Where(w => w.GetType().IsSubclassOf(typeof(WrapperBehaviourTemplate)))
+                .Select(s => (WrapperBehaviourTemplate)s).ToArray();
+
             var managedApplication = this._managedServiceBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
-                .UsingBasicBehaviours(basicBehaviours)
+                .UsingBehaviours(behaviours)
                 .UsingWrappersBehaviours(wrapperBehaviours)
-                .UsingOnExceptionBehaviours(onExceptionBehaviours)
-                .Build(); 
-            
+                .Build();
+
             _instancesInMemory[applicationInstanceId] = managedApplication;
 
             return Task.CompletedTask;

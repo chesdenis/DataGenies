@@ -6,7 +6,8 @@ namespace DataGenies.Core.Models
     {
         IQueryable<ApplicationTemplateEntity> ApplicationTemplates { get; }
         IQueryable<ApplicationInstanceEntity> ApplicationInstances { get; }
-        IQueryable<BehaviourEntity> Behaviours { get; }
+        IQueryable<BehaviourTemplateEntity> BehaviourTemplates { get; }
+        IQueryable<BehaviourInstanceEntity> BehaviourInstances { get; }
         IQueryable<BindingEntity> Bindings { get; }
     }
 }

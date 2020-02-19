@@ -8,41 +8,39 @@ using DataGenies.Core.Repositories;
 
 namespace DataGenies.Core.Scanners
 {
-    public class BehavioursScanner : IApplicationBehavioursScanner
+    public class BehavioursTemplatesScanner : IBehaviourTemplatesScanner
     {
         private readonly DataGeniesOptions _options;
         private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IAssemblyScanner _assemblyScanner;
 
-        public BehavioursScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyScanner assemblyScanner)
+        public BehavioursTemplatesScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyScanner assemblyScanner)
         {
             _options = options;
             _fileSystemRepository = fileSystemRepository;
             _assemblyScanner = assemblyScanner;
         }
         
-        public IEnumerable<BehaviourEntity> ScanBehaviours()
+        public IEnumerable<BehaviourTemplateEntity> ScanTemplates()
         {
             return _options.DropFolderOptions.UseZippedPackages ? this.ScanInsideZippedPackages() : this.ScanAsRegularPackages();
         }
-
-        public IEnumerable<IBehaviour> GetBehavioursInstances(IEnumerable<BehaviourEntity> behaviours)
+        
+        public Type FindType(BehaviourTemplateEntity behaviourTemplateEntity)
         {
-            var allBehaviours = this.ScanBehaviours();
-            var matchedBehaviours = allBehaviours
-                .Where(w => behaviours.Any(c => c.IsMatch(w)));
-            return (IEnumerable<IBehaviour>)matchedBehaviours
-                .Select(s => 
-                    Activator.CreateInstance(
-                        Assembly.LoadFile(s.AssemblyPath).GetType(s.Name, true)));
-        }
+            var allTemplates = this.ScanTemplates();
+            var matchTemplate = allTemplates.First(f => f.IsMatch(behaviourTemplateEntity));
+            var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
 
-        private IEnumerable<BehaviourEntity> ScanInsideZippedPackages()
+            return templateType;
+        }
+ 
+        private IEnumerable<BehaviourTemplateEntity> ScanInsideZippedPackages()
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<BehaviourEntity> ScanAsRegularPackages()
+        private IEnumerable<BehaviourTemplateEntity> ScanAsRegularPackages()
         {
             var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
 
@@ -52,7 +50,7 @@ namespace DataGenies.Core.Scanners
 
                 foreach (var appTypeInfo in types)
                 {
-                    yield return new BehaviourEntity
+                    yield return new BehaviourTemplateEntity
                     {
                         Name = appTypeInfo.TemplateName,
                         Version = appTypeInfo.AssemblyVersion,

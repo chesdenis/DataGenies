@@ -5,7 +5,7 @@ using DataGenies.Core.Models;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
-using DataGenies.Core.Tests.Integration.Mocks.Converters;
+ 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
@@ -25,8 +25,8 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
-                typeof(MockRevertTextAfterReceiveConverter),
-                typeof(MockRevertTextBeforePublishConverter)
+                // typeof(MockRevertTextAfterReceiveConverter),
+                // typeof(MockRevertTextBeforePublishConverter)
             });
             
             // Act
@@ -48,12 +48,12 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
                 typeof(MockBehaviour),
-                typeof(MockRevertTextAfterReceiveConverter),
-                typeof(MockRevertTextBeforePublishConverter)
+                // typeof(MockRevertTextAfterReceiveConverter),
+                // typeof(MockRevertTextBeforePublishConverter)
             });
             
             // Act
-            var applicationTemplates = sut.ScanBehaviours("path to asm");
+            var applicationTemplates = sut.ScanBehaviourTemplates("path to asm");
 
             // Assert
             Assert.AreEqual(1, applicationTemplates.Count());

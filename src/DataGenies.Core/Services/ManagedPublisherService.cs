@@ -11,19 +11,16 @@ namespace DataGenies.Core.Services
     public abstract class ManagedPublisherService : IPublisher, IManagedService
     {
         private readonly IPublisher _publisher;
-        public IEnumerable<IBasicBehaviour> BasicBehaviours { get; }
-        public IEnumerable<IBehaviourOnException> BehaviourOnExceptions { get; }
-        public IEnumerable<IWrapperBehaviour> WrapperBehaviours { get; }
+        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
+        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
 
         protected ManagedPublisherService(
             IPublisher publisher, 
-            IEnumerable<IBasicBehaviour> basicBehaviours,
-            IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours)
+            IEnumerable<BehaviourTemplate> behaviourTemplates,
+            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
         {
             _publisher = publisher;
-            BasicBehaviours = basicBehaviours;
-            BehaviourOnExceptions = behaviourOnExceptions;
+            BehaviourTemplates = behaviourTemplates;
             WrapperBehaviours = wrapperBehaviours;
         }
          

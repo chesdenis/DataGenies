@@ -13,22 +13,19 @@ namespace DataGenies.Core.Services
     {
         private readonly IReceiver _receiver;
         
-        public IEnumerable<IBasicBehaviour> BasicBehaviours { get; }
-        public IEnumerable<IBehaviourOnException> BehaviourOnExceptions { get; }
-        public IEnumerable<IWrapperBehaviour> WrapperBehaviours { get; }
+        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
+        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
         
         protected ManagedReceiverServiceWithContainer(
             IContainer container,
             IReceiver receiver,    
-            IEnumerable<IBasicBehaviour> basicBehaviours,
-            IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours)
+            IEnumerable<BehaviourTemplate> behaviourTemplates,
+            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
         {
             Container = container;
             
             _receiver = receiver;
-            BasicBehaviours = basicBehaviours;
-            BehaviourOnExceptions = behaviourOnExceptions;
+            BehaviourTemplates = behaviourTemplates;
             WrapperBehaviours = wrapperBehaviours;
         }
 

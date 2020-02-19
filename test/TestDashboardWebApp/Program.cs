@@ -23,29 +23,29 @@ namespace TestDashboardWebApp
 
         private static void BuildData()
         {
-            var inMemorySchemaContext = new InMemorySchemaDataContext();
-
-            var sampleAppTemplate = new ApplicationTemplateEntity
-            {
-                Id = 1,
-                Name = "SampleAppTemplate",
-                Version = "2019.1.1",
-                AssemblyPath = string.Empty,
-                ConfigTemplateJson = "{}"
-            };
-            var sampleAppInstance = new ApplicationInstanceEntity
-            {
-                Id = 1,
-                Name = "SampleAppInstance",
-                ConfigJson = "{}",
-                IncomingBindings = new List<BindingEntity>(),
-                OutcomingBindings = new List<BindingEntity>()
-            };
-            sampleAppInstance.TemplateEntity = sampleAppTemplate;
-            sampleAppInstance.TemplateId = sampleAppTemplate.Id;
-
-            inMemorySchemaContext.ApplicationTemplates.Add(sampleAppTemplate);
-            inMemorySchemaContext.ApplicationInstances.Add(sampleAppInstance);
+            // var inMemorySchemaContext = new InMemorySchemaDataContext();
+            //
+            // var sampleAppTemplate = new ApplicationTemplateEntity
+            // {
+            //     Id = 1,
+            //     Name = "SampleAppTemplate",
+            //     Version = "2019.1.1",
+            //     AssemblyPath = string.Empty,
+            //     ConfigTemplateJson = "{}"
+            // };
+            // var sampleAppInstance = new ApplicationInstanceEntity
+            // {
+            //     Id = 1,
+            //     Name = "SampleAppInstance",
+            //     ConfigJson = "{}",
+            //     IncomingBindings = new List<BindingEntity>(),
+            //     OutcomingBindings = new List<BindingEntity>()
+            // };
+            // sampleAppInstance.TemplateEntity = sampleAppTemplate;
+            // sampleAppInstance.TemplateId = sampleAppTemplate.Id;
+            //
+            // inMemorySchemaContext.ApplicationTemplates.Add(sampleAppTemplate);
+            // inMemorySchemaContext.ApplicationInstances.Add(sampleAppInstance);
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

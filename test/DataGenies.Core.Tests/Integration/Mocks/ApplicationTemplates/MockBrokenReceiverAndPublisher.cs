@@ -15,10 +15,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockBrokenReceiverAndPublisher : ManagedReceiverAndPublisherServiceWithContainer
     {
-        public MockBrokenReceiverAndPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
-            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, receiver, basicBehaviours,
-            behaviourOnExceptions, wrapperBehaviours)
+        public MockBrokenReceiverAndPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }

@@ -13,14 +13,11 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimpleReceiver : ManagedReceiverServiceWithContainer
     {
-        public MockSimpleReceiver(IContainer container, IReceiver receiver,
-            IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, receiver, basicBehaviours,
-            behaviourOnExceptions, wrapperBehaviours)
+        public MockSimpleReceiver(IContainer container, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, receiver, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }
-        
+
         private MockReceiverProperties Properties => this.Container.Resolve<MockReceiverProperties>();
         
         protected override void OnStart()

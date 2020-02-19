@@ -8,6 +8,9 @@ ProjectSection(SolutionItems) = preProject
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{6BC2E7D6-D1C6-469E-A1AD-13FFC68CB71A}"
+ProjectSection(SolutionItems) = preProject
+	src\Settings.StyleCop = src\Settings.StyleCop
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDashboardWebApp", "test\TestDashboardWebApp\TestDashboardWebApp.csproj", "{250C9F5E-C733-4BFF-9B46-96C23E4FC8DD}"
 EndProject

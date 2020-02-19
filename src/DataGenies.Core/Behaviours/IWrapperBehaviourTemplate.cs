@@ -5,7 +5,7 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Wrappers
 {
-    public interface IWrapperBehaviour : IBehaviour
+    public interface IWrapperBehaviourTemplate
     {
         Action Wrap(Action<Action> wrapperAction, Action executeAction);
 

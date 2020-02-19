@@ -24,7 +24,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MessageWithPrefixPublisher),"SampleAppPublisherTemplate");
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver), "SampleAppReceiverTemplate");
             
-            Behaviours.Add("SampleBehaviour", new MarkMessagesWithPrefixBehaviour());
+            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(MarkMessagesWithPrefixBehaviour), "SampleBehaviourTemplate");
         }
         
         [TestMethod]
@@ -33,12 +33,13 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             // Arrange
             var publisherId = 1;
             InMemorySchemaDataBuilder.CreateApplicationTemplate(
-                    "SampleAppPublisherTemplate", 
+                    "SampleAppPublisherTemplate",
                     "2019.1.1")
                 .CreateApplicationInstance("SampleAppPublisher", publisherId)
-                .RegisterBehaviour("SampleBehaviour", "2019.1.1")
-                .ApplyBehaviour();
-        
+                .CreateBehaviourTemplate("SampleBehaviourTemplate", "2019.1.1")
+                .CreateBehaviourInstance("SampleBehaviour", BehaviourType.BeforeStart, BehaviourScope.Service)
+                .AssignBehaviour();
+
             var receiverId = 2;
             InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SampleAppReceiverTemplate",
@@ -73,9 +74,9 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         private class MessageWithPrefixPublisher : MockSimplePublisher
         {
             public MessageWithPrefixPublisher(IContainer container, IPublisher publisher,
-                IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions,
-                IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours,
-                behaviourOnExceptions, wrapperBehaviours)
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher,
+                behaviourTemplates, wrapperBehaviours)
             {
             }
 
@@ -93,15 +94,12 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             }
         }
         
-        private class MarkMessagesWithPrefixBehaviour : BasicBehaviour
+        private class MarkMessagesWithPrefixBehaviour : BehaviourTemplate
         {
             public override void Execute(IContainer arg)
             {
                 arg.Resolve<MockPublisherProperties>().ManagedParameter = "Prefix";
             }
-
-            public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Service;
-            public override BehaviourType BehaviourType { get; set; } = BehaviourType.BeforeStart;
         }
     }
 }

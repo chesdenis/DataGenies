@@ -9,7 +9,7 @@ using DataGenies.InMemory;
 namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
 {
     [BehaviourTemplate]
-    public class MockHandleErroredMessagesBehavior : BehaviourOnException
+    public class MockHandleErroredMessagesBehavior : BehaviourTemplate
     {
         public override void Execute(IContainer arg, Exception exception)
         {
@@ -25,8 +25,5 @@ namespace DataGenies.Core.Tests.Integration.Mocks.Behaviours
             
             publisher.Publish(exceptionMessage);
         }
-
-        public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Message;
-        public override BehaviourType BehaviourType { get; set; } = BehaviourType.OnException;
     }
 }

@@ -14,12 +14,11 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockPublisherMultipleMessagesDifferentRoutingKeys : ManagedPublisherServiceWithContainer
     {
-         
-        public MockPublisherMultipleMessagesDifferentRoutingKeys(IContainer container, IPublisher publisher, IEnumerable<IBasicBehaviour> basicBehaviours, IEnumerable<IBehaviourOnException> behaviourOnExceptions, IEnumerable<IWrapperBehaviour> wrapperBehaviours) : base(container, publisher, basicBehaviours, behaviourOnExceptions, wrapperBehaviours)
+        public MockPublisherMultipleMessagesDifferentRoutingKeys(IContainer container, IPublisher publisher, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }
-        
+
         private MockPublisherProperties Properties => this.Container.Resolve<MockPublisherProperties>();
         
         protected override void OnStart()

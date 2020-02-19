@@ -20,10 +20,9 @@ namespace DataGenies.Core.Services
         private Type _templateType;
         private ApplicationInstanceEntity _applicationInstanceEntity;
         
-        private IEnumerable<IBasicBehaviour> _basicBehaviours = new List<IBasicBehaviour>();
-        private IEnumerable<IBehaviourOnException> _behaviourOnExceptions = new List<IBehaviourOnException>();
-        private IEnumerable<IWrapperBehaviour> _wrapperBehaviours = new List<IWrapperBehaviour>();
-       
+        private IEnumerable<BehaviourTemplate> _behaviourTemplates { get; set; }
+        private IEnumerable<WrapperBehaviourTemplate> _wrapperBehaviours { get; set; }
+        
         public ManagedServiceBuilder(
             IReceiverBuilder receiverBuilder, 
             IPublisherBuilder publisherBuilder,
@@ -34,21 +33,13 @@ namespace DataGenies.Core.Services
             _bindingConfigurator = bindingConfigurator;
         }
 
-        public ManagedServiceBuilder UsingBasicBehaviours(IEnumerable<IBasicBehaviour> basicBehaviours)
+        public ManagedServiceBuilder UsingBehaviours(IEnumerable<BehaviourTemplate> behaviourTemplates)
         {
-            _basicBehaviours = basicBehaviours;
-            return this;
-        }
-
-        public ManagedServiceBuilder UsingOnExceptionBehaviours(
-            IEnumerable<IBehaviourOnException> behaviourOnExceptions)
-        {
-            _behaviourOnExceptions = behaviourOnExceptions;
+            _behaviourTemplates = behaviourTemplates;
             return this;
         }
         
-        public ManagedServiceBuilder UsingWrappersBehaviours(
-            IEnumerable<IWrapperBehaviour> wrapperBehaviours)
+        public ManagedServiceBuilder UsingWrappersBehaviours(IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
         {
             _wrapperBehaviours = wrapperBehaviours;
             return this;
@@ -89,8 +80,7 @@ namespace DataGenies.Core.Services
 
                 ctorArgs.Add(publisher);
                 ctorArgs.Add(receiver);
-                ctorArgs.Add(_basicBehaviours);
-                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_behaviourTemplates);
                 ctorArgs.Add(_wrapperBehaviours);
                  
                 var managedService =
@@ -117,8 +107,7 @@ namespace DataGenies.Core.Services
                 }
                 
                 ctorArgs.Add(receiver);
-                ctorArgs.Add(_basicBehaviours);
-                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_behaviourTemplates);
                 ctorArgs.Add(_wrapperBehaviours);
                 
                 var managedService =
@@ -145,8 +134,7 @@ namespace DataGenies.Core.Services
                 }
                 
                 ctorArgs.Add(publisher);
-                ctorArgs.Add(_basicBehaviours);
-                ctorArgs.Add(_behaviourOnExceptions);
+                ctorArgs.Add(_behaviourTemplates);
                 ctorArgs.Add(_wrapperBehaviours);
                 
                 var managedService =

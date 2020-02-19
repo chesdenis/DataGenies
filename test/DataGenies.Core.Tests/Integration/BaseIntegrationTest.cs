@@ -25,16 +25,14 @@ namespace DataGenies.Core.Tests.Integration
         
         protected IApplicationTemplatesScanner ApplicationTemplatesScanner;
         
-        protected IApplicationBehavioursScanner ApplicationBehavioursScanner;
-
-        protected Dictionary<string, IBehaviour> Behaviours;
+        protected IBehaviourTemplatesScanner BehaviourTemplatesScanner;
         
         public virtual void Initialize()
         {
             InMemoryMqBroker = new InMemoryMqBroker();
              
             ApplicationTemplatesScanner = Substitute.For<IApplicationTemplatesScanner>();
-            ApplicationBehavioursScanner = Substitute.For<IApplicationBehavioursScanner>();
+            BehaviourTemplatesScanner = Substitute.For<IBehaviourTemplatesScanner>();
            
             InMemorySchemaContext = new InMemorySchemaDataContext();
             InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemorySchemaContext);
@@ -44,30 +42,13 @@ namespace DataGenies.Core.Tests.Integration
             
             Orchestrator = new InMemoryOrchestrator(InMemorySchemaContext,
                 ApplicationTemplatesScanner,
-                ApplicationBehavioursScanner,
+                BehaviourTemplatesScanner,
                
                 new ManagedServiceBuilder(
                     new InMemoryReceiverBuilder(InMemoryMqBroker),
                     new InMemoryPublisherBuilder(InMemoryMqBroker),
                     BindingConfigurator
                     ));
-            
-            Behaviours = new Dictionary<string, IBehaviour>();
-            
-            ApplicationBehavioursScanner.GetBehavioursInstances(
-                    Arg.Any<IEnumerable<BehaviourEntity>>())
-                .Returns((cb) =>
-                {
-                    var retVal = new List<IBehaviour>();
-                    var behavioursEntities = cb.Arg<IEnumerable<BehaviourEntity>>();
-            
-                    foreach (var behaviourEntity in behavioursEntities)
-                    {
-                        retVal.Add(this.Behaviours[behaviourEntity.Name]);
-                    }
-                    
-                    return retVal;
-                });
         }
     }
 }

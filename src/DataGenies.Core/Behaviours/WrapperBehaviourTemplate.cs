@@ -5,12 +5,11 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Behaviours
 {
-    public abstract class WrapperBehaviour  : IWrapperBehaviour 
+    public abstract class WrapperBehaviourTemplate : IWrapperBehaviourTemplate 
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public abstract BehaviourScope BehaviourScope { get; set; }
-        public abstract BehaviourType BehaviourType { get; set; }
 
         public Action Wrap(Action<Action> wrapperAction, Action executeAction)
         {

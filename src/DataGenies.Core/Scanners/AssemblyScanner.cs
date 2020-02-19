@@ -26,8 +26,7 @@ namespace DataGenies.Core.Scanners
         }
 
         public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
-        {
-            
+        { 
             var types = GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
 
@@ -42,7 +41,7 @@ namespace DataGenies.Core.Scanners
             }
         }
 
-        public IEnumerable<BehaviourInfo> ScanBehaviours(string assemblyFullPath)
+        public IEnumerable<BehaviourInfo> ScanBehaviourTemplates(string assemblyFullPath)
         {
             var types = GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.IsClass)

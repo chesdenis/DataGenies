@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text.Json;
+using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 
 namespace DataGenies.InMemory
@@ -11,9 +13,10 @@ namespace DataGenies.InMemory
 
         private ApplicationTemplateEntity _scopedApplicationTemplateEntity;
         private ApplicationInstanceEntity _scopedApplicationInstanceEntity;
-        private BehaviourEntity _scopedBehaviourEntity;
+        private BehaviourTemplateEntity _scopedBehaviourTemplateEntity;
+        private BehaviourInstanceEntity _scopedBehaviourInstanceEntity;
        
-        private string _scopeConfig = "{}";
+        private string _parametersDictAsJson = "{}";
 
         public InMemorySchemaDataBuilder(ISchemaDataContext schemaDataContext)
         {
@@ -27,20 +30,35 @@ namespace DataGenies.InMemory
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationTemplates.Count() + 1,
                 Name = templateName, 
                 Version = templateVersion,
-                ConfigTemplateJson = _scopeConfig,
+                ConfigTemplateJson = this._parametersDictAsJson,
                 AssemblyPath = string.Empty
             };
 
-            _scopeConfig = "{}";
+            this._parametersDictAsJson = "{}";
 
             _inMemorySchemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplateEntity);
 
             return this;
         }
-
-        public InMemorySchemaDataBuilder UsingConfig(Dictionary<string, string> config)
+        
+        public InMemorySchemaDataBuilder CreateBehaviourTemplate(string behaviourName, string behaviourVersion, int? id = null)
         {
-            _scopeConfig = JsonSerializer.Serialize(config);
+            this._scopedBehaviourTemplateEntity = new BehaviourTemplateEntity
+            {
+                Id = id ?? _inMemorySchemaDataContext.BehaviourTemplates.Count() + 1,
+                Name = behaviourName,
+                Version = behaviourVersion,
+                AssemblyPath = string.Empty
+            };
+
+            _inMemorySchemaDataContext.BehaviourTemplates.Add(_scopedBehaviourTemplateEntity);
+
+            return this;
+        }
+
+        public InMemorySchemaDataBuilder UsingParametersDictAsJson(Dictionary<string, string> config)
+        {
+            this._parametersDictAsJson = JsonSerializer.Serialize(config);
             return this;
         }
 
@@ -51,17 +69,62 @@ namespace DataGenies.InMemory
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedApplicationTemplateEntity.Id,
                 Name = instanceName,
-                ConfigJson = _scopeConfig,
+                ParametersDictAsJson = this._parametersDictAsJson,
                 TemplateEntity = _scopedApplicationTemplateEntity,
-                Behaviours = new List<BehaviourEntity>()
+                Behaviours = new List<BehaviourInstanceEntity>()
             };
             
-            _scopeConfig = "{}";
+            this._parametersDictAsJson = "{}";
 
             _inMemorySchemaDataContext.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
 
             return this;
         }
+        
+        public InMemorySchemaDataBuilder CreateBehaviourInstance(string instanceName, BehaviourType behaviourType, BehaviourScope behaviourScope, int? id = null)
+        {
+            this._scopedBehaviourInstanceEntity = new BehaviourInstanceEntity
+            {
+                Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
+                TemplateId = this._scopedBehaviourTemplateEntity.Id,
+                Name = instanceName,
+                ParametersDictAsJson = this._parametersDictAsJson,
+                BehaviourType = behaviourType,
+                BehaviourScope = behaviourScope,
+                TemplateEntity = this._scopedBehaviourTemplateEntity,
+                ApplicationInstances = new List<ApplicationInstanceEntity>()
+            };
+            
+            this._parametersDictAsJson = "{}";
+            
+            _inMemorySchemaDataContext.BehaviourInstances.Add(_scopedBehaviourInstanceEntity);
+             
+            return this;
+        }
+        
+        public InMemorySchemaDataBuilder AssignBehaviour(string behaviourInstance = "", string applicationInstance = "")
+        {
+            var behaviourInstanceEntity = this._scopedBehaviourInstanceEntity;
+            var applicationInstanceEntity = this._scopedApplicationInstanceEntity;
+            
+            if (!string.IsNullOrEmpty(behaviourInstance))
+            {
+                behaviourInstanceEntity =
+                    this._inMemorySchemaDataContext.BehaviourInstances.First(f => f.Name == behaviourInstance);
+            }
+
+            if (!string.IsNullOrEmpty(applicationInstance))
+            {
+                applicationInstanceEntity =
+                    this._inMemorySchemaDataContext.ApplicationInstances.First(f => f.Name == applicationInstance);
+            }
+
+            applicationInstanceEntity.Behaviours.Add(behaviourInstanceEntity);
+            behaviourInstanceEntity.ApplicationInstances.Add(applicationInstanceEntity);
+
+            return this;
+        }
+
 
         public InMemorySchemaDataBuilder UsingExistingApplicationInstance(string instanceName)
         {
@@ -70,10 +133,24 @@ namespace DataGenies.InMemory
 
             return this;
         }
+        
+        public InMemorySchemaDataBuilder UsingExistingBehaviourInstance(string instanceName)
+        {
+            this._scopedBehaviourInstanceEntity =
+                this._inMemorySchemaDataContext.BehaviourInstances.First(f => f.Name == instanceName);
+
+            return this;
+        }
 
         public InMemorySchemaDataBuilder UsingExistedApplicationTemplate(string templateName)
         {
             _scopedApplicationTemplateEntity = this._inMemorySchemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
+            return this;
+        }
+        
+        public InMemorySchemaDataBuilder UsingExistedBehaviourTemplate(string templateName)
+        {
+            this._scopedBehaviourTemplateEntity = this._inMemorySchemaDataContext.BehaviourTemplates.First(f => f.Name == templateName);
             return this;
         }
 
@@ -93,36 +170,7 @@ namespace DataGenies.InMemory
 
             return this;
         }
-
-        public InMemorySchemaDataBuilder RegisterBehaviour(string behaviourName, string behaviourVersion, int? id = null)
-        {
-            _scopedBehaviourEntity = new BehaviourEntity
-            {
-                Id = id ?? _inMemorySchemaDataContext.Behaviours.Count() + 1,
-                Name = behaviourName,
-                Version = behaviourVersion,
-                AssemblyPath = string.Empty,
-                ApplicationInstances = new List<ApplicationInstanceEntity>()
-            };
-
-            _inMemorySchemaDataContext.Behaviours.Add(_scopedBehaviourEntity);
-
-            return this;
-        }
-        
-        public InMemorySchemaDataBuilder ApplyBehaviour(string behaviourName = "")
-        {
-            if (!string.IsNullOrEmpty(behaviourName))
-            {
-                _scopedBehaviourEntity = _inMemorySchemaDataContext.Behaviours.First(f => f.Name == behaviourName);
-            }
-
-            _scopedApplicationInstanceEntity.Behaviours.Add(_scopedBehaviourEntity);
-            _scopedBehaviourEntity.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
-
-            return this;
-        }
-
+ 
         public InMemorySchemaDataBuilder Save()
         {
             return this;

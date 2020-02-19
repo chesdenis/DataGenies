@@ -4,7 +4,6 @@
     {
         BeforeStart,
         AfterStart,
-        Wrapper,
         OnException
     }
 }

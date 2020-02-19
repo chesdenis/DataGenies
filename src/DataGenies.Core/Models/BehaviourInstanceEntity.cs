@@ -16,13 +16,13 @@ namespace DataGenies.Core.Models
         
         public string Name { get; set; }
         
-        public string ParametersAsJson { get; set;  }
+        public string ParametersDictAsJson { get; set; }
         
         public BehaviourType BehaviourType { get; set; }
 
         public BehaviourScope BehaviourScope { get; set; }
 
-        public virtual BehaviourTemplateEntity TemplateEntity { get; set;  }
+        public virtual BehaviourTemplateEntity TemplateEntity { get; set; }
         
         public virtual ICollection<ApplicationInstanceEntity> ApplicationInstances { get; set; }
 
@@ -31,6 +31,4 @@ namespace DataGenies.Core.Models
             return this.Name == behaviourEntity.Name && this.Id == behaviourEntity.Id;
         }
     }
-    
-    p
 }
