@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DataGenies.Core.Models;
 using DataGenies.Core.Repositories;
@@ -9,7 +9,7 @@ using NSubstitute;
 namespace DataGenies.Core.Tests.Unit.Scanners
 {
     [TestClass]
-    public class ApplicationTemplatesScannerTests
+    public class BehaviourTemplatesScannerTests
     {
         [TestMethod]
         public void ShouldNotFailIfNoAnyPackage()
@@ -26,7 +26,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             var options = new DataGeniesOptions();
             
             // Act
-            var sut = new ApplicationTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
+            var sut = new BehavioursTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
             var data = sut.ScanTemplates().ToList();
 
             // Assert
@@ -49,26 +49,26 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 .Returns(filesListInDropFolder);
             
             var assemblyTypesProvider = Substitute.For<IAssemblyScanner>();
-            assemblyTypesProvider.ScanApplicationTemplates(Arg.Is(filesListInDropFolder[0])).Returns(
-                new List<ApplicationTemplateInfo>
+            assemblyTypesProvider.ScanBehaviourTemplates(Arg.Is(filesListInDropFolder[0])).Returns(
+                new List<BehaviourInfo>
                 {
-                    new ApplicationTemplateInfo
+                    new BehaviourInfo
                     {
                         AssemblyPath = filesListInDropFolder[0],
-                        TemplateName = "Type1",
+                        BehaviourName = "Type1",
                         AssemblyVersion = "20190102.1"
                     },
-                    new ApplicationTemplateInfo
+                    new BehaviourInfo
                     {
                         AssemblyPath = filesListInDropFolder[1],
-                        TemplateName = "Type2",
+                        BehaviourName = "Type2",
                         AssemblyVersion = "20190102.1"
                     }
                 });
             var options = new DataGeniesOptions();
             
             // Act
-            var sut = new ApplicationTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
+            var sut = new BehavioursTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
             var data = sut.ScanTemplates().ToList();
 
             // Assert

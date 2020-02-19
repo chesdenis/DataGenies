@@ -2,6 +2,7 @@
 {
     public enum BehaviourType
     {
+        Unspecified,
         BeforeStart,
         AfterStart,
         OnException

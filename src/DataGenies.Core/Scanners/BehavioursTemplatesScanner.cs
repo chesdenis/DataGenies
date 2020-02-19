@@ -46,13 +46,13 @@ namespace DataGenies.Core.Scanners
 
             foreach (var assemblyPath in assemblies)
             {
-                var types = this._assemblyScanner.ScanApplicationTemplates(assemblyPath);
+                var types = this._assemblyScanner.ScanBehaviourTemplates(assemblyPath);
 
                 foreach (var appTypeInfo in types)
                 {
                     yield return new BehaviourTemplateEntity
                     {
-                        Name = appTypeInfo.TemplateName,
+                        Name = appTypeInfo.BehaviourName,
                         Version = appTypeInfo.AssemblyVersion,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };
