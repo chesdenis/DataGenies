@@ -32,17 +32,11 @@ namespace DataGenies.Core.Services
             }
         }
 
-        public virtual void Start()
-        {
-            this.ManagedAction(OnStart, BehaviourScope.Service);
-        }
+        public abstract void Start();
 
         protected abstract void OnStart();
 
-        public virtual void Stop()
-        {
-            this.ManagedAction(OnStop, BehaviourScope.Service);
-        }
+        public abstract void Stop();
 
         protected abstract void OnStop();
     }

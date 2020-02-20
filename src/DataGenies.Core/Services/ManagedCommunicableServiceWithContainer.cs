@@ -11,12 +11,12 @@ using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {
-    public abstract class ManagedReceiverAndPublisherServiceWithContainer : ManagedServiceWithContainer, IPublisher, IReceiver
+    public abstract class ManagedCommunicableServiceWithContainer : ManagedServiceWithContainer, IPublisher, IReceiver
     {
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
       
-        protected ManagedReceiverAndPublisherServiceWithContainer(
+        protected ManagedCommunicableServiceWithContainer(
             IContainer container,
             IPublisher publisher, 
             IReceiver receiver, 

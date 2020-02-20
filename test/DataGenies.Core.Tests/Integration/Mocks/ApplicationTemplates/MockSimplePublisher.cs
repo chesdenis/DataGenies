@@ -5,6 +5,7 @@ using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
 using DataGenies.Core.Wrappers;
@@ -13,11 +14,11 @@ using DataGenies.InMemory;
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimplePublisher :  ManagedPublisherServiceWithContainer
+    public class MockSimplePublisher :  ManagedCommunicableServiceWithContainer
     {
-        public MockSimplePublisher(IContainer container, IPublisher publisher,
+        public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-            : base(container, publisher, behaviourTemplates, wrapperBehaviours)
+            : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }

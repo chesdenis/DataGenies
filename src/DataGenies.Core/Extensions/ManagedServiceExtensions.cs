@@ -9,117 +9,14 @@ namespace DataGenies.Core.Extensions
 {
     public static class ManagedServiceExtensions
     {
-        // public static IContainer ManagedFunction(this IManagedService managedService, Func<IContainer, IContainer> function, IContainer arg, BehaviourScope behaviourScope)
-        // {
-        //     var retVal = default(IContainer);
-        //     
-        //     try
-        //     {
-        //         foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
-        //         {
-        //             beforeStart.Execute(arg);
-        //         }
-        //
-        //         Func<IContainer, IContainer> resultFunction = function;
-        //
-        //         retVal = resultFunction(arg);
-        //  
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         foreach (var onException in managedService.BehaviourOnExceptions)
-        //         {
-        //             onException.Execute(ex);
-        //         }
-        //     }
-        //     finally
-        //     {
-        //         foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
-        //         {
-        //             afterStart.Execute();
-        //         }
-        //     }
-        //
-        //     return retVal;
-        // }
-        //
-        // public static T ManagedFunction<T>(this IManagedService managedService, Func<T> function, BehaviourScope behaviourScope)
-        // {
-        //     var retVal = default(T);
-        //     
-        //     try
-        //     {
-        //         foreach (var beforeStart in managedService.BasicBehaviours.OfType<IBehaviorBeforeStart>())
-        //         {
-        //             beforeStart.Execute();
-        //         }
-        //
-        //         retVal = function();
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         foreach (var onException in managedService.BehaviourOnExceptions)
-        //         {
-        //             onException.Execute(ex);
-        //         }
-        //     }
-        //     finally
-        //     {
-        //         foreach (var afterStart in managedService.BasicBehaviours.OfType<IBehaviourAfterStart>())
-        //         {
-        //             afterStart.Execute();
-        //         }
-        //     }
-        //
-        //     return retVal;
-        // }
-        
-        public static void ManagedAction(this IManagedService managedService, Action execute, BehaviourScope behaviourScope)
+        public static void ManagedActionWithMessage<T>(this IManagedService managedService, Action<T> execute, T message, BehaviourScope behaviourScope) where T: MqMessage
         {
             try
             {
                 foreach (var beforeStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
                 {
-                    beforeStart.Execute();
-                }
-
-                Action resultAction = execute;
-
-                foreach (var wrapper in managedService.WrapperBehaviours
-                    .Where(w=>w.BehaviourScope == behaviourScope))
-                {
-                    resultAction = wrapper.Wrap(wrapper.BehaviourAction, resultAction);
-                }
-
-                resultAction();
-            }
-            catch (Exception ex)
-            {
-                foreach (var onException in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
-                {
-                    onException.Execute(ex);
-                }
-            }
-            finally
-            {
-                foreach (var afterStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
-                {
-                    afterStart.Execute();
-                }
-            }
-        }
-        
-        public static void ManagedActionWithMessage<T>(this IManagedService managedService, Action<T> execute, T arg, BehaviourScope behaviourScope) where T: MqMessage
-        {
-            try
-            {
-                foreach (var beforeStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
-                {
-                    beforeStart.Execute();
+                    beforeStart.Execute(message);
                 }
 
                 Action<T> resultAction = execute;
@@ -127,17 +24,17 @@ namespace DataGenies.Core.Extensions
                 foreach (var wrapper in managedService.WrapperBehaviours
                     .Where(w=>w.BehaviourScope == behaviourScope))
                 {
-                    resultAction = wrapper.WrapMessageHandling(wrapper.BehaviourActionWithMessage, resultAction, arg);
+                    resultAction = wrapper.WrapMessageHandling(wrapper.BehaviourActionWithMessage, resultAction, message);
                 }
 
-                resultAction(arg);
+                resultAction(message);
             }
             catch (Exception ex)
             {
                 foreach (var onException in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
+                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
-                    onException.Execute(ex);
+                    onException.Execute(message, ex);
                 }
             }
             finally
@@ -145,19 +42,19 @@ namespace DataGenies.Core.Extensions
                 foreach (var afterStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
                 {
-                    afterStart.Execute();
+                    afterStart.Execute(message);
                 }
             }
         }
         
-        public static void ManagedActionWithContainer<T>(this IManagedService managedService, Action<T> execute, T arg, BehaviourScope behaviourScope) where T: IContainer
+        public static void ManagedActionWithContainer<T>(this IManagedService managedService, Action<T> execute, T container, BehaviourScope behaviourScope) where T: IContainer
         {
             try
             {
                 foreach (var beforeStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
                 {
-                    beforeStart.Execute(arg);
+                    beforeStart.Execute(container);
                 }
 
                 Action<T> resultAction = execute;
@@ -165,17 +62,17 @@ namespace DataGenies.Core.Extensions
                 foreach (var wrapper in managedService.WrapperBehaviours
                     .Where(w=>w.BehaviourScope == behaviourScope))
                 {
-                    resultAction = wrapper.WrapContainerHandling(wrapper.BehaviourActionWithContainer, resultAction, arg);
+                    resultAction = wrapper.WrapContainerHandling(wrapper.BehaviourActionWithContainer, resultAction, container);
                 }
 
-                resultAction(arg);
+                resultAction(container);
             }
             catch (Exception ex)
             {
                 foreach (var onException in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
-                    onException.Execute(arg, ex);
+                    onException.Execute(container, ex);
                 }
             }
             finally
@@ -183,10 +80,9 @@ namespace DataGenies.Core.Extensions
                 foreach (var afterStart in managedService.BehaviourTemplates
                     .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
                 {
-                    afterStart.Execute(arg);
+                    afterStart.Execute(container);
                 }
             }
         }
-         
     }
 }

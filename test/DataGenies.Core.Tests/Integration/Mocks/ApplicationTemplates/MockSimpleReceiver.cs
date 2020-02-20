@@ -3,6 +3,7 @@ using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
@@ -11,11 +12,11 @@ using DataGenies.Core.Wrappers;
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimpleReceiver : ManagedReceiverServiceWithContainer
+    public class MockSimpleReceiver : ManagedCommunicableServiceWithContainer
     {
-        public MockSimpleReceiver(IContainer container, IReceiver receiver,
+        public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-            : base(container, receiver, behaviourTemplates, wrapperBehaviours)
+            : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
         {
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }

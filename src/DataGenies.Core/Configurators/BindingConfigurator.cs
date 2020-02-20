@@ -19,26 +19,8 @@ namespace DataGenies.Core.Configurators
         
         public void ConfigureFor(IManagedService managedService, ApplicationInstanceEntity applicationInstanceEntity)
         {
-            if (managedService.GetType().IsSubclassOf(typeof(ManagedReceiverAndPublisherService))
-            || 
-            managedService.GetType().IsSubclassOf(typeof(ManagedReceiverAndPublisherServiceWithContainer)))
-            {
-                ConfigureMqForReceiverRole(applicationInstanceEntity);
-                ConfigureMqForPublisherRole(applicationInstanceEntity);
-            }
-            else if (managedService.GetType().IsSubclassOf(typeof(ManagedReceiverService)) 
-                     || 
-                     managedService.GetType().IsSubclassOf(typeof(ManagedReceiverServiceWithContainer)))
-            {
-                ConfigureMqForReceiverRole(applicationInstanceEntity);
-            }
-            else if (managedService.GetType().IsSubclassOf(typeof(ManagedPublisherService))
-            || 
-            managedService.GetType().IsSubclassOf(typeof(ManagedPublisherServiceWithContainer))
-            )
-            {
-                ConfigureMqForPublisherRole(applicationInstanceEntity);
-            }
+            ConfigureMqForReceiverRole(applicationInstanceEntity);
+            ConfigureMqForPublisherRole(applicationInstanceEntity);
         }
         
         private void ConfigureMqForPublisherRole(ApplicationInstanceEntity applicationInstanceEntity)

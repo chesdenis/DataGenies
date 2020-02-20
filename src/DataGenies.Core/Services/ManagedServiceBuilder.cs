@@ -59,95 +59,32 @@ namespace DataGenies.Core.Services
 
         public IManagedService Build()
         {
-            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherService)) 
-                ||
-                this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherServiceWithContainer)))
-            {
-                var receiver = this._receiverBuilder
-                    .WithQueue(this._applicationInstanceEntity.Name)
-                    .Build();
+            var receiver = this._receiverBuilder
+                .WithQueue(this._applicationInstanceEntity.Name)
+                .Build();
                 
-                var publisher = this._publisherBuilder
-                    .WithExchange(this._applicationInstanceEntity.Name)
-                    .Build();
+            var publisher = this._publisherBuilder
+                .WithExchange(this._applicationInstanceEntity.Name)
+                .Build();
 
-                var ctorArgs = new List<Object>();
+            var ctorArgs = new List<Object>();
                
-                if (this._templateType.IsSubclassOf(typeof(ManagedReceiverAndPublisherServiceWithContainer)))
-                {
-                    ctorArgs.Add(new Container());
-                }
+            if (this._templateType.IsSubclassOf(typeof(ManagedCommunicableServiceWithContainer)))
+            {
+                ctorArgs.Add(new Container());
+            }
 
-                ctorArgs.Add(publisher);
-                ctorArgs.Add(receiver);
-                ctorArgs.Add(_behaviourTemplates);
-                ctorArgs.Add(_wrapperBehaviours);
+            ctorArgs.Add(publisher);
+            ctorArgs.Add(receiver);
+            ctorArgs.Add(_behaviourTemplates);
+            ctorArgs.Add(_wrapperBehaviours);
                  
-                var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
+            var managedService =
+                (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
                 
-                this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
+            this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
-                return managedService;
-            }
-            
-            if (this._templateType.IsSubclassOf(typeof(ManagedReceiverService))
-            ||
-            this._templateType.IsSubclassOf(typeof(ManagedReceiverServiceWithContainer)))
-            {
-                var receiver = this._receiverBuilder
-                    .WithQueue(this._applicationInstanceEntity.Name)
-                    .Build();
-                
-                var ctorArgs = new List<Object>();
-                
-                if (this._templateType.IsSubclassOf(typeof(ManagedReceiverServiceWithContainer)))
-                {
-                    ctorArgs.Add(new Container());
-                }
-                
-                ctorArgs.Add(receiver);
-                ctorArgs.Add(_behaviourTemplates);
-                ctorArgs.Add(_wrapperBehaviours);
-                
-                var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
-                
-                this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
-
-                return managedService;
-            }
-
-            if (this._templateType.IsSubclassOf(typeof(ManagedPublisherService)) 
-                ||
-                this._templateType.IsSubclassOf(typeof(ManagedPublisherServiceWithContainer)) )
-            {
-                var publisher = this._publisherBuilder
-                    .WithExchange(this._applicationInstanceEntity.Name)
-                    .Build();
-                
-                var ctorArgs = new List<Object>();
-                
-                if (this._templateType.IsSubclassOf(typeof(ManagedPublisherServiceWithContainer)))
-                {
-                    ctorArgs.Add(new Container());
-                }
-                
-                ctorArgs.Add(publisher);
-                ctorArgs.Add(_behaviourTemplates);
-                ctorArgs.Add(_wrapperBehaviours);
-                
-                var managedService =
-                    (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
-                
-                this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
-
-                return managedService;
-            }
-
-            throw new NotImplementedException();
+            return managedService;
         }
-  
-       
     }
 }

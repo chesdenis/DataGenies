@@ -7,6 +7,8 @@ using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
+using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
@@ -39,7 +41,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         }
         
         [TestMethod]
-        public void BeforeRunBehaviourShouldChangeStateElement()
+        public void BeforeRunBehaviourShouldAffectFlow()
         {
             // Arrange
             var publisherId = 1;
@@ -83,7 +85,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         }
         
         [TestMethod]
-        public void AfterStartBehaviourShouldChangeStateElement()
+        public void AfterRunBehaviourShouldAffectFlow()
         {
             // Arrange
             var publisherId = 1;
@@ -135,7 +137,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         }
 
         [TestMethod]
-        public void OnExceptionBehaviourShouldApplyAdditionalLogic()
+        public void OnExceptionBehaviourShouldAffectFlow()
         {
             // Arrange
             var publisherId = 1;
@@ -181,7 +183,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         }
 
         [TestMethod]
-        public void WrapperBehaviourShouldApplyAdditionalLogic()
+        public void WrapperBehaviourShouldAffectFlow()
         {
             // Arrange
             var publisherId = 1;
@@ -228,9 +230,9 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class MessageWithPrefixPublisher : MockSimplePublisher
         {
-            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher,
+            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
                 IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver,
                 behaviourTemplates, wrapperBehaviours)
             {
             }
@@ -277,6 +279,37 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 });
                 
                 action(container);
+            }
+        }
+        
+        private class MockBrokenReceiver : ManagedCommunicableServiceWithContainer
+        {
+            public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+                : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
+            {
+                this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
+            }
+
+            private MockReceiverProperties Properties => this.Container.Resolve<MockReceiverProperties>();
+         
+            protected override void OnStart()
+            {
+                if (Properties.ManagedParameter == "Work")
+                {
+                    this.Listen((message) =>
+                    {
+                        Properties.ReceivedMessages.Add(
+                            Encoding.UTF8.GetString(message.Body));
+                    });
+                }
+
+                throw new Exception("Something went wrong");
+            }
+ 
+            protected override void OnStop()
+            {
+                this.StopListen();
             }
         }
     }
