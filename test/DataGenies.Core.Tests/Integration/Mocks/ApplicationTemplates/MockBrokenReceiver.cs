@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
@@ -24,6 +25,15 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
          
         protected override void OnStart()
         {
+            if (Properties.ManagedParameter == "Work")
+            {
+                this.Listen((message) =>
+                {
+                    Properties.ReceivedMessages.Add(
+                        Encoding.UTF8.GetString(message.Body));
+                });
+            }
+
             throw new Exception("Something went wrong");
         }
  

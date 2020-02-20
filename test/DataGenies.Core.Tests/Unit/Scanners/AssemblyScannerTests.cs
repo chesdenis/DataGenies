@@ -14,7 +14,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
     [TestClass]
     public class AssemblyScannerTests
     {
-        [TestMethod]
+        //[TestMethod]
         public void ShouldScanApplicationTemplates()
         {
             // Arrange
@@ -35,7 +35,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             Assert.AreEqual(4, applicationTemplates.Count());
         }
         
-        [TestMethod]
+        //[TestMethod]
         public void ShouldScanBehaviours()
         {
             // Arrange
@@ -46,7 +46,6 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 //typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
                 typeof(MockSimplePublisher),
                 typeof(MockSimpleReceiver),
-                typeof(MockBehaviour),
                 // typeof(MockRevertTextAfterReceiveConverter),
                 // typeof(MockRevertTextBeforePublishConverter)
             });
