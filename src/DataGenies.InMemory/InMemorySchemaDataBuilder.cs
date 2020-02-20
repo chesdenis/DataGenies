@@ -16,13 +16,34 @@ namespace DataGenies.InMemory
         private BehaviourTemplateEntity _scopedBehaviourTemplateEntity;
         private BehaviourInstanceEntity _scopedBehaviourInstanceEntity;
        
-        private string _parametersDictAsJson = "{}";
+        private string _scopedParametersDictAsJson = "{}";
+
+        private string _scopedConfigTemplateJson = "{}";
 
         public InMemorySchemaDataBuilder(ISchemaDataContext schemaDataContext)
         {
             _inMemorySchemaDataContext = (InMemorySchemaDataContext)schemaDataContext;
         }
 
+        public InMemorySchemaDataBuilder UsingConfigTemplate<T>(T config) where T : class
+        {
+            this._scopedConfigTemplateJson = JsonSerializer.Serialize(config);
+            return this;
+        }
+
+        public InMemorySchemaDataBuilder UsingParametersDict(Dictionary<string, string> parameters)
+        {
+            this._scopedParametersDictAsJson = JsonSerializer.Serialize(parameters);
+            return this;
+        }
+        
+        public InMemorySchemaDataBuilder ResetScopedConfigAndParameters()
+        {
+            this._scopedParametersDictAsJson = "{}";
+            this._scopedConfigTemplateJson = "{}";
+            return this;
+        }
+        
         public InMemorySchemaDataBuilder CreateApplicationTemplate(string templateName, string templateVersion, int? id = null)
         {
             _scopedApplicationTemplateEntity = new ApplicationTemplateEntity
@@ -30,12 +51,10 @@ namespace DataGenies.InMemory
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationTemplates.Count() + 1,
                 Name = templateName, 
                 Version = templateVersion,
-                ConfigTemplateJson = this._parametersDictAsJson,
+                ConfigTemplateJson = this._scopedConfigTemplateJson,
                 AssemblyPath = string.Empty
             };
-
-            this._parametersDictAsJson = "{}";
-
+            
             _inMemorySchemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplateEntity);
 
             return this;
@@ -48,6 +67,7 @@ namespace DataGenies.InMemory
                 Id = id ?? _inMemorySchemaDataContext.BehaviourTemplates.Count() + 1,
                 Name = behaviourName,
                 Version = behaviourVersion,
+                ConfigTemplateJson = this._scopedConfigTemplateJson,
                 AssemblyPath = string.Empty
             };
 
@@ -55,13 +75,7 @@ namespace DataGenies.InMemory
 
             return this;
         }
-
-        public InMemorySchemaDataBuilder UsingParametersDictAsJson(Dictionary<string, string> config)
-        {
-            this._parametersDictAsJson = JsonSerializer.Serialize(config);
-            return this;
-        }
-
+ 
         public InMemorySchemaDataBuilder CreateApplicationInstance(string instanceName, int? id = null)
         {
             _scopedApplicationInstanceEntity = new ApplicationInstanceEntity
@@ -69,13 +83,11 @@ namespace DataGenies.InMemory
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedApplicationTemplateEntity.Id,
                 Name = instanceName,
-                ParametersDictAsJson = this._parametersDictAsJson,
+                ParametersDictAsJson = this._scopedParametersDictAsJson,
                 TemplateEntity = _scopedApplicationTemplateEntity,
                 Behaviours = new List<BehaviourInstanceEntity>()
             };
-            
-            this._parametersDictAsJson = "{}";
-
+             
             _inMemorySchemaDataContext.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
 
             return this;
@@ -88,14 +100,14 @@ namespace DataGenies.InMemory
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedBehaviourTemplateEntity.Id,
                 Name = instanceName,
-                ParametersDictAsJson = this._parametersDictAsJson,
+                ParametersDictAsJson = this._scopedParametersDictAsJson,
                 BehaviourType = behaviourType,
                 BehaviourScope = behaviourScope,
                 TemplateEntity = this._scopedBehaviourTemplateEntity,
                 ApplicationInstances = new List<ApplicationInstanceEntity>()
             };
             
-            this._parametersDictAsJson = "{}";
+            this._scopedParametersDictAsJson = "{}";
             
             _inMemorySchemaDataContext.BehaviourInstances.Add(_scopedBehaviourInstanceEntity);
              

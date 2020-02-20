@@ -64,10 +64,15 @@ namespace DataGenies.Core.Services
             var publisher = this._publisherBuilder
                 .WithExchange(this._applicationInstanceEntity.Name)
                 .Build();
+            
+            var container = new Container();
+            
+            container.Register<string>(this._applicationInstanceEntity.ParametersDictAsJson, "ParametersDictAsJson");
+            container.Register<string>(this._applicationInstanceEntity.TemplateEntity.ConfigTemplateJson, "ConfigTemplateJson");
 
             var ctorArgs = new List<object>
             {
-                new Container(),
+                container,
                 publisher,
                 receiver,
                 _behaviourTemplates,

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
@@ -99,5 +101,22 @@ namespace DataGenies.Core.Services
         protected abstract void OnStart();
 
         protected abstract void OnStop();
+
+        protected T ReadSettings<T>()
+        {
+            var parametersDictAsJson =
+                Container.Resolve<string>("ParametersDictAsJson");
+            var configTemplateJson =
+                Container.Resolve<string>("ConfigTemplateJson");
+
+            var parametersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(parametersDictAsJson);
+
+            foreach (var parameter in parametersDict)
+            {
+                configTemplateJson = configTemplateJson.Replace($"[{parameter.Key}]", parameter.Value);
+            }
+
+            return JsonSerializer.Deserialize<T>(configTemplateJson);
+        }
     }
 }

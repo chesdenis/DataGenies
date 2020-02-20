@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.MessageBrokers",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.ApplicationPlatforms", "src\DataGenies.ApplicationPlatforms\DataGenies.ApplicationPlatforms.csproj", "{5BFD2387-2273-473F-8EFE-FF8517DB10C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataGenies.InMemoryManager", "src\DataGenies.InMemoryManager\DataGenies.InMemoryManager.csproj", "{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BFD2387-2273-473F-8EFE-FF8517DB10C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DEE76808-7FCD-4495-B582-8E4F37918E69} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
@@ -74,5 +80,6 @@ Global
 		{289CFC73-02CE-41C7-9DAA-EC0659409A99} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 		{19978928-0083-40DD-8BF9-FC49C7202F92} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 		{5BFD2387-2273-473F-8EFE-FF8517DB10C2} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
+		{CB82A1C0-9187-4075-8F4B-0B82F19AFD3E} = {6F4E1D96-D0F3-44B0-ABD1-6435D364152D}
 	EndGlobalSection
 EndGlobal
