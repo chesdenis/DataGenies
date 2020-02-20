@@ -14,6 +14,8 @@ namespace DataGenies.Core.Models
 
         public int TemplateId { get; set; }
 
+        public int InstanceCount { get; set; }
+
         public string Name { get; set; }
 
         public string ParametersDictAsJson { get; set; }

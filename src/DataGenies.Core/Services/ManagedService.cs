@@ -16,6 +16,10 @@ namespace DataGenies.Core.Services
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
 
+        public int ApplicationInstanceEntityId { get; set; }
+        
+        public ServiceState State { get; set; }
+        
         public IContainer Container { get; }
         public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
         public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }

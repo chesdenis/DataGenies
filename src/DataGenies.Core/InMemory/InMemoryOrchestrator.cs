@@ -41,6 +41,22 @@ namespace DataGenies.Core.InMemory
             return this._instancesInMemory[applicationInstanceId].Container;
         }
 
+        public IQueryable<ApplicationInstanceEntity> GetDeployed()
+        {
+            return this._instancesInMemory.Keys.Select(s=>this._instancesInMemory[s])
+                .Where(w=>w.State == ServiceState.Deployed)
+        }
+
+        public IQueryable<ApplicationInstanceEntity> GetStarted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IQueryable<ApplicationInstanceEntity> GetStopped()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task PrepareTemplatePackage(int applicationInstanceId)
         {
             return Task.CompletedTask;

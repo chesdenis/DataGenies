@@ -8,6 +8,8 @@ namespace DataGenies.Core.Services
 {
     public interface IManagedService : IRestartable, IPublisher, IReceiver
     {
+        int ApplicationInstanceEntityId { get; set; }
+        ServiceState State { get; set; }
         IContainer Container { get; }
         IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
         IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }

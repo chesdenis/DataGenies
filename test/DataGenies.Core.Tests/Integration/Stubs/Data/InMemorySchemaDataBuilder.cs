@@ -82,6 +82,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
                 Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedApplicationTemplateEntity.Id,
                 Name = instanceName,
+                InstanceCount = 1,
                 ParametersDictAsJson = this._scopedParametersDictAsJson,
                 TemplateEntity = _scopedApplicationTemplateEntity,
                 Behaviours = new List<BehaviourInstanceEntity>()

@@ -81,6 +81,9 @@ namespace DataGenies.Core.Services
 
             var managedService =
                 (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
+            
+            managedService.ApplicationInstanceEntityId = this._applicationInstanceEntity.Id;
+            managedService.State = ServiceState.Created;
                 
             this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
 
