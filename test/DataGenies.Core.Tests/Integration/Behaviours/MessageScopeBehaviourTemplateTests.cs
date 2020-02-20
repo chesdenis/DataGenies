@@ -37,7 +37,9 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(ConvertMessagesDuringRunBehaviour), 
                 "ConvertMessagesDuringRunBehaviourTemplate");
             BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(SendErroredMessagesBehavior), 
-                "SendErroredMessagesBehaviorTemplate");
+                "SendErroredMessagesBehaviorTemplate"); 
+            BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(ConvertMessageBeforeRunBehaviour), 
+                "ConvertMessageBeforeRunBehaviourTemplate");
         }
         
         [TestMethod]
@@ -159,6 +161,50 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             // Assert.AreEqual(new string("TestString0".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]); 
         }
         
+        [TestMethod]
+        public void BeforeRunBehaviourShouldAffectFlow()
+        {
+            // Arrange
+            var publisherId = 1;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "Publish5MessagesPublisherTemplate",
+                    "2019.1.1")
+                .CreateApplicationInstance("SampleAppPublisher", publisherId)
+                .CreateBehaviourTemplate("ConvertMessageBeforeRunBehaviourTemplate", "2019.1.1")
+                .CreateBehaviourInstance("ConvertMessageBeforeRunBehaviour", BehaviourType.BeforeRun, BehaviourScope.Message)
+                .AssignBehaviour();
+            
+            var receiverId = 2;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SimpleReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+            
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "SampleAppPublisher",
+                "SampleAppReceiver", "#");
+          
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(receiverId);
+            
+            // Act
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(receiverId);
+            
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await Orchestrator.Stop(receiverId);
+            }).Wait();
+    
+            // Assert
+            var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
+            var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+    
+            Assert.AreEqual(new string("TestString0".Reverse().ToArray()), publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual(new string("TestString0".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]); 
+        }
+        
         private class ConvertMessagesDuringRunBehaviour : WrapperBehaviourTemplate
         {
             public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Message;
@@ -173,7 +219,18 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 action(message);
             }
         }
-        
+
+        private class ConvertMessageBeforeRunBehaviour : BehaviourTemplate
+        {
+            public override void Execute(MqMessage message)
+            {
+                var originalString = Encoding.UTF8.GetString(message.Body);
+                var reversedString = new string(originalString.Reverse().ToArray());
+                
+                message.Body = Encoding.UTF8.GetBytes(reversedString);
+            }
+        }
+
         private class SendErroredMessagesBehavior : BehaviourTemplate
         {
             public override void Execute(MqMessage message, Exception exception)

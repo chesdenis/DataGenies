@@ -39,13 +39,7 @@ namespace DataGenies.InMemory
 
         public IContainer GetApplicationInstanceContainer(int applicationInstanceId)
         {
-            var applicationInstance = this._instancesInMemory[applicationInstanceId];
-            if (applicationInstance is IManagedServiceWithContainer applicationInstanceWithContainer)
-            {
-                return applicationInstanceWithContainer.Container;
-            }
-
-            throw new NotSupportedException();
+            return this._instancesInMemory[applicationInstanceId].Container;
         }
 
         public Task PrepareTemplatePackage(int applicationInstanceId)

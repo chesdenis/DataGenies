@@ -11,7 +11,7 @@ using DataGenies.Core.Tests.Integration.Mocks.Properties;
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimpleReceiver : ManagedCommunicableServiceWithContainer
+    public class MockSimpleReceiver : ManagedService
     {
         public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)

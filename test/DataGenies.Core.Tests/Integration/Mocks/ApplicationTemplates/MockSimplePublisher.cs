@@ -14,7 +14,7 @@ using DataGenies.InMemory;
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {
     [ApplicationTemplate]
-    public class MockSimplePublisher :  ManagedCommunicableServiceWithContainer
+    public class MockSimplePublisher :  ManagedService
     {
         public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)

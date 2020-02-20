@@ -283,7 +283,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             }
         }
         
-        private class MockBrokenReceiver : ManagedCommunicableServiceWithContainer
+        private class MockBrokenReceiver : ManagedService
         {
             public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
                 IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)

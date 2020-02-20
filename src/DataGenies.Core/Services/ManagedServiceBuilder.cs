@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
@@ -66,18 +65,15 @@ namespace DataGenies.Core.Services
                 .WithExchange(this._applicationInstanceEntity.Name)
                 .Build();
 
-            var ctorArgs = new List<Object>();
-               
-            if (this._templateType.IsSubclassOf(typeof(ManagedCommunicableServiceWithContainer)))
+            var ctorArgs = new List<object>
             {
-                ctorArgs.Add(new Container());
-            }
+                new Container(),
+                publisher,
+                receiver,
+                _behaviourTemplates,
+                _wrapperBehaviours
+            };
 
-            ctorArgs.Add(publisher);
-            ctorArgs.Add(receiver);
-            ctorArgs.Add(_behaviourTemplates);
-            ctorArgs.Add(_wrapperBehaviours);
-                 
             var managedService =
                 (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
                 
