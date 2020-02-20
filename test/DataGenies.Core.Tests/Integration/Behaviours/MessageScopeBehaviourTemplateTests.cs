@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
@@ -25,8 +26,12 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(Publish5MessagesPublisher),
                 "Publish5MessagesPublisherTemplate");
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(ReceiveFirst2MessagesAndThrowErrorReceiver),
+                "ReceiveFirst2MessagesAndThrowErrorReceiverTemplate");
+            
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver),
-                "SampleAppReceiverTemplate");
+                "SimpleReceiverTemplate");
+            
             BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(ConvertMessagesDuringRunBehaviour), 
                 "ConvertMessagesDuringRunBehaviourTemplate");
             BehaviourTemplatesScanner.RegisterMockBehaviourTemplate(typeof(SendErroredMessagesBehavior), 
@@ -34,7 +39,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         }
         
         [TestMethod]
-        public void ConversionBehaviourShouldChangeMessagesBeforePublish()
+        public void WrappedBehaviourShouldAffectFlow()
         {
             // Arrange
             var publisherId = 1;
@@ -48,7 +53,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             
             var receiverId = 2;
             InMemorySchemaDataBuilder.CreateApplicationTemplate(
-                    "SampleAppReceiverTemplate",
+                    "SimpleReceiverTemplate",
                     "2018.1.1")
                 .CreateApplicationInstance("SampleAppReceiver", receiverId);
             
@@ -77,6 +82,73 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             Assert.AreEqual(new string("TestString0".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]); 
         }
 
+         [TestMethod]
+        public void OnExceptionBehaviourShouldAffectFlow()
+        {
+            // Arrange
+            var publisherId = 1;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "Publish5MessagesPublisherTemplate",
+                    "2019.1.1")
+                .CreateApplicationInstance("SampleAppPublisher", publisherId);
+
+            var brokenAppReceiverId = 2;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "ReceiveFirst2MessagesAndThrowErrorReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("BrokenAppReceiver", brokenAppReceiverId);
+
+            var receiverId = 3;
+            InMemorySchemaDataBuilder.CreateApplicationTemplate(
+                    "SimpleReceiverTemplate",
+                    "2018.1.1")
+                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+
+            InMemorySchemaDataBuilder
+                .UsingExistingApplicationInstance("SampleAppPublisher")
+                .CreateBehaviourTemplate("ConvertMessagesDuringRunBehaviourTemplate", "2019.1.1")
+                .CreateBehaviourInstance("ConvertMessagesDuringRunBehaviour", BehaviourType.Unspecified,
+                    BehaviourScope.Message)
+                .AssignBehaviour();
+
+            InMemorySchemaDataBuilder
+                .UsingExistingApplicationInstance("SampleAppReceiver")
+                .CreateBehaviourTemplate("SendErroredMessagesBehaviorTemplate", "2019.1.1")
+                .CreateBehaviourInstance("SendErroredMessagesBehavior", BehaviourType.Unspecified,
+                    BehaviourScope.Message)
+                .AssignBehaviour();
+             
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "SampleAppPublisher",
+                "BrokenAppReceiver", "#");
+            
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "BrokenAppReceiver",
+                "SampleAppReceiver", "#");
+          
+            Orchestrator.Deploy(publisherId);
+            Orchestrator.Deploy(brokenAppReceiverId);
+            Orchestrator.Deploy(receiverId);
+            
+            // Act
+            Orchestrator.Start(publisherId);
+            Orchestrator.Start(brokenAppReceiverId);
+            Orchestrator.Start(receiverId);
+            
+            Task.Run(async () =>
+            {
+                await Task.Delay(1000);
+                await Orchestrator.Stop(receiverId);
+                await Orchestrator.Stop(brokenAppReceiverId);
+            }).Wait();
+    
+            // Assert
+            // var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
+            // var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+            //
+            // Assert.AreEqual(new string("TestString0".Reverse().ToArray()), publisherProperties.PublishedMessages[0]);
+            // Assert.AreEqual(new string("TestString0".Reverse().ToArray()), receiverProperties.ReceivedMessages[0]); 
+        }
         
         private class ConvertMessagesDuringRunBehaviour : WrapperBehaviourTemplate
         {
@@ -133,6 +205,36 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 }
                
+            }
+        }
+        
+        private class ReceiveFirst2MessagesAndThrowErrorReceiver : MockSimpleReceiver
+        {
+            public ReceiveFirst2MessagesAndThrowErrorReceiver(IContainer container, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, receiver, behaviourTemplates,
+                wrapperBehaviours)
+            {
+            }
+            
+            private MockReceiverProperties Properties => this.Container.Resolve<MockReceiverProperties>();
+
+            protected override void OnStart()
+            {
+                int receivedMessages = 0;
+                
+                this.Listen((message) =>
+                {
+                    if (receivedMessages > 1)
+                    {
+                        throw new Exception();
+                    }
+
+                    Properties.ReceivedMessages.Add(
+                        Encoding.UTF8.GetString(message.Body));
+
+                    receivedMessages++;
+                });
             }
         }
     }

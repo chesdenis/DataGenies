@@ -4,8 +4,6 @@ using System.Linq;
 using DataGenies.Core.Models;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
-using DataGenies.Core.Tests.Integration.Mocks.Behaviours;
- 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
 
@@ -42,10 +40,10 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             var sut =  Substitute.ForPartsOf<AssemblyScanner>(new DataGeniesOptions());
             sut.GetAssemblyTypes(Arg.Any<string>()).Returns(new List<Type>()
             {
-                typeof(MockBrokenReceiver),
-                //typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
-                typeof(MockSimplePublisher),
-                typeof(MockSimpleReceiver),
+                // typeof(MockBrokenReceiver),
+                // //typeof(MockPublisherMultipleMessagesDifferentRoutingKeys),
+                // typeof(MockSimplePublisher),
+                // typeof(MockSimpleReceiver),
                 // typeof(MockRevertTextAfterReceiveConverter),
                 // typeof(MockRevertTextBeforePublishConverter)
             });
