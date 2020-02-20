@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace DataGenies.InMemoryManager.Controllers
+namespace DataGenies.Orchestrator.Controllers
 {
     [ApiController]
     [Route("[controller]")]

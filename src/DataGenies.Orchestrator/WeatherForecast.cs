@@ -1,6 +1,6 @@
 using System;
 
-namespace DataGenies.InMemoryManager
+namespace DataGenies.Orchestrator
 {
     public class WeatherForecast
     {

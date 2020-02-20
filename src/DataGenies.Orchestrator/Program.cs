@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DataGenies.InMemoryManager
+namespace DataGenies.Orchestrator
 {
     public class Program
     {
