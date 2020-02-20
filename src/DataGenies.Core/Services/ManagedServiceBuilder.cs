@@ -7,7 +7,6 @@ using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
-using DataGenies.Core.Wrappers;
 
 namespace DataGenies.Core.Services
 {

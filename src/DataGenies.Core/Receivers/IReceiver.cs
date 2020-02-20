@@ -1,5 +1,5 @@
 ﻿using System;
-using DataGenies.InMemory;
+using DataGenies.Core.Models;
 
 namespace DataGenies.Core.Receivers
 {

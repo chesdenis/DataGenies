@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Models
 {
     public class MqExceptionMessage : MqMessage
     {

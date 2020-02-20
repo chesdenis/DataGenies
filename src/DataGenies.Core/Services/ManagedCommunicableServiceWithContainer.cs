@@ -4,10 +4,9 @@ using System.Runtime.InteropServices;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
-using DataGenies.Core.Wrappers;
-using DataGenies.InMemory;
 
 namespace DataGenies.Core.Services
 {

@@ -1,4 +1,4 @@
-﻿namespace DataGenies.InMemory
+﻿namespace DataGenies.Core.Models
 {
     public class MqMessage
     {

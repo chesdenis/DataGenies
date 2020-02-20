@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using DataGenies.Core.Models;
 
 namespace DataGenies.InMemory
 {

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 
 namespace DataGenies.InMemory

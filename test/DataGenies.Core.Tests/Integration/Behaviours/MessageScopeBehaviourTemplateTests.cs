@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Tests.Integration.Extensions;

@@ -1,10 +1,9 @@
 ﻿using System;
-using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Models;
 using DataGenies.Core.Services;
-using DataGenies.InMemory;
 
-namespace DataGenies.Core.Wrappers
+namespace DataGenies.Core.Behaviours
 {
     public interface IWrapperBehaviourTemplate
     {

@@ -4,11 +4,11 @@ using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.Core.Wrappers;
 using DataGenies.InMemory;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
