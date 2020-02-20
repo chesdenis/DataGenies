@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Data
 {
     public class InMemorySchemaDataBuilder
     {

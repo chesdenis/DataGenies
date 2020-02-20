@@ -2,7 +2,7 @@
 using System.Linq;
 using DataGenies.Core.Configurators;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryMqConfigurator : IMqConfigurator
     {

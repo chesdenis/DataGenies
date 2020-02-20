@@ -9,7 +9,6 @@ using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.InMemory;
 
 namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
 {

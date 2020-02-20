@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DataGenies.InMemory
+﻿namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryMqBroker
     {

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using DataGenies.Core.Models;
 using DataGenies.Core.Receivers;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryReceiver : IReceiver
     {

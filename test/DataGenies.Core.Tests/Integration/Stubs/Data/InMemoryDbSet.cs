@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Data
 {
     public class InMemoryDbSet<T> : Microsoft.EntityFrameworkCore.DbSet<T>, IQueryable<T> where T : class
     {

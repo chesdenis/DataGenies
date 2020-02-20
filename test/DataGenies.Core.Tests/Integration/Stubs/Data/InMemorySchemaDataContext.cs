@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using DataGenies.Core.Models;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Data
 {
     public class InMemorySchemaDataContext : ISchemaDataContext
     {

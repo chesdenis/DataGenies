@@ -8,9 +8,8 @@ using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
-using Microsoft.EntityFrameworkCore.Internal;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.InMemory
 {
     public class InMemoryOrchestrator : IOrchestrator
     {

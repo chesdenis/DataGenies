@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
+using DataGenies.Core.InMemory;
 using DataGenies.Core.Models;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
-using DataGenies.InMemory;
+using DataGenies.Core.Tests.Integration.Stubs;
+using DataGenies.Core.Tests.Integration.Stubs.Data;
+using DataGenies.Core.Tests.Integration.Stubs.Mq;
 using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration

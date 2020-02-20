@@ -1,7 +1,6 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryExchanges : ConcurrentDictionary<string, InMemoryRoutingKeysWithQueues>
     {

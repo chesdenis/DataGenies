@@ -13,7 +13,6 @@ using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DataGenies.Core.Tests.Integration.Behaviours

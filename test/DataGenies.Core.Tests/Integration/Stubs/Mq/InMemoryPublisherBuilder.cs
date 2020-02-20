@@ -1,8 +1,6 @@
-﻿using System;
-using System.Runtime.Versioning;
-using DataGenies.Core.Publishers;
+﻿using DataGenies.Core.Publishers;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryPublisherBuilder : IPublisherBuilder
     {

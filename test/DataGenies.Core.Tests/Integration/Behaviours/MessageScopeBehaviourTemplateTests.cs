@@ -11,7 +11,6 @@ using DataGenies.Core.Receivers;
 using DataGenies.Core.Tests.Integration.Extensions;
 using DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates;
 using DataGenies.Core.Tests.Integration.Mocks.Properties;
-using DataGenies.InMemory;
 using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute.Exceptions;

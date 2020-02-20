@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using DataGenies.Core.Receivers;
+﻿using DataGenies.Core.Receivers;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryReceiverBuilder : IReceiverBuilder
     {

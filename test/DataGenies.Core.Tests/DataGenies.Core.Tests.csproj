@@ -16,11 +16,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\DataGenies.Core\DataGenies.Core.csproj" />
-      <ProjectReference Include="..\..\src\DataGenies.InMemory\DataGenies.InMemory.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Integration\Converters" />
     </ItemGroup>
 
 </Project>

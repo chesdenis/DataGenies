@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using DataGenies.Core.Models;
 
-namespace DataGenies.InMemory
+namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 {
     public class InMemoryQueue : ConcurrentQueue<MqMessage>
     {
