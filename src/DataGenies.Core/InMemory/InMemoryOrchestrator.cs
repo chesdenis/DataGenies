@@ -43,8 +43,9 @@ namespace DataGenies.Core.InMemory
 
         public IQueryable<ApplicationInstanceEntity> GetDeployed()
         {
-            return this._instancesInMemory.Keys.Select(s=>this._instancesInMemory[s])
-                .Where(w=>w.State == ServiceState.Deployed)
+            throw new NotImplementedException();
+            // return this._instancesInMemory.Keys.Select(s=>this._instancesInMemory[s])
+            //     .Where(w=>w.State == ServiceState.Deployed)
         }
 
         public IQueryable<ApplicationInstanceEntity> GetStarted()
