@@ -18,12 +18,17 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Mq
         
         public void Publish(MqMessage message)
         {
-            if (!this._broker.Model[_exchangeName].ContainsKey(message.RoutingKey))
+            this.Publish(_exchangeName, message);
+        }
+
+        public void Publish(string exchange, MqMessage message)
+        {
+            if (!this._broker.Model[exchange].ContainsKey(message.RoutingKey))
             {
                 return;
             }
             
-            var contextQueues = this._broker.Model[_exchangeName][message.RoutingKey].ToArray();
+            var contextQueues = this._broker.Model[exchange][message.RoutingKey].ToArray();
             
             Array.ForEach(contextQueues, queue =>
             {
@@ -40,6 +45,14 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Mq
             foreach (var dataEntry in dataRange)
             {
                 this.Publish(dataEntry);
+            }
+        }
+
+        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
+        {
+            foreach (var dataEntry in dataRange)
+            {
+                this.Publish(exchange, dataEntry);
             }
         }
     }

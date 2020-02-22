@@ -18,6 +18,9 @@ namespace DataGenies.Core.Services
 
         public int ApplicationInstanceEntityId { get; set; }
         
+        public List<CustomPublishParameter> CustomPublishParameters { get; set; }
+        public List<CustomListenParameter> CustomListenParameters { get; set; }
+
         public ServiceState State { get; set; }
         
         public IContainer Container { get; }
@@ -60,6 +63,11 @@ namespace DataGenies.Core.Services
             this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
         }
 
+        public void Publish(string exchange, MqMessage data)
+        {
+            this.ManagedActionWithMessage((x) => _publisher.Publish(exchange, x), data, BehaviourScope.Message);
+        }
+
         public void PublishRange(IEnumerable<MqMessage> dataRange)
         {
             this.ManagedActionWithContainer(
@@ -74,12 +82,39 @@ namespace DataGenies.Core.Services
                 BehaviourScope.Service);
         }
 
+        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
+        {
+            this.ManagedActionWithContainer(
+                (x) =>
+                {
+                    foreach (var dataEntry in dataRange)
+                    {
+                        this.Publish(exchange, dataEntry);
+                    }
+                },
+                Container,
+                BehaviourScope.Service);
+        }
+
         public void Listen(Action<MqMessage> onReceive)
         {
             this.ManagedActionWithContainer(
                 (x) =>
                 {
                     _receiver.Listen(
+                        arg =>
+                            this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
+                },
+                Container,
+                BehaviourScope.Service);
+        }
+
+        public void Listen(string queueName, Action<MqMessage> onReceive)
+        {
+            this.ManagedActionWithContainer(
+                (x) =>
+                {
+                    _receiver.Listen(queueName, 
                         arg =>
                             this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
                 },

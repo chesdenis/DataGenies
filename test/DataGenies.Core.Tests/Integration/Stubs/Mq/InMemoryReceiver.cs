@@ -20,9 +20,14 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Mq
 
         public void Listen(Action<MqMessage> onReceive)
         {
+            this.Listen(_queueName, onReceive);
+        }
+
+        public void Listen(string queueName, Action<MqMessage> onReceive)
+        {
             var relatedQueue = _broker.Model.Keys
                 .SelectMany(ss => _broker.Model[ss])
-                .SelectMany(ss => ss.Value).First(f => f.Name == _queueName);
+                .SelectMany(ss => ss.Value).First(f => f.Name == queueName);
              
             this._isListening = true;
             while (_isListening)

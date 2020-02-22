@@ -7,6 +7,8 @@ namespace DataGenies.Core.Receivers
     {
         void Listen(Action<MqMessage> onReceive);
 
+        void Listen(string queueName, Action<MqMessage> onReceive);
+
         void StopListen();
     }
 }
