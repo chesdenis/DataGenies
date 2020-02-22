@@ -14,7 +14,7 @@ namespace DataGenies.Core.Services
         private readonly IReceiverBuilder _receiverBuilder;
         private readonly IPublisherBuilder _publisherBuilder;
         private readonly IBindingConfigurator _bindingConfigurator;
-       
+
         private Type _templateType;
         private ApplicationInstanceEntity _applicationInstanceEntity;
         
@@ -85,7 +85,26 @@ namespace DataGenies.Core.Services
             managedService.ApplicationInstanceEntityId = this._applicationInstanceEntity.Id;
             managedService.State = ServiceState.Created;
                 
-            this._bindingConfigurator.ConfigureFor(managedService, this._applicationInstanceEntity);
+            this._bindingConfigurator.ConfigureFor(this._applicationInstanceEntity.Id);
+
+            foreach (var virtualBinding in managedService.GetVirtualBindings())
+            {
+                switch (virtualBinding.Scope)
+                {
+                    case VirtualBindingScope.Instance:
+                    {
+                        this._bindingConfigurator.ConfigureForInstanceScope(this._applicationInstanceEntity.Id, virtualBinding.InstanceName, virtualBinding.RoutingKey);
+                    }
+                        break;
+                    case VirtualBindingScope.Template:
+                    {
+                        this._bindingConfigurator.ConfigureForTemplateScope(this._applicationInstanceEntity.Id, virtualBinding.InstanceName, virtualBinding.RoutingKey);
+                    }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
 
             return managedService;
         }

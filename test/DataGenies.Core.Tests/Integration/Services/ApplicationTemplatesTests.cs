@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
@@ -96,19 +97,14 @@ namespace DataGenies.Core.Tests.Integration.Services
 
         private class DynamicMessagesPublisher : MockSimplePublisher
         {
-            private MockSettings Settings { get; set; }
-
-            public DynamicMessagesPublisher(
-                IContainer container, 
-                IPublisher publisher, 
-                IReceiver receiver,
-                IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) 
-                : base(container, publisher, receiver,
-                behaviourTemplates, wrapperBehaviours)
+            public DynamicMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator, MockSettings settings) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
+                Settings = settings;
             }
 
+            private MockSettings Settings { get; set; }
+
+         
             protected override void OnStart()
             {
                 Settings = ReadSettings<MockSettings>();

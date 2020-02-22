@@ -2,6 +2,7 @@
 using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
@@ -15,9 +16,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimplePublisher :  ManagedService
     {
-        public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver,
-            IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-            : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
+        public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }

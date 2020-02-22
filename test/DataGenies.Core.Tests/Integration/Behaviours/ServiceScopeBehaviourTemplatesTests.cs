@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
@@ -230,10 +231,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class MessageWithPrefixPublisher : MockSimplePublisher
         {
-            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
-                IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver,
-                behaviourTemplates, wrapperBehaviours)
+            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
             }
 
@@ -284,9 +282,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class MockBrokenReceiver : ManagedService
         {
-            public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
-                IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-                : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
+            public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
                 this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
             }

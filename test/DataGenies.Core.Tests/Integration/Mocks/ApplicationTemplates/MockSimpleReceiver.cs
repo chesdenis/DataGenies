@@ -2,7 +2,9 @@
 using System.Text;
 using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Services;
@@ -13,9 +15,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimpleReceiver : ManagedService
     {
-        public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
-            IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
-            : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours)
+        public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
         {
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }

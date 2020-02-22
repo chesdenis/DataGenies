@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
@@ -247,10 +248,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class Publish5MessagesPublisher : MockSimplePublisher
         {
-            public Publish5MessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
-                IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver,
-                behaviourTemplates, wrapperBehaviours)
+            public Publish5MessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
             }
 
@@ -275,10 +273,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class ReceiveFirst2MessagesAndThrowErrorReceiver : MockSimpleReceiver
         {
-            public ReceiveFirst2MessagesAndThrowErrorReceiver(IContainer container, IPublisher publisher,
-                IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver,
-                behaviourTemplates, wrapperBehaviours)
+            public ReceiveFirst2MessagesAndThrowErrorReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
             }
 

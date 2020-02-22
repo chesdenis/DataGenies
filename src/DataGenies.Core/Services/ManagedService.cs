@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
@@ -15,11 +17,17 @@ namespace DataGenies.Core.Services
     {
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
+        
+        protected readonly ISchemaDataContext SchemaDataContext;
+        
+        private readonly IBindingConfigurator _bindingConfigurator;
 
         public int ApplicationInstanceEntityId { get; set; }
-        
-        public List<CustomPublishParameter> CustomPublishParameters { get; set; }
-        public List<CustomListenParameter> CustomListenParameters { get; set; }
+
+        public virtual IEnumerable<VirtualBinding> GetVirtualBindings()
+        {
+            return new List<VirtualBinding>();
+        }
 
         public ServiceState State { get; set; }
         
@@ -32,16 +40,20 @@ namespace DataGenies.Core.Services
             IPublisher publisher,
             IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates,
-            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
+            IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours,
+            ISchemaDataContext schemaDataContext,
+            IBindingConfigurator bindingConfigurator)
         {
             Container = container;
 
             _receiver = receiver;
             _publisher = publisher;
 
+            SchemaDataContext = schemaDataContext;
+            _bindingConfigurator = bindingConfigurator;
             BehaviourTemplates = behaviourTemplates;
             WrapperBehaviours = wrapperBehaviours;
-
+            
             SetLinkToThisServiceInBehaviours();
         }
 
@@ -63,9 +75,9 @@ namespace DataGenies.Core.Services
             this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
         }
 
-        public void Publish(string exchange, MqMessage data)
+        public void PublishScoped(IEnumerable<VirtualBinding> scope, MqMessage data)
         {
-            this.ManagedActionWithMessage((x) => _publisher.Publish(exchange, x), data, BehaviourScope.Message);
+            throw new NotImplementedException();
         }
 
         public void PublishRange(IEnumerable<MqMessage> dataRange)
@@ -82,18 +94,9 @@ namespace DataGenies.Core.Services
                 BehaviourScope.Service);
         }
 
-        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
+        public void PublishRangeScoped(IEnumerable<VirtualBinding> scope, IEnumerable<MqMessage> dataRange)
         {
-            this.ManagedActionWithContainer(
-                (x) =>
-                {
-                    foreach (var dataEntry in dataRange)
-                    {
-                        this.Publish(exchange, dataEntry);
-                    }
-                },
-                Container,
-                BehaviourScope.Service);
+            throw new NotImplementedException();
         }
 
         public void Listen(Action<MqMessage> onReceive)
@@ -109,17 +112,9 @@ namespace DataGenies.Core.Services
                 BehaviourScope.Service);
         }
 
-        public void Listen(string queueName, Action<MqMessage> onReceive)
+        public void ListenScoped(IEnumerable<VirtualBinding> scope, Action<MqMessage> onReceive)
         {
-            this.ManagedActionWithContainer(
-                (x) =>
-                {
-                    _receiver.Listen(queueName, 
-                        arg =>
-                            this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
-                },
-                Container,
-                BehaviourScope.Service);
+            throw new NotImplementedException();
         }
 
         public void StopListen()

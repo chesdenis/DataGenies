@@ -1,7 +1,11 @@
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
+using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
+using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
 using DataGenies.Core.Tests.Integration.Extensions;
@@ -19,8 +23,8 @@ namespace DataGenies.Core.Tests.Integration.Services
         {
             base.Initialize();
             
-            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimplePublisher),
-                "MockSimplePublisher");
+            ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(CustomMessagesPublisher),
+                "CustomMessagesPublisherTemplate");
             
             ApplicationTemplatesScanner.RegisterMockApplicationTemplate(typeof(MockSimpleReceiver),
                 "SimpleReceiverTemplate");
@@ -36,78 +40,87 @@ namespace DataGenies.Core.Tests.Integration.Services
             var publisherId = 1;
             InMemorySchemaDataBuilder
                 .CreateApplicationTemplate(
-                    "DynamicMessagesPublisherTemplate",
+                    "CustomMessagesPublisherTemplate",
                     "2019.1.1")
-                .CreateApplicationInstance("SampleAppPublisher", publisherId)
+                .CreateApplicationInstance("Publisher", publisherId)
                 .ResetScopedConfigAndParameters();
             
-            var receiverAId = 2;
+            var receiverId = 2;
             InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SimpleReceiverTemplate",
                     "2018.1.1")
-                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+                .CreateApplicationInstance("Receiver", receiverId);
             
-            var receiverBId = 2;
+            var notifierId = 3;
             InMemorySchemaDataBuilder.CreateApplicationTemplate(
                     "SimpleReceiverTemplate",
                     "2018.1.1")
-                .CreateApplicationInstance("SampleAppReceiver", receiverId);
+                .CreateApplicationInstance("Notifier", notifierId);
             
             InMemorySchemaDataBuilder.ConfigureBinding(
-                "SampleAppPublisher",
-                "SampleAppReceiver", "#");
+                "Publisher",
+                "Receiver", "#");    
+            //
+            // InMemorySchemaDataBuilder.ConfigureBinding(
+            //     "Publisher",
+            //     "Notifier", "#");
             
             Orchestrator.Deploy(publisherId);
             Orchestrator.Deploy(receiverId);
+            Orchestrator.Deploy(notifierId);
             
             // Act
             Orchestrator.Start(publisherId);
             Orchestrator.Start(receiverId);
+            Orchestrator.Start(notifierId);
             
             Task.Run(async () =>
             {
                 await Task.Delay(1000);
                 await Orchestrator.Stop(receiverId);
+                await Orchestrator.Stop(notifierId);
             }).Wait();
             
             // Assert
             var publisherProperties = Orchestrator.GetApplicationInstanceContainer(publisherId).Resolve<MockPublisherProperties>();
             var receiverProperties = Orchestrator.GetApplicationInstanceContainer(receiverId).Resolve<MockReceiverProperties>();
+            var notifierProperties = Orchestrator.GetApplicationInstanceContainer(notifierId).Resolve<MockReceiverProperties>();
             
-            Assert.AreEqual(10, publisherProperties.PublishedMessages.Count);
-            Assert.AreEqual(10, receiverProperties.ReceivedMessages.Count);
+            Assert.AreEqual(2, publisherProperties.PublishedMessages.Count);
+            Assert.AreEqual(1, receiverProperties.ReceivedMessages.Count);
+            Assert.AreEqual(1, notifierProperties.ReceivedMessages.Count);
             
-            Assert.AreEqual("TestString4 - InnerProperty2: 20", publisherProperties.PublishedMessages[4]);
-            Assert.AreEqual("TestString4 - InnerProperty2: 20", receiverProperties.ReceivedMessages[4]); 
+            Assert.AreEqual("\"TestString\"", publisherProperties.PublishedMessages[0]);
+            Assert.AreEqual("\"TestString\"", receiverProperties.ReceivedMessages[0]); 
+            Assert.AreEqual("\"NotifierText\"", notifierProperties.ReceivedMessages[0]); 
         }
         
         private class CustomMessagesPublisher : MockSimplePublisher
         {
-            public CustomMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
-                IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours) : base(container, publisher, receiver,
-                behaviourTemplates, wrapperBehaviours)
+            public CustomMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
             {
             }
 
             protected override void OnStart()
             {
-                // Settings = ReadSettings<MockSettings>();
-                //
-                // for (int i = 0; i < int.Parse(Settings.SectionA.InnerProperty1); i++)
-                // {
-                //     var testString = $"TestString{i} - InnerProperty2: {Settings.SectionA.InnerProperty2}";
-                //
-                //     var testData = Encoding.UTF8.GetBytes(testString);
-                //     var mqMessage = new MqMessage()
-                //     {
-                //         Body = testData
-                //     };
-                //     this.Publish(mqMessage);
-                //
-                //     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
-                // }
-               
+                var mqMessage = new MqMessage
+                {
+                    Body = "TestString".ToBytes(),
+                    RoutingKey = "#"
+                };
+                
+                this.Publish(mqMessage);
+                
+                var mqMessageToNotifier = new MqMessage
+                {
+                    Body = "NotifierText".ToBytes(),
+                    RoutingKey = "#"
+                };
+                
+                //this.Publish("NotifierExchange", mqMessageToNotifier);
+                
+                Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
+                Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessageToNotifier.Body));
             }
         }
     }
