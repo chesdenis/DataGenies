@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.IO.Compression;
-using DataGenies.Core.Attributes;
+﻿using DataGenies.Core.Attributes;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
 
