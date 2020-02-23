@@ -20,7 +20,7 @@ namespace DataGenies.Core.Configurators
         private void ConfigureFor(BindingReference bindingReference)
         {
             this._mqConfigurator.EnsureExchange(bindingReference.ExchangeName);
-            this._mqConfigurator.EnsureQueue(bindingReference.ReceiverInstanceName, bindingReference.PublisherInstanceName, bindingReference.RoutingKey);
+            this._mqConfigurator.EnsureQueue(bindingReference.QueueName, bindingReference.ExchangeName, bindingReference.RoutingKey);
         }
 
         public BindingNetwork ConfigureBindingNetworkFor(int applicationInstanceEntityId)

@@ -100,23 +100,24 @@ namespace DataGenies.Core.Tests.Integration.Services
         {
             public DynamicMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
                 IEnumerable<BehaviourTemplate> behaviourTemplates,
-                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork,
-                MockSettings settings) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) 
+                :
+                base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours,
                 bindingNetwork)
             {
-                Settings = settings;
+               
             }
 
-            private MockSettings Settings { get; set; }
+           
 
          
             protected override void OnStart()
             {
-                Settings = ReadSettings<MockSettings>();
+                var  settings = ReadSettings<MockSettings>();
                 
-                for (int i = 0; i < int.Parse(Settings.SectionA.InnerProperty1); i++)
+                for (int i = 0; i < int.Parse(settings.SectionA.InnerProperty1); i++)
                 {
-                    var testString = $"TestString{i} - InnerProperty2: {Settings.SectionA.InnerProperty2}";
+                    var testString = $"TestString{i} - InnerProperty2: {settings.SectionA.InnerProperty2}";
             
                     var testData = Encoding.UTF8.GetBytes(testString);
                     var mqMessage = new MqMessage()
