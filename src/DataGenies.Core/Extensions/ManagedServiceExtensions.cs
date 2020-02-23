@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
@@ -84,5 +86,127 @@ namespace DataGenies.Core.Extensions
                 }
             }
         }
+
+
+        public static ConnectedReceivers ConnectedReceivers(this IManagedService managedService)
+        {
+            return managedService.BindingNetwork.Receivers;
+        }
+        
+        public static ConnectedReceivers ConnectedReceivers(
+            this IManagedService managedService,
+            Func<BindingReference, bool> whereArg)
+        {
+            var filtered = new ConnectedReceivers();
+
+            filtered.AddRange(managedService.BindingNetwork.Receivers.Where(whereArg).ToList());
+            
+            return filtered;
+        }
+        
+        public static ConnectedReceivers Except(
+            this ConnectedReceivers receivers,
+            ConnectedReceivers except)
+        {
+            var filtered = new ConnectedReceivers();
+
+            filtered.AddRange(((IEnumerable<BindingReference>)receivers).Except(except).ToList());
+            
+            return filtered;
+        }
+        
+        public static ConnectedPublishers Except(
+            this ConnectedPublishers publishers,
+            ConnectedPublishers except)
+        {
+            var filtered = new ConnectedPublishers();
+
+            filtered.AddRange(((IEnumerable<BindingReference>)publishers).Except(except).ToList());
+            
+            return filtered;
+        }
+
+        public static ConnectedReceivers ConnectedReceivers(
+            this IManagedService managedService,
+            string name)
+        {
+            var filtered = new ConnectedReceivers();
+            
+            filtered.AddRange(managedService.BindingNetwork.Receivers.Where(w=> w.ReceiverInstanceName == name).ToList());
+
+            return filtered;
+        }
+
+        public static ConnectedPublishers ConnectedPublishers(this IManagedService managedService)
+        {
+            return managedService.BindingNetwork.Publishers;
+        }
+
+        public static ConnectedPublishers ConnectedPublishers(
+            this IManagedService managedService,
+            Func<BindingReference, bool> whereArg)
+        {
+            var filtered = new ConnectedPublishers();
+
+            var bindingReferences = managedService.BindingNetwork.Publishers;
+
+            filtered.AddRange(bindingReferences.Where(whereArg));
+            
+            return filtered;
+        }
+
+        public static void ManagedPublishUsing(
+            this ConnectedReceivers connectedReceivers,
+            IManagedService managedService,
+            MqMessage message)
+        {
+            managedService.ManagedActionWithMessage((x) =>
+            {
+                foreach (var bindingReference in connectedReceivers)
+                {
+                    managedService.Publish(bindingReference.ExchangeName, x);
+                }
+            }, message, BehaviourScope.Message);
+        }
+
+        public static void ManagedPublishRange(
+            this ConnectedReceivers connectedReceivers,
+            IManagedService managedService,
+            IEnumerable<MqMessage> dataRange)
+        {
+            managedService.ManagedActionWithContainer(
+                (x) =>
+                {
+                    foreach (var dataEntry in dataRange)
+                    {
+                        connectedReceivers.ManagedPublishUsing(managedService, dataEntry);
+                    }
+                },
+                managedService.Container,
+                BehaviourScope.Service);
+        }
+        
+        public static void ManagedListen(
+            this ConnectedPublishers connectedPublishers,
+            IManagedService managedService,
+            Action<MqMessage> onReceive)
+        {
+            managedService.ManagedActionWithContainer(
+                (x) =>
+                {
+                    foreach (var bindingReference in connectedPublishers)
+                    {
+                        managedService.Listen(bindingReference.QueueName,
+                            arg =>
+                                managedService.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
+                    }
+                },
+                managedService.Container,
+                BehaviourScope.Service);
+        }
     }
+
+    
+
+
 }

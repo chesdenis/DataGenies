@@ -231,7 +231,10 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class MessageWithPrefixPublisher : MockSimplePublisher
         {
-            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public MessageWithPrefixPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) : base(
+                container, publisher, receiver, behaviourTemplates, wrapperBehaviours, bindingNetwork)
             {
             }
 
@@ -240,7 +243,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 var testString = $"{this.Properties.ManagedParameter}TestString";
             
                 var testData = Encoding.UTF8.GetBytes(testString);
-                this.Publish(new MqMessage()
+                this.ConnectedReceivers().ManagedPublishUsing(this, new MqMessage()
                 {
                     Body = testData
                 });
@@ -271,7 +274,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
 
             public override void BehaviourActionWithContainer<T>(Action<T> action, T container)
             {
-                ((IPublisher)this.ManagedService).Publish(new MqMessage
+                this.ManagedService.ConnectedReceivers().ManagedPublishUsing(this.ManagedService, new MqMessage
                 {
                     Body = "Started".ToBytes()
                 });
@@ -282,7 +285,10 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class MockBrokenReceiver : ManagedService
         {
-            public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public MockBrokenReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) : base(
+                container, publisher, receiver, behaviourTemplates, wrapperBehaviours, bindingNetwork)
             {
                 this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
             }
@@ -293,7 +299,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             {
                 if (Properties.ManagedParameter == "Work")
                 {
-                    this.Listen((message) =>
+                    this.ConnectedPublishers().ManagedListen(this, (message) =>
                     {
                         Properties.ReceivedMessages.Add(
                             Encoding.UTF8.GetString(message.Body));

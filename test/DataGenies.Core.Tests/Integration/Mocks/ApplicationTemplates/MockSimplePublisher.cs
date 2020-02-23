@@ -16,7 +16,10 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimplePublisher :  ManagedService
     {
-        public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+        public MockSimplePublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+            IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours,
+            BindingNetwork bindingNetwork) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours,
+            bindingNetwork)
         {
             this.Container.Register<MockPublisherProperties>(new MockPublisherProperties());
         }
@@ -25,7 +28,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         
         protected override void OnStart()
         {
-            this.Publish(new MqMessage(){ Body = "TestMessage".ToBytes(), RoutingKey = "#"});
+            this.ConnectedReceivers().ManagedPublishUsing(this, new MqMessage(){ Body = "TestMessage".ToBytes(), RoutingKey = "#"});
         }
  
         protected override void OnStop()

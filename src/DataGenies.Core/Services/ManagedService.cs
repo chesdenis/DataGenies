@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using DataGenies.Core.Behaviours;
-using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
@@ -17,23 +16,15 @@ namespace DataGenies.Core.Services
     {
         private readonly IPublisher _publisher;
         private readonly IReceiver _receiver;
-        
-        protected readonly ISchemaDataContext SchemaDataContext;
-        
-        private readonly IBindingConfigurator _bindingConfigurator;
-
+      
         public int ApplicationInstanceEntityId { get; set; }
-
-        public virtual IEnumerable<VirtualBinding> GetVirtualBindings()
-        {
-            return new List<VirtualBinding>();
-        }
-
         public ServiceState State { get; set; }
         
         public IContainer Container { get; }
         public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
         public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
+        
+        public BindingNetwork BindingNetwork { get; }
 
         protected ManagedService(
             IContainer container,
@@ -41,19 +32,17 @@ namespace DataGenies.Core.Services
             IReceiver receiver,
             IEnumerable<BehaviourTemplate> behaviourTemplates,
             IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours,
-            ISchemaDataContext schemaDataContext,
-            IBindingConfigurator bindingConfigurator)
+            BindingNetwork bindingNetwork)
         {
             Container = container;
 
             _receiver = receiver;
             _publisher = publisher;
 
-            SchemaDataContext = schemaDataContext;
-            _bindingConfigurator = bindingConfigurator;
             BehaviourTemplates = behaviourTemplates;
             WrapperBehaviours = wrapperBehaviours;
-            
+            BindingNetwork = bindingNetwork;
+
             SetLinkToThisServiceInBehaviours();
         }
 
@@ -69,52 +58,10 @@ namespace DataGenies.Core.Services
                 behaviour.ManagedService = this;
             }
         }
-
-        public void Publish(MqMessage data)
+        
+        public void Listen(string queueName, Action<MqMessage> onReceive)
         {
-            this.ManagedActionWithMessage((x) => _publisher.Publish(x), data, BehaviourScope.Message);
-        }
-
-        public void PublishScoped(IEnumerable<VirtualBinding> scope, MqMessage data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void PublishRange(IEnumerable<MqMessage> dataRange)
-        {
-            this.ManagedActionWithContainer(
-                (x) =>
-                {
-                    foreach (var dataEntry in dataRange)
-                    {
-                        this.Publish(dataEntry);
-                    }
-                },
-                Container,
-                BehaviourScope.Service);
-        }
-
-        public void PublishRangeScoped(IEnumerable<VirtualBinding> scope, IEnumerable<MqMessage> dataRange)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Listen(Action<MqMessage> onReceive)
-        {
-            this.ManagedActionWithContainer(
-                (x) =>
-                {
-                    _receiver.Listen(
-                        arg =>
-                            this.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
-                },
-                Container,
-                BehaviourScope.Service);
-        }
-
-        public void ListenScoped(IEnumerable<VirtualBinding> scope, Action<MqMessage> onReceive)
-        {
-            throw new NotImplementedException();
+            _receiver.Listen(queueName, onReceive);
         }
 
         public void StopListen()
@@ -151,6 +98,16 @@ namespace DataGenies.Core.Services
             }
 
             return JsonSerializer.Deserialize<T>(configTemplateJson);
+        }
+
+        public void Publish(string exchange, MqMessage data)
+        {
+            _publisher.Publish(exchange, data);
+        }
+
+        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
+        {
+            _publisher.PublishRange(exchange, dataRange);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
@@ -97,7 +98,11 @@ namespace DataGenies.Core.Tests.Integration.Services
 
         private class DynamicMessagesPublisher : MockSimplePublisher
         {
-            public DynamicMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator, MockSettings settings) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public DynamicMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork,
+                MockSettings settings) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours,
+                bindingNetwork)
             {
                 Settings = settings;
             }
@@ -118,7 +123,7 @@ namespace DataGenies.Core.Tests.Integration.Services
                     {
                         Body = testData
                     };
-                    this.Publish(mqMessage);
+                    this.ConnectedReceivers().ManagedPublishUsing(this, mqMessage);
     
                     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
@@ -242,13 +243,17 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     RoutingKey = "Errors"
                 };
                 
-                ((IPublisher)this.ManagedService).Publish(exceptionMessage);
+                this.ManagedService.ConnectedReceivers()
+                    .ManagedPublishUsing(this.ManagedService, exceptionMessage);
             }
         }
         
         private class Publish5MessagesPublisher : MockSimplePublisher
         {
-            public Publish5MessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public Publish5MessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) : base(
+                container, publisher, receiver, behaviourTemplates, wrapperBehaviours, bindingNetwork)
             {
             }
 
@@ -263,7 +268,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     {
                         Body = testData
                     };
-                    this.Publish(mqMessage);
+                    this.ConnectedReceivers().ManagedPublishUsing(this, mqMessage);
     
                     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 }
@@ -273,7 +278,10 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
         
         private class ReceiveFirst2MessagesAndThrowErrorReceiver : MockSimpleReceiver
         {
-            public ReceiveFirst2MessagesAndThrowErrorReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public ReceiveFirst2MessagesAndThrowErrorReceiver(IContainer container, IPublisher publisher,
+                IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) : base(
+                container, publisher, receiver, behaviourTemplates, wrapperBehaviours, bindingNetwork)
             {
             }
 
@@ -282,8 +290,8 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             protected override void OnStart()
             {
                 int receivedMessages = 0;
-                
-                this.Listen((message) =>
+
+                this.ConnectedPublishers().ManagedListen(this, ((message) =>
                 {
                     if (receivedMessages > 1)
                     {
@@ -294,7 +302,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                         Encoding.UTF8.GetString(message.Body));
 
                     receivedMessages++;
-                });
+                }));
             }
         }
     }

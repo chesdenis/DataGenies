@@ -4,6 +4,7 @@ using DataGenies.Core.Attributes;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.Containers;
+using DataGenies.Core.Extensions;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 using DataGenies.Core.Receivers;
@@ -15,7 +16,10 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
     [ApplicationTemplate]
     public class MockSimpleReceiver : ManagedService
     {
-        public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+        public MockSimpleReceiver(IContainer container, IPublisher publisher, IReceiver receiver,
+            IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours,
+            BindingNetwork bindingNetwork) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours,
+            bindingNetwork)
         {
             this.Container.Register<MockReceiverProperties>(new MockReceiverProperties());
         }
@@ -24,7 +28,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         
         protected override void OnStart()
         {
-            this.Listen((message) =>
+            this.ConnectedPublishers().ManagedListen(this, (message) =>
             {
                 Properties.ReceivedMessages.Add(
                     Encoding.UTF8.GetString(message.Body));

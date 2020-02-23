@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DataGenies.Core.Behaviours;
@@ -60,10 +61,10 @@ namespace DataGenies.Core.Tests.Integration.Services
             InMemorySchemaDataBuilder.ConfigureBinding(
                 "Publisher",
                 "Receiver", "#");    
-            //
-            // InMemorySchemaDataBuilder.ConfigureBinding(
-            //     "Publisher",
-            //     "Notifier", "#");
+            
+            InMemorySchemaDataBuilder.ConfigureBinding(
+                "Publisher",
+                "Notifier", "#");
             
             Orchestrator.Deploy(publisherId);
             Orchestrator.Deploy(receiverId);
@@ -97,7 +98,10 @@ namespace DataGenies.Core.Tests.Integration.Services
         
         private class CustomMessagesPublisher : MockSimplePublisher
         {
-            public CustomMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver, IEnumerable<BehaviourTemplate> behaviourTemplates, IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, ISchemaDataContext schemaDataContext, IBindingConfigurator bindingConfigurator) : base(container, publisher, receiver, behaviourTemplates, wrapperBehaviours, schemaDataContext, bindingConfigurator)
+            public CustomMessagesPublisher(IContainer container, IPublisher publisher, IReceiver receiver,
+                IEnumerable<BehaviourTemplate> behaviourTemplates,
+                IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours, BindingNetwork bindingNetwork) : base(
+                container, publisher, receiver, behaviourTemplates, wrapperBehaviours, bindingNetwork)
             {
             }
 
@@ -108,17 +112,21 @@ namespace DataGenies.Core.Tests.Integration.Services
                     Body = "TestString".ToBytes(),
                     RoutingKey = "#"
                 };
-                
-                this.Publish(mqMessage);
-                
+
+               this.ConnectedReceivers()
+                    .Except(
+                    this.ConnectedReceivers(w => w.ReceiverInstanceName == "Notifier"))
+                    .ManagedPublishUsing(this, mqMessage);
+                 
                 var mqMessageToNotifier = new MqMessage
                 {
                     Body = "NotifierText".ToBytes(),
                     RoutingKey = "#"
                 };
                 
-                //this.Publish("NotifierExchange", mqMessageToNotifier);
-                
+                this.ConnectedReceivers("Notifier")
+                    .ManagedPublishUsing(this, mqMessageToNotifier);
+                 
                 Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessageToNotifier.Body));
             }

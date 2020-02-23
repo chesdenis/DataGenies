@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DataGenies.Core.Models;
-using DataGenies.Core.Services;
 
 namespace DataGenies.Core.Configurators
 {
@@ -17,74 +17,75 @@ namespace DataGenies.Core.Configurators
             _mqConfigurator = mqConfigurator;
         }
         
-        public void ConfigureFor(int instanceId)
+        private void ConfigureFor(BindingReference bindingReference)
         {
-            ConfigureMqForReceiverRole(instanceId);
-            ConfigureMqForPublisherRole(instanceId);
+            this._mqConfigurator.EnsureExchange(bindingReference.ExchangeName);
+            this._mqConfigurator.EnsureQueue(bindingReference.ReceiverInstanceName, bindingReference.PublisherInstanceName, bindingReference.RoutingKey);
         }
 
-        public void ConfigureForTemplateScope(int instanceId, string boundTemplateName, string routingKey = "#")
+        public BindingNetwork ConfigureBindingNetworkFor(int applicationInstanceEntityId)
         {
-            var boundInstanceNames =
-                _schemaDataContext.ApplicationTemplates
-                    .First(f => f.Name == boundTemplateName)
-                    .ApplicationInstances.Select(s => s.Name).ToArray(); 
+            var publishersBindingEntities = _schemaDataContext.Bindings
+                .Where(w => w.ReceiverId == applicationInstanceEntityId);
+
+            var receiversBindingEntities = _schemaDataContext.Bindings
+                .Where(w => w.PublisherId == applicationInstanceEntityId);
+
+            var bindingReferences = publishersBindingEntities.Select(
+                s => new BindingReference
+                {
+                    PublisherId = s.PublisherId,
+                    ReceiverId = s.ReceiverId,
+                    PublisherInstanceName = s.PublisherApplicationInstanceEntity.Name,
+                    ReceiverInstanceName = s.ReceiverApplicationInstanceEntity.Name,
+                    PublisherTemplateName = s.PublisherApplicationInstanceEntity.TemplateEntity.Name,
+                    ReceiverTemplateName = s.ReceiverApplicationInstanceEntity.TemplateEntity.Name,
+                    RoutingKey = s.ReceiverRoutingKey,
+                    CurrentInstanceName = s.ReceiverApplicationInstanceEntity.Name
+                }).Union(
+                receiversBindingEntities.Select(
+                    s => new BindingReference
+                    {
+                        PublisherId = s.PublisherId,
+                        ReceiverId = s.ReceiverId,
+                        PublisherInstanceName = s.PublisherApplicationInstanceEntity.Name,
+                        ReceiverInstanceName = s.ReceiverApplicationInstanceEntity.Name,
+                        PublisherTemplateName = s.PublisherApplicationInstanceEntity.TemplateEntity.Name,
+                        ReceiverTemplateName = s.ReceiverApplicationInstanceEntity.TemplateEntity.Name,
+                        RoutingKey = s.ReceiverRoutingKey,
+                        CurrentInstanceName = s.PublisherApplicationInstanceEntity.Name
+                    }));
             
-            var instanceName = _schemaDataContext.ApplicationInstances.First(f => f.Id == instanceId).Name;
-
-            foreach (var boundInstanceName in boundInstanceNames)
-            {
-                ConfigureFor(instanceName, boundInstanceName, routingKey);
-                ConfigureFor(boundInstanceName, instanceName, routingKey);
-            }
-        }
-
-        public void ConfigureForInstanceScope(int instanceId, string boundInstanceName, string routingKey = "#")
-        {
-            var instanceName = _schemaDataContext.ApplicationInstances.First(f => f.Id == instanceId).Name;
+            var connectedPublishers = new ConnectedPublishers();
+            connectedPublishers.AddRange(bindingReferences
+                     .Where(w => w.ReceiverId == applicationInstanceEntityId)
+                     .ToList());
             
-            ConfigureFor(instanceName, boundInstanceName, routingKey);
-            ConfigureFor(boundInstanceName, instanceName, routingKey);
-        }
-        
-        private void ConfigureMqForPublisherRole(int instanceId)
-        {
-            var instanceName = _schemaDataContext.ApplicationInstances.First(f => f.Id == instanceId).Name;
-            
-            var relatedReceivers = _schemaDataContext.Bindings
-                .Where(w => w.PublisherId == instanceId);
+            var connectedReceivers = new ConnectedReceivers();
+            connectedReceivers.AddRange(
+                bindingReferences
+                    .Where(w => w.PublisherId == applicationInstanceEntityId)
+                    .ToList());
 
-            this._mqConfigurator.EnsureExchange(instanceName);
-
-            foreach (var receiver in relatedReceivers)
+            return new BindingNetwork
             {
-                this._mqConfigurator.EnsureQueue(receiver.ReceiverApplicationInstanceEntity.Name, 
-                    instanceName,
-                    $"{receiver.ReceiverRoutingKey}");
-            }
+                ApplicationInstanceEntityId = applicationInstanceEntityId,
+                Publishers = connectedPublishers,
+                Receivers = connectedReceivers
+            };
         }
 
-        private void ConfigureMqForReceiverRole(int instanceId)
+        public void ConfigureBindings(BindingNetwork bindingNetwork)
         {
-            var instanceName = _schemaDataContext.ApplicationInstances.First(f => f.Id == instanceId).Name;
-
-            var relatedPublishers = _schemaDataContext.Bindings
-                .Where(w => w.ReceiverId == instanceId);
-
-            foreach (var publisher in relatedPublishers)
+            foreach (var bindingReference in bindingNetwork.Publishers)
             {
-                this._mqConfigurator.EnsureExchange(publisher.PublisherApplicationInstanceEntity.Name);
-                this._mqConfigurator.EnsureQueue(
-                    instanceName, 
-                    publisher.PublisherApplicationInstanceEntity.Name,
-                    publisher.ReceiverRoutingKey);
+                ConfigureFor(bindingReference);
             }
-        }
-        
-        private void ConfigureFor(string publisherName, string receiverName, string routingKey = "#")
-        {
-            this._mqConfigurator.EnsureExchange(publisherName);
-            this._mqConfigurator.EnsureQueue(receiverName,publisherName, $"{routingKey}");
+
+            foreach (var bindingReference in bindingNetwork.Receivers)
+            {
+                ConfigureFor(bindingReference);
+            }
         }
     }
 }

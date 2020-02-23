@@ -60,15 +60,20 @@ namespace DataGenies.Core.Services
             var receiver = this._receiverBuilder
                 .WithQueue(this._applicationInstanceEntity.Name)
                 .Build();
-                
+
             var publisher = this._publisherBuilder
                 .WithExchange(this._applicationInstanceEntity.Name)
                 .Build();
-            
+
             var container = new Container();
-            
+
             container.Register<string>(this._applicationInstanceEntity.ParametersDictAsJson, "ParametersDictAsJson");
-            container.Register<string>(this._applicationInstanceEntity.TemplateEntity.ConfigTemplateJson, "ConfigTemplateJson");
+            container.Register<string>(
+                this._applicationInstanceEntity.TemplateEntity.ConfigTemplateJson,
+                "ConfigTemplateJson");
+            
+            var bindingNetwork = this._bindingConfigurator.ConfigureBindingNetworkFor(this._applicationInstanceEntity.Id);
+            this._bindingConfigurator.ConfigureBindings(bindingNetwork);
 
             var ctorArgs = new List<object>
             {
@@ -76,36 +81,16 @@ namespace DataGenies.Core.Services
                 publisher,
                 receiver,
                 _behaviourTemplates,
-                _wrapperBehaviours
+                _wrapperBehaviours,
+                bindingNetwork
             };
 
             var managedService =
-                (IManagedService) Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
-            
+                (IManagedService)Activator.CreateInstance(this._templateType, ctorArgs.ToArray());
+
             managedService.ApplicationInstanceEntityId = this._applicationInstanceEntity.Id;
             managedService.State = ServiceState.Created;
-                
-            this._bindingConfigurator.ConfigureFor(this._applicationInstanceEntity.Id);
-
-            foreach (var virtualBinding in managedService.GetVirtualBindings())
-            {
-                switch (virtualBinding.Scope)
-                {
-                    case VirtualBindingScope.Instance:
-                    {
-                        this._bindingConfigurator.ConfigureForInstanceScope(this._applicationInstanceEntity.Id, virtualBinding.InstanceName, virtualBinding.RoutingKey);
-                    }
-                        break;
-                    case VirtualBindingScope.Template:
-                    {
-                        this._bindingConfigurator.ConfigureForTemplateScope(this._applicationInstanceEntity.Id, virtualBinding.InstanceName, virtualBinding.RoutingKey);
-                    }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
+            
             return managedService;
         }
     }
