@@ -243,7 +243,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 var testString = $"{this.Properties.ManagedParameter}TestString";
             
                 var testData = Encoding.UTF8.GetBytes(testString);
-                this.ConnectedReceivers().ManagedPublishUsing(this, new MqMessage()
+                this.ConnectedReceivers().PublishUsing(this, new MqMessage()
                 {
                     Body = testData
                 });
@@ -274,7 +274,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
 
             public override void BehaviourActionWithContainer<T>(Action<T> action, T container)
             {
-                this.ManagedService.ConnectedReceivers().ManagedPublishUsing(this.ManagedService, new MqMessage
+                this.ManagedService.ConnectedReceivers().PublishUsing(this.ManagedService, new MqMessage
                 {
                     Body = "Started".ToBytes()
                 });
@@ -299,7 +299,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             {
                 if (Properties.ManagedParameter == "Work")
                 {
-                    this.ConnectedPublishers().ManagedListen(this, (message) =>
+                    this.ConnectedPublishers().ListenUsing(this, (message) =>
                     {
                         Properties.ReceivedMessages.Add(
                             Encoding.UTF8.GetString(message.Body));

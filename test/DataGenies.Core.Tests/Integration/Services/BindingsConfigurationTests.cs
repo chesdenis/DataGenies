@@ -116,7 +116,7 @@ namespace DataGenies.Core.Tests.Integration.Services
                this.ConnectedReceivers()
                     .Except(
                     this.ConnectedReceivers(w => w.ReceiverInstanceName == "Notifier"))
-                    .ManagedPublishUsing(this, mqMessage);
+                    .PublishUsing(this, mqMessage);
                  
                 var mqMessageToNotifier = new MqMessage
                 {
@@ -125,7 +125,7 @@ namespace DataGenies.Core.Tests.Integration.Services
                 };
                 
                 this.ConnectedReceivers("Notifier")
-                    .ManagedPublishUsing(this, mqMessageToNotifier);
+                    .PublishUsing(this, mqMessageToNotifier);
                  
                 Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessageToNotifier.Body));

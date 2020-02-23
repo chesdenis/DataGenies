@@ -58,11 +58,9 @@ namespace DataGenies.Core.Services
         public IManagedService Build()
         {
             var receiver = this._receiverBuilder
-                .WithQueue(this._applicationInstanceEntity.Name)
                 .Build();
 
             var publisher = this._publisherBuilder
-                .WithExchange(this._applicationInstanceEntity.Name)
                 .Build();
 
             var container = new Container();

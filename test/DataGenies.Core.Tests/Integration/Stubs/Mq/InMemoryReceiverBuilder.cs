@@ -11,16 +11,10 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Mq
         {
             _broker = broker;
         }
-
-        public IReceiverBuilder WithQueue(string queueName)
-        {
-            this.QueueName = queueName;
-            return this;
-        }
         
         public IReceiver Build()
         {
-            return new InMemoryReceiver(_broker, this.QueueName);
+            return new InMemoryReceiver(_broker);
         }
     }
 }

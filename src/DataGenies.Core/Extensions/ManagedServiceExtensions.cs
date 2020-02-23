@@ -155,7 +155,7 @@ namespace DataGenies.Core.Extensions
             return filtered;
         }
 
-        public static void ManagedPublishUsing(
+        public static void PublishUsing(
             this ConnectedReceivers connectedReceivers,
             IManagedService managedService,
             MqMessage message)
@@ -169,7 +169,7 @@ namespace DataGenies.Core.Extensions
             }, message, BehaviourScope.Message);
         }
 
-        public static void ManagedPublishRange(
+        public static void PublishRangeUsing(
             this ConnectedReceivers connectedReceivers,
             IManagedService managedService,
             IEnumerable<MqMessage> dataRange)
@@ -179,14 +179,14 @@ namespace DataGenies.Core.Extensions
                 {
                     foreach (var dataEntry in dataRange)
                     {
-                        connectedReceivers.ManagedPublishUsing(managedService, dataEntry);
+                        connectedReceivers.PublishUsing(managedService, dataEntry);
                     }
                 },
                 managedService.Container,
                 BehaviourScope.Service);
         }
         
-        public static void ManagedListen(
+        public static void ListenUsing(
             this ConnectedPublishers connectedPublishers,
             IManagedService managedService,
             Action<MqMessage> onReceive)

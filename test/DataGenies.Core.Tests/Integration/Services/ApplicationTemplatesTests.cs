@@ -123,7 +123,7 @@ namespace DataGenies.Core.Tests.Integration.Services
                     {
                         Body = testData
                     };
-                    this.ConnectedReceivers().ManagedPublishUsing(this, mqMessage);
+                    this.ConnectedReceivers().PublishUsing(this, mqMessage);
     
                     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 }

@@ -28,7 +28,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         
         protected override void OnStart()
         {
-            this.ConnectedReceivers().ManagedPublishUsing(this, new MqMessage(){ Body = "TestMessage".ToBytes(), RoutingKey = "#"});
+            this.ConnectedReceivers().PublishUsing(this, new MqMessage(){ Body = "TestMessage".ToBytes(), RoutingKey = "#"});
         }
  
         protected override void OnStop()

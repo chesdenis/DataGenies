@@ -8,21 +8,14 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Mq
     public class InMemoryReceiver : IReceiver
     {
         private readonly InMemoryMqBroker _broker;
-        private readonly string _queueName;
-         
+      
         private bool _isListening;
 
-        public InMemoryReceiver(InMemoryMqBroker broker, string queueName)
+        public InMemoryReceiver(InMemoryMqBroker broker)
         {
             _broker = broker;
-            _queueName = queueName;
         }
-
-        public void Listen(Action<MqMessage> onReceive)
-        {
-            this.Listen(_queueName, onReceive);
-        }
-
+        
         public void Listen(string queueName, Action<MqMessage> onReceive)
         {
             var relatedQueue = _broker.Model.Keys

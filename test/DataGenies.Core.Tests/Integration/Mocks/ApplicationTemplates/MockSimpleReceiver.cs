@@ -28,7 +28,7 @@ namespace DataGenies.Core.Tests.Integration.Mocks.ApplicationTemplates
         
         protected override void OnStart()
         {
-            this.ConnectedPublishers().ManagedListen(this, (message) =>
+            this.ConnectedPublishers().ListenUsing(this, (message) =>
             {
                 Properties.ReceivedMessages.Add(
                     Encoding.UTF8.GetString(message.Body));

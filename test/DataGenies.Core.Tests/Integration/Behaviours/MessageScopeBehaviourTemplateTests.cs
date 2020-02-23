@@ -244,7 +244,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                 };
                 
                 this.ManagedService.ConnectedReceivers()
-                    .ManagedPublishUsing(this.ManagedService, exceptionMessage);
+                    .PublishUsing(this.ManagedService, exceptionMessage);
             }
         }
         
@@ -268,7 +268,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
                     {
                         Body = testData
                     };
-                    this.ConnectedReceivers().ManagedPublishUsing(this, mqMessage);
+                    this.ConnectedReceivers().PublishUsing(this, mqMessage);
     
                     Properties.PublishedMessages.Add(Encoding.UTF8.GetString(mqMessage.Body));
                 }
@@ -291,7 +291,7 @@ namespace DataGenies.Core.Tests.Integration.Behaviours
             {
                 int receivedMessages = 0;
 
-                this.ConnectedPublishers().ManagedListen(this, ((message) =>
+                this.ConnectedPublishers().ListenUsing(this, ((message) =>
                 {
                     if (receivedMessages > 1)
                     {
