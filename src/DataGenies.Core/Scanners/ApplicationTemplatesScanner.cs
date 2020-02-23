@@ -9,20 +9,25 @@ namespace DataGenies.Core.Scanners
 {
     public class ApplicationTemplatesScanner : IApplicationTemplatesScanner
     {
-        private readonly DataGeniesOptions _options;
-        private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IAssemblyScanner _assemblyScanner;
+        private readonly IFileSystemRepository _fileSystemRepository;
+        private readonly DataGeniesOptions _options;
 
-        public ApplicationTemplatesScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyScanner assemblyScanner)
+        public ApplicationTemplatesScanner(
+            DataGeniesOptions options,
+            IFileSystemRepository fileSystemRepository,
+            IAssemblyScanner assemblyScanner)
         {
-            _options = options;
-            _fileSystemRepository = fileSystemRepository;
-            _assemblyScanner = assemblyScanner;
+            this._options = options;
+            this._fileSystemRepository = fileSystemRepository;
+            this._assemblyScanner = assemblyScanner;
         }
 
         public IEnumerable<ApplicationTemplateEntity> ScanTemplates()
         {
-            return _options.DropFolderOptions.UseZippedPackages ? this.ScanTemplatesInsideZippedPackages() : this.ScanTemplatesAsRegularPackages();
+            return this._options.DropFolderOptions.UseZippedPackages
+                ? this.ScanTemplatesInsideZippedPackages()
+                : this.ScanTemplatesAsRegularPackages();
         }
 
         public Type FindType(ApplicationTemplateEntity applicationTemplateEntity)
@@ -41,7 +46,7 @@ namespace DataGenies.Core.Scanners
 
         private IEnumerable<ApplicationTemplateEntity> ScanTemplatesAsRegularPackages()
         {
-            var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
+            var assemblies = this._fileSystemRepository.GetFilesInFolder(this._options.DropFolderOptions.Path, "*.dll");
 
             foreach (var assemblyPath in assemblies)
             {

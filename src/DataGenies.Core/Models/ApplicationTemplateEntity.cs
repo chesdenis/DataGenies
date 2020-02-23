@@ -8,12 +8,15 @@ namespace DataGenies.Core.Models
         {
             this.ApplicationInstances = new HashSet<ApplicationInstanceEntity>();
         }
-        
+
         public int Id { get; set; }
+
         public string Name { get; set; }
+
         public string Version { get; set; }
+
         public string AssemblyPath { get; set; }
-        
+
         public string ConfigTemplateJson { get; set; }
 
         public virtual ICollection<ApplicationInstanceEntity> ApplicationInstances { get; set; }

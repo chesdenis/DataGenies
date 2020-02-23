@@ -6,6 +6,5 @@ namespace DataGenies.Core.Guards
 {
     public interface IGuard : IReceiver, IPublisher, IStartable
     {
-        
     }
 }

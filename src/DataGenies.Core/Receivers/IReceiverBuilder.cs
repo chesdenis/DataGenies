@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace DataGenies.Core.Receivers
+﻿namespace DataGenies.Core.Receivers
 {
     public interface IReceiverBuilder
     {

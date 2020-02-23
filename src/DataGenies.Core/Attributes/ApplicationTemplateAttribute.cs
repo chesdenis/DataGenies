@@ -1,6 +1,8 @@
-﻿namespace DataGenies.Core.Attributes
+﻿using System;
+
+namespace DataGenies.Core.Attributes
 {
-    public class ApplicationTemplateAttribute : System.Attribute
+    public class ApplicationTemplateAttribute : Attribute
     {
     }
 }

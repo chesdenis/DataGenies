@@ -6,8 +6,8 @@ namespace DataGenies.Core.Models
     {
         public ApplicationInstanceEntity()
         {
-            IncomingBindings = new HashSet<BindingEntity>();
-            OutcomingBindings = new HashSet<BindingEntity>();
+            this.IncomingBindings = new HashSet<BindingEntity>();
+            this.OutcomingBindings = new HashSet<BindingEntity>();
         }
 
         public int Id { get; set; }

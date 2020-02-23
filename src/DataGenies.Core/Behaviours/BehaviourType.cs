@@ -5,6 +5,6 @@
         Unspecified,
         BeforeRun,
         AfterRun,
-        OnException
+        OnException,
     }
 }

@@ -1,34 +1,27 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using DataGenies.Core.Models;
 
 namespace DataGenies.Core.Configurators
 {
     public class BindingConfigurator : IBindingConfigurator
     {
-        private readonly ISchemaDataContext _schemaDataContext;
-        private readonly IMqConfigurator _mqConfigurator;
+        private readonly IMqConfigurator mqConfigurator;
+        private readonly ISchemaDataContext schemaDataContext;
 
         public BindingConfigurator(
             ISchemaDataContext schemaDataContext,
             IMqConfigurator mqConfigurator)
         {
-            _schemaDataContext = schemaDataContext;
-            _mqConfigurator = mqConfigurator;
-        }
-        
-        private void ConfigureFor(BindingReference bindingReference)
-        {
-            this._mqConfigurator.EnsureExchange(bindingReference.ExchangeName);
-            this._mqConfigurator.EnsureQueue(bindingReference.QueueName, bindingReference.ExchangeName, bindingReference.RoutingKey);
+            this.schemaDataContext = schemaDataContext;
+            this.mqConfigurator = mqConfigurator;
         }
 
         public BindingNetwork ConfigureBindingNetworkFor(int applicationInstanceEntityId)
         {
-            var publishersBindingEntities = _schemaDataContext.Bindings
+            var publishersBindingEntities = this.schemaDataContext.Bindings
                 .Where(w => w.ReceiverId == applicationInstanceEntityId);
 
-            var receiversBindingEntities = _schemaDataContext.Bindings
+            var receiversBindingEntities = this.schemaDataContext.Bindings
                 .Where(w => w.PublisherId == applicationInstanceEntityId);
 
             var bindingReferences = publishersBindingEntities.Select(
@@ -41,7 +34,7 @@ namespace DataGenies.Core.Configurators
                     PublisherTemplateName = s.PublisherApplicationInstanceEntity.TemplateEntity.Name,
                     ReceiverTemplateName = s.ReceiverApplicationInstanceEntity.TemplateEntity.Name,
                     RoutingKey = s.ReceiverRoutingKey,
-                    CurrentInstanceName = s.ReceiverApplicationInstanceEntity.Name
+                    CurrentInstanceName = s.ReceiverApplicationInstanceEntity.Name,
                 }).Union(
                 receiversBindingEntities.Select(
                     s => new BindingReference
@@ -53,14 +46,15 @@ namespace DataGenies.Core.Configurators
                         PublisherTemplateName = s.PublisherApplicationInstanceEntity.TemplateEntity.Name,
                         ReceiverTemplateName = s.ReceiverApplicationInstanceEntity.TemplateEntity.Name,
                         RoutingKey = s.ReceiverRoutingKey,
-                        CurrentInstanceName = s.PublisherApplicationInstanceEntity.Name
+                        CurrentInstanceName = s.PublisherApplicationInstanceEntity.Name,
                     }));
-            
+
             var connectedPublishers = new ConnectedPublishers();
-            connectedPublishers.AddRange(bindingReferences
-                     .Where(w => w.ReceiverId == applicationInstanceEntityId)
-                     .ToList());
-            
+            connectedPublishers.AddRange(
+                bindingReferences
+                    .Where(w => w.ReceiverId == applicationInstanceEntityId)
+                    .ToList());
+
             var connectedReceivers = new ConnectedReceivers();
             connectedReceivers.AddRange(
                 bindingReferences
@@ -71,7 +65,7 @@ namespace DataGenies.Core.Configurators
             {
                 ApplicationInstanceEntityId = applicationInstanceEntityId,
                 Publishers = connectedPublishers,
-                Receivers = connectedReceivers
+                Receivers = connectedReceivers,
             };
         }
 
@@ -79,13 +73,22 @@ namespace DataGenies.Core.Configurators
         {
             foreach (var bindingReference in bindingNetwork.Publishers)
             {
-                ConfigureFor(bindingReference);
+                this.ConfigureFor(bindingReference);
             }
 
             foreach (var bindingReference in bindingNetwork.Receivers)
             {
-                ConfigureFor(bindingReference);
+                this.ConfigureFor(bindingReference);
             }
+        }
+
+        private void ConfigureFor(BindingReference bindingReference)
+        {
+            this.mqConfigurator.EnsureExchange(bindingReference.ExchangeName);
+            this.mqConfigurator.EnsureQueue(
+                bindingReference.QueueName,
+                bindingReference.ExchangeName,
+                bindingReference.RoutingKey);
         }
     }
 }

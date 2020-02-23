@@ -11,38 +11,39 @@ namespace DataGenies.Core.Services
 {
     public class ManagedServiceBuilder
     {
-        private readonly IReceiverBuilder _receiverBuilder;
-        private readonly IPublisherBuilder _publisherBuilder;
         private readonly IBindingConfigurator _bindingConfigurator;
+        private readonly IPublisherBuilder _publisherBuilder;
+        private readonly IReceiverBuilder _receiverBuilder;
+        private ApplicationInstanceEntity _applicationInstanceEntity;
 
         private Type _templateType;
-        private ApplicationInstanceEntity _applicationInstanceEntity;
-        
-        private IEnumerable<BehaviourTemplate> _behaviourTemplates { get; set; }
-        private IEnumerable<WrapperBehaviourTemplate> _wrapperBehaviours { get; set; }
-        
+
         public ManagedServiceBuilder(
-            IReceiverBuilder receiverBuilder, 
+            IReceiverBuilder receiverBuilder,
             IPublisherBuilder publisherBuilder,
             IBindingConfigurator bindingConfigurator)
         {
-            _receiverBuilder = receiverBuilder;
-            _publisherBuilder = publisherBuilder;
-            _bindingConfigurator = bindingConfigurator;
+            this._receiverBuilder = receiverBuilder;
+            this._publisherBuilder = publisherBuilder;
+            this._bindingConfigurator = bindingConfigurator;
         }
+
+        private IEnumerable<BehaviourTemplate> _behaviourTemplates { get; set; }
+
+        private IEnumerable<WrapperBehaviourTemplate> _wrapperBehaviours { get; set; }
 
         public ManagedServiceBuilder UsingBehaviours(IEnumerable<BehaviourTemplate> behaviourTemplates)
         {
-            _behaviourTemplates = behaviourTemplates;
+            this._behaviourTemplates = behaviourTemplates;
             return this;
         }
-        
+
         public ManagedServiceBuilder UsingWrappersBehaviours(IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours)
         {
-            _wrapperBehaviours = wrapperBehaviours;
+            this._wrapperBehaviours = wrapperBehaviours;
             return this;
         }
-        
+
         public ManagedServiceBuilder UsingTemplateType(Type templateType)
         {
             this._templateType = templateType;
@@ -69,8 +70,9 @@ namespace DataGenies.Core.Services
             container.Register<string>(
                 this._applicationInstanceEntity.TemplateEntity.ConfigTemplateJson,
                 "ConfigTemplateJson");
-            
-            var bindingNetwork = this._bindingConfigurator.ConfigureBindingNetworkFor(this._applicationInstanceEntity.Id);
+
+            var bindingNetwork =
+                this._bindingConfigurator.ConfigureBindingNetworkFor(this._applicationInstanceEntity.Id);
             this._bindingConfigurator.ConfigureBindings(bindingNetwork);
 
             var ctorArgs = new List<object>
@@ -78,8 +80,8 @@ namespace DataGenies.Core.Services
                 container,
                 publisher,
                 receiver,
-                _behaviourTemplates,
-                _wrapperBehaviours,
+                this._behaviourTemplates,
+                this._wrapperBehaviours,
                 bindingNetwork
             };
 
@@ -88,7 +90,7 @@ namespace DataGenies.Core.Services
 
             managedService.ApplicationInstanceEntityId = this._applicationInstanceEntity.Id;
             managedService.State = ServiceState.Created;
-            
+
             return managedService;
         }
     }

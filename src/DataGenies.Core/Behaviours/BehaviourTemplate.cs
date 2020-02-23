@@ -8,7 +8,7 @@ namespace DataGenies.Core.Behaviours
     public abstract class BehaviourTemplate : IBehaviourTemplate
     {
         public BehaviourScope BehaviourScope { get; set; }
-        
+
         public BehaviourType BehaviourType { get; set; }
 
         public IManagedService ManagedService { get; set; }
@@ -17,7 +17,7 @@ namespace DataGenies.Core.Behaviours
         {
             throw new NotImplementedException();
         }
-        
+
         public virtual void Execute(IContainer container)
         {
             throw new NotImplementedException();

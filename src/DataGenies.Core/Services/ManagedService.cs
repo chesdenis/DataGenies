@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Containers;
 using DataGenies.Core.Extensions;
@@ -14,17 +12,8 @@ namespace DataGenies.Core.Services
 {
     public abstract class ManagedService : IManagedService
     {
-        private readonly IPublisher _publisher;
-        private readonly IReceiver _receiver;
-      
-        public int ApplicationInstanceEntityId { get; set; }
-        public ServiceState State { get; set; }
-        
-        public IContainer Container { get; }
-        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
-        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
-        
-        public BindingNetwork BindingNetwork { get; }
+        private readonly IPublisher publisher;
+        private readonly IReceiver receiver;
 
         protected ManagedService(
             IContainer container,
@@ -34,49 +23,71 @@ namespace DataGenies.Core.Services
             IEnumerable<WrapperBehaviourTemplate> wrapperBehaviours,
             BindingNetwork bindingNetwork)
         {
-            Container = container;
+            this.Container = container;
 
-            _receiver = receiver;
-            _publisher = publisher;
+            this.receiver = receiver;
+            this.publisher = publisher;
 
-            BehaviourTemplates = behaviourTemplates;
-            WrapperBehaviours = wrapperBehaviours;
-            BindingNetwork = bindingNetwork;
+            this.BehaviourTemplates = behaviourTemplates;
+            this.WrapperBehaviours = wrapperBehaviours;
+            this.BindingNetwork = bindingNetwork;
 
-            SetLinkToThisServiceInBehaviours();
+            this.SetLinkToThisServiceInBehaviours();
         }
 
-        private void SetLinkToThisServiceInBehaviours()
-        {
-            foreach (var behaviour in WrapperBehaviours)
-            {
-                behaviour.ManagedService = this;
-            }
+        public int ApplicationInstanceEntityId { get; set; }
 
-            foreach (var behaviour in BehaviourTemplates)
-            {
-                behaviour.ManagedService = this;
-            }
-        }
-        
+        public ServiceState State { get; set; }
+
+        public IContainer Container { get; }
+
+        public IEnumerable<BehaviourTemplate> BehaviourTemplates { get; }
+
+        public IEnumerable<WrapperBehaviourTemplate> WrapperBehaviours { get; }
+
+        public BindingNetwork BindingNetwork { get; }
+
         public void Listen(string queueName, Action<MqMessage> onReceive)
         {
-            _receiver.Listen(queueName, onReceive);
+            this.receiver.Listen(queueName, onReceive);
         }
 
         public void StopListen()
         {
-            this.ManagedActionWithContainer((x) => _receiver.StopListen(), Container, BehaviourScope.Service);
+            this.ManagedActionWithContainer(x => this.receiver.StopListen(), this.Container, BehaviourScope.Service);
         }
 
         public void Start()
         {
-            this.ManagedActionWithContainer((x) => OnStart(), Container, BehaviourScope.Service);
+            this.ManagedActionWithContainer(x => this.OnStart(), this.Container, BehaviourScope.Service);
         }
 
         public void Stop()
         {
-            this.ManagedActionWithContainer((x) => OnStop(), Container, BehaviourScope.Service);
+            this.ManagedActionWithContainer(x => this.OnStop(), this.Container, BehaviourScope.Service);
+        }
+
+        public void Publish(string exchange, MqMessage data)
+        {
+            this.publisher.Publish(exchange, data);
+        }
+
+        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
+        {
+            this.publisher.PublishRange(exchange, dataRange);
+        }
+
+        private void SetLinkToThisServiceInBehaviours()
+        {
+            foreach (var behaviour in this.WrapperBehaviours)
+            {
+                behaviour.ManagedService = this;
+            }
+
+            foreach (var behaviour in this.BehaviourTemplates)
+            {
+                behaviour.ManagedService = this;
+            }
         }
 
         protected abstract void OnStart();
@@ -85,10 +96,8 @@ namespace DataGenies.Core.Services
 
         protected T ReadSettings<T>()
         {
-            var parametersDictAsJson =
-                Container.Resolve<string>("ParametersDictAsJson");
-            var configTemplateJson =
-                Container.Resolve<string>("ConfigTemplateJson");
+            var parametersDictAsJson = this.Container.Resolve<string>("ParametersDictAsJson");
+            var configTemplateJson = this.Container.Resolve<string>("ConfigTemplateJson");
 
             var parametersDict = JsonSerializer.Deserialize<Dictionary<string, string>>(parametersDictAsJson);
 
@@ -98,16 +107,6 @@ namespace DataGenies.Core.Services
             }
 
             return JsonSerializer.Deserialize<T>(configTemplateJson);
-        }
-
-        public void Publish(string exchange, MqMessage data)
-        {
-            _publisher.Publish(exchange, data);
-        }
-
-        public void PublishRange(string exchange, IEnumerable<MqMessage> dataRange)
-        {
-            _publisher.PublishRange(exchange, dataRange);
         }
     }
 }

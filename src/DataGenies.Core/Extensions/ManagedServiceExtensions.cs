@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DataGenies.Core.Behaviours;
@@ -11,22 +10,30 @@ namespace DataGenies.Core.Extensions
 {
     public static class ManagedServiceExtensions
     {
-        public static void ManagedActionWithMessage<T>(this IManagedService managedService, Action<T> execute, T message, BehaviourScope behaviourScope) where T: MqMessage
+        public static void ManagedActionWithMessage<T>(
+            this IManagedService managedService,
+            Action<T> execute,
+            T message,
+            BehaviourScope behaviourScope)
+            where T : MqMessage
         {
             try
             {
                 foreach (var beforeStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
                 {
                     beforeStart.Execute(message);
                 }
 
-                Action<T> resultAction = execute;
+                var resultAction = execute;
 
                 foreach (var wrapper in managedService.WrapperBehaviours
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w => w.BehaviourScope == behaviourScope))
                 {
-                    resultAction = wrapper.WrapMessageHandling(wrapper.BehaviourActionWithMessage, resultAction, message);
+                    resultAction = wrapper.WrapMessageHandling(
+                        wrapper.BehaviourActionWithMessage,
+                        resultAction,
+                        message);
                 }
 
                 resultAction(message);
@@ -34,7 +41,7 @@ namespace DataGenies.Core.Extensions
             catch (Exception ex)
             {
                 foreach (var onException in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
                     onException.Execute(message, ex);
                 }
@@ -42,29 +49,37 @@ namespace DataGenies.Core.Extensions
             finally
             {
                 foreach (var afterStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
                 {
                     afterStart.Execute(message);
                 }
             }
         }
-        
-        public static void ManagedActionWithContainer<T>(this IManagedService managedService, Action<T> execute, T container, BehaviourScope behaviourScope) where T: IContainer
+
+        public static void ManagedActionWithContainer<T>(
+            this IManagedService managedService,
+            Action<T> execute,
+            T container,
+            BehaviourScope behaviourScope)
+            where T : IContainer
         {
             try
             {
                 foreach (var beforeStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.BeforeRun))
                 {
                     beforeStart.Execute(container);
                 }
 
-                Action<T> resultAction = execute;
+                var resultAction = execute;
 
                 foreach (var wrapper in managedService.WrapperBehaviours
-                    .Where(w=>w.BehaviourScope == behaviourScope))
+                    .Where(w => w.BehaviourScope == behaviourScope))
                 {
-                    resultAction = wrapper.WrapContainerHandling(wrapper.BehaviourActionWithContainer, resultAction, container);
+                    resultAction = wrapper.WrapContainerHandling(
+                        wrapper.BehaviourActionWithContainer,
+                        resultAction,
+                        container);
                 }
 
                 resultAction(container);
@@ -72,7 +87,7 @@ namespace DataGenies.Core.Extensions
             catch (Exception ex)
             {
                 foreach (var onException in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.OnException))
                 {
                     onException.Execute(container, ex);
                 }
@@ -80,19 +95,18 @@ namespace DataGenies.Core.Extensions
             finally
             {
                 foreach (var afterStart in managedService.BehaviourTemplates
-                    .Where(w=>w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
+                    .Where(w => w.BehaviourScope == behaviourScope && w.BehaviourType == BehaviourType.AfterRun))
                 {
                     afterStart.Execute(container);
                 }
             }
         }
 
-
         public static ConnectedReceivers ConnectedReceivers(this IManagedService managedService)
         {
             return managedService.BindingNetwork.Receivers;
         }
-        
+
         public static ConnectedReceivers ConnectedReceivers(
             this IManagedService managedService,
             Func<BindingReference, bool> whereArg)
@@ -100,10 +114,10 @@ namespace DataGenies.Core.Extensions
             var filtered = new ConnectedReceivers();
 
             filtered.AddRange(managedService.BindingNetwork.Receivers.Where(whereArg).ToList());
-            
+
             return filtered;
         }
-        
+
         public static ConnectedReceivers Except(
             this ConnectedReceivers receivers,
             ConnectedReceivers except)
@@ -111,10 +125,10 @@ namespace DataGenies.Core.Extensions
             var filtered = new ConnectedReceivers();
 
             filtered.AddRange(((IEnumerable<BindingReference>)receivers).Except(except).ToList());
-            
+
             return filtered;
         }
-        
+
         public static ConnectedPublishers Except(
             this ConnectedPublishers publishers,
             ConnectedPublishers except)
@@ -122,7 +136,7 @@ namespace DataGenies.Core.Extensions
             var filtered = new ConnectedPublishers();
 
             filtered.AddRange(((IEnumerable<BindingReference>)publishers).Except(except).ToList());
-            
+
             return filtered;
         }
 
@@ -131,8 +145,9 @@ namespace DataGenies.Core.Extensions
             string name)
         {
             var filtered = new ConnectedReceivers();
-            
-            filtered.AddRange(managedService.BindingNetwork.Receivers.Where(w=> w.ReceiverInstanceName == name).ToList());
+
+            filtered.AddRange(
+                managedService.BindingNetwork.Receivers.Where(w => w.ReceiverInstanceName == name).ToList());
 
             return filtered;
         }
@@ -151,7 +166,7 @@ namespace DataGenies.Core.Extensions
             var bindingReferences = managedService.BindingNetwork.Publishers;
 
             filtered.AddRange(bindingReferences.Where(whereArg));
-            
+
             return filtered;
         }
 
@@ -160,13 +175,16 @@ namespace DataGenies.Core.Extensions
             IManagedService managedService,
             MqMessage message)
         {
-            managedService.ManagedActionWithMessage((x) =>
-            {
-                foreach (var bindingReference in connectedReceivers)
+            managedService.ManagedActionWithMessage(
+                x =>
                 {
-                    managedService.Publish(bindingReference.ExchangeName, x);
-                }
-            }, message, BehaviourScope.Message);
+                    foreach (var bindingReference in connectedReceivers)
+                    {
+                        managedService.Publish(bindingReference.ExchangeName, x);
+                    }
+                },
+                message,
+                BehaviourScope.Message);
         }
 
         public static void PublishRangeUsing(
@@ -175,7 +193,7 @@ namespace DataGenies.Core.Extensions
             IEnumerable<MqMessage> dataRange)
         {
             managedService.ManagedActionWithContainer(
-                (x) =>
+                x =>
                 {
                     foreach (var dataEntry in dataRange)
                     {
@@ -185,18 +203,19 @@ namespace DataGenies.Core.Extensions
                 managedService.Container,
                 BehaviourScope.Service);
         }
-        
+
         public static void ListenUsing(
             this ConnectedPublishers connectedPublishers,
             IManagedService managedService,
             Action<MqMessage> onReceive)
         {
             managedService.ManagedActionWithContainer(
-                (x) =>
+                x =>
                 {
                     foreach (var bindingReference in connectedPublishers)
                     {
-                        managedService.Listen(bindingReference.QueueName,
+                        managedService.Listen(
+                            bindingReference.QueueName,
                             arg =>
                                 managedService.ManagedActionWithMessage(onReceive, arg, BehaviourScope.Message));
                     }
@@ -205,8 +224,4 @@ namespace DataGenies.Core.Extensions
                 BehaviourScope.Service);
         }
     }
-
-    
-
-
 }

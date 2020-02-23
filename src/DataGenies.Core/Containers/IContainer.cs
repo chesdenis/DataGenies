@@ -9,7 +9,7 @@
             where T : class;
 
         T Resolve<T>();
-        
+
         T Resolve<T>(string name);
     }
 }

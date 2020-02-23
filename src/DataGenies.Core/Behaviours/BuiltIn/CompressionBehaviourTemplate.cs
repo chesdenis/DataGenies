@@ -10,7 +10,6 @@ namespace DataGenies.Core.Behaviours.BuiltIn
         public override void Execute(MqMessage message)
         {
             message.Body = message.Body.Compress();
-            
             base.Execute(message);
         }
     }

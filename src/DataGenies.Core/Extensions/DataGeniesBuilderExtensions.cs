@@ -16,9 +16,10 @@ namespace DataGenies.Core.Extensions
             this IApplicationBuilder app,
             Action<DataGeniesOptions> setupAction = null)
         {
-            var options = app.ApplicationServices.GetService<IOptions<DataGeniesOptions>>()?.Value ?? new DataGeniesOptions();
+            var options = app.ApplicationServices.GetService<IOptions<DataGeniesOptions>>()?.Value ??
+                          new DataGeniesOptions();
             setupAction?.Invoke(options);
-            
+
             app.UseMiddleware<DataGeniesMiddleware>(options);
 
             return app;
@@ -29,7 +30,7 @@ namespace DataGenies.Core.Extensions
             services.AddTransient<IFileSystemRepository, FileSystemRepository>();
             services.AddTransient<IAssemblyScanner, AssemblyScanner>();
             services.AddTransient<IApplicationTemplatesScanner, ApplicationTemplatesScanner>();
-            
+
             services.AddTransient<IDataGeniesMiddlewareResponder, ApplicationTypesResponder>();
 
             services.AddSingleton<DataGeniesOptions>();

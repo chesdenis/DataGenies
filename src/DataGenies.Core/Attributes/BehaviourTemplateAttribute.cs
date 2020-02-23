@@ -2,7 +2,7 @@ using System;
 
 namespace DataGenies.Core.Attributes
 {
-    public class BehaviourTemplateAttribute : System.Attribute
+    public class BehaviourTemplateAttribute : Attribute
     {
     }
 }

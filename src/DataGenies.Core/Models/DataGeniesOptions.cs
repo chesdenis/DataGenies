@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
-
 namespace DataGenies.Core.Models
 {
     public class DataGeniesOptions
@@ -10,7 +6,7 @@ namespace DataGenies.Core.Models
 
         public string DocumentTitle { get; set; } = "DATA Genies";
 
-        public DropFolderOptions DropFolderOptions { get; set; } = new DropFolderOptions()
+        public DropFolderOptions DropFolderOptions { get; set; } = new DropFolderOptions
         {
             Path = "C:\\GeniesDropFolder",
             UseZippedPackages = false

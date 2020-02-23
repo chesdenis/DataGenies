@@ -3,6 +3,6 @@
     public enum BehaviourScope
     {
         Service,
-        Message
+        Message,
     }
 }

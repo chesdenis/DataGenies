@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DataGenies.Core.Behaviours;
 using DataGenies.Core.Models;
 using DataGenies.Core.Repositories;
 
@@ -10,22 +9,27 @@ namespace DataGenies.Core.Scanners
 {
     public class BehavioursTemplatesScanner : IBehaviourTemplatesScanner
     {
-        private readonly DataGeniesOptions _options;
-        private readonly IFileSystemRepository _fileSystemRepository;
         private readonly IAssemblyScanner _assemblyScanner;
+        private readonly IFileSystemRepository _fileSystemRepository;
+        private readonly DataGeniesOptions _options;
 
-        public BehavioursTemplatesScanner(DataGeniesOptions options, IFileSystemRepository fileSystemRepository, IAssemblyScanner assemblyScanner)
+        public BehavioursTemplatesScanner(
+            DataGeniesOptions options,
+            IFileSystemRepository fileSystemRepository,
+            IAssemblyScanner assemblyScanner)
         {
-            _options = options;
-            _fileSystemRepository = fileSystemRepository;
-            _assemblyScanner = assemblyScanner;
+            this._options = options;
+            this._fileSystemRepository = fileSystemRepository;
+            this._assemblyScanner = assemblyScanner;
         }
-        
+
         public IEnumerable<BehaviourTemplateEntity> ScanTemplates()
         {
-            return _options.DropFolderOptions.UseZippedPackages ? this.ScanInsideZippedPackages() : this.ScanAsRegularPackages();
+            return this._options.DropFolderOptions.UseZippedPackages
+                ? this.ScanInsideZippedPackages()
+                : this.ScanAsRegularPackages();
         }
-        
+
         public Type FindType(BehaviourTemplateEntity behaviourTemplateEntity)
         {
             var allTemplates = this.ScanTemplates();
@@ -34,7 +38,7 @@ namespace DataGenies.Core.Scanners
 
             return templateType;
         }
- 
+
         private IEnumerable<BehaviourTemplateEntity> ScanInsideZippedPackages()
         {
             throw new NotImplementedException();
@@ -42,7 +46,7 @@ namespace DataGenies.Core.Scanners
 
         private IEnumerable<BehaviourTemplateEntity> ScanAsRegularPackages()
         {
-            var assemblies = _fileSystemRepository.GetFilesInFolder(_options.DropFolderOptions.Path, "*.dll");
+            var assemblies = this._fileSystemRepository.GetFilesInFolder(this._options.DropFolderOptions.Path, "*.dll");
 
             foreach (var assemblyPath in assemblies)
             {

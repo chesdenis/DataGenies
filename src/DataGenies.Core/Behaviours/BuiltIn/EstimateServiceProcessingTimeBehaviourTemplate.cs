@@ -7,22 +7,22 @@ namespace DataGenies.Core.Behaviours.BuiltIn
     [BehaviourTemplate]
     public class EstimateServiceProcessingTimeBehaviourTemplate : WrapperBehaviourTemplate
     {
-        private readonly Stopwatch _sw = new Stopwatch();
-        
+        private readonly Stopwatch sw = new Stopwatch();
+
         public override BehaviourScope BehaviourScope { get; set; } = BehaviourScope.Service;
 
         public override void BehaviourActionWithContainer<T>(Action<T> action, T container)
         {
-            _sw.Reset();
-            
+            this.sw.Reset();
+
             try
             {
-                _sw.Start();
+                this.sw.Start();
                 action(container);
             }
             finally
             {
-                _sw.Stop();
+                this.sw.Stop();
             }
         }
     }

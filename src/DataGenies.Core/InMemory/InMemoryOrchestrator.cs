@@ -13,39 +13,34 @@ namespace DataGenies.Core.InMemory
 {
     public class InMemoryOrchestrator : IOrchestrator
     {
-        private Dictionary<int, IManagedService> _instancesInMemory { get; set; }
+        private readonly IApplicationTemplatesScanner applicationTemplatesScanner;
+        private readonly IBehaviourTemplatesScanner behaviourTemplatesScanner;
 
-        private readonly ISchemaDataContext _schemaDataContext;
-        private readonly IApplicationTemplatesScanner _applicationTemplatesScanner;
-        private readonly IBehaviourTemplatesScanner _behaviourTemplatesScanner;
-       
-        private readonly ManagedServiceBuilder _managedServiceBuilder;
-        
-        public InMemoryOrchestrator(ISchemaDataContext schemaDataContext,
+        private readonly ManagedServiceBuilder managedServiceBuilder;
+
+        private readonly ISchemaDataContext schemaDataContext;
+
+        public InMemoryOrchestrator(
+            ISchemaDataContext schemaDataContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
             IBehaviourTemplatesScanner behaviourTemplatesScanner,
             ManagedServiceBuilder managedServiceBuilder)
         {
-            _schemaDataContext = schemaDataContext;
-            
-            _applicationTemplatesScanner = applicationTemplatesScanner;
-            _behaviourTemplatesScanner = behaviourTemplatesScanner;
-        
-            _managedServiceBuilder = managedServiceBuilder;
-           
-            _instancesInMemory = new Dictionary<int, IManagedService>(); 
+            this.schemaDataContext = schemaDataContext;
+
+            this.applicationTemplatesScanner = applicationTemplatesScanner;
+            this.behaviourTemplatesScanner = behaviourTemplatesScanner;
+
+            this.managedServiceBuilder = managedServiceBuilder;
+
+            this.InstancesInMemory = new Dictionary<int, IManagedService>();
         }
 
-        public IContainer GetApplicationInstanceContainer(int applicationInstanceId)
-        {
-            return this._instancesInMemory[applicationInstanceId].Container;
-        }
+        private Dictionary<int, IManagedService> InstancesInMemory { get; }
 
         public IQueryable<ApplicationInstanceEntity> GetDeployed()
         {
             throw new NotImplementedException();
-            // return this._instancesInMemory.Keys.Select(s=>this._instancesInMemory[s])
-            //     .Where(w=>w.State == ServiceState.Deployed)
         }
 
         public IQueryable<ApplicationInstanceEntity> GetStarted()
@@ -66,15 +61,15 @@ namespace DataGenies.Core.InMemory
         public Task Deploy(int applicationInstanceId)
         {
             var applicationInstanceInfo =
-                this._schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
+                this.schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
 
-            var templateType = this._applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
+            var templateType = this.applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
 
             var behaviours = applicationInstanceInfo.Behaviours
                 .Select(
                     s =>
                     {
-                        var type = this._behaviourTemplatesScanner.FindType(s.TemplateEntity);
+                        var type = this.behaviourTemplatesScanner.FindType(s.TemplateEntity);
                         var instance = Activator.CreateInstance(type);
 
                         if (type.IsSubclassOf(typeof(BehaviourTemplate)))
@@ -86,13 +81,13 @@ namespace DataGenies.Core.InMemory
                         }
 
                         return null;
-                    }).Where(s=> s != null).ToArray();
-            
+                    }).Where(s => s != null).ToArray();
+
             var wrapperBehaviours = applicationInstanceInfo.Behaviours
                 .Select(
                     s =>
                     {
-                        var type = this._behaviourTemplatesScanner.FindType(s.TemplateEntity);
+                        var type = this.behaviourTemplatesScanner.FindType(s.TemplateEntity);
                         var instance = Activator.CreateInstance(type);
 
                         if (type.IsSubclassOf(typeof(WrapperBehaviourTemplate)))
@@ -103,78 +98,87 @@ namespace DataGenies.Core.InMemory
                         }
 
                         return null;
-                    }).Where(s=> s != null).ToArray();
-             
-            var managedApplication = this._managedServiceBuilder
+                    }).Where(s => s != null).ToArray();
+
+            var managedApplication = this.managedServiceBuilder
                 .UsingApplicationInstance(applicationInstanceInfo)
                 .UsingTemplateType(templateType)
                 .UsingBehaviours(behaviours)
                 .UsingWrappersBehaviours(wrapperBehaviours)
                 .Build();
 
-            _instancesInMemory[applicationInstanceId] = managedApplication;
+            this.InstancesInMemory[applicationInstanceId] = managedApplication;
 
             return Task.CompletedTask;
         }
 
         public Task Start(int applicationInstanceId)
         {
-            return Task.Run(() => _instancesInMemory[applicationInstanceId].Start());
+            return Task.Run(() => this.InstancesInMemory[applicationInstanceId].Start());
         }
 
         public Task Stop(int applicationInstanceId)
         {
-            return Task.Run(() => _instancesInMemory[applicationInstanceId].Stop());
+            return Task.Run(() => this.InstancesInMemory[applicationInstanceId].Stop());
         }
 
         public Task Remove(int applicationInstanceId)
         {
-            return Task.Run(() =>
-            {
-                _instancesInMemory[applicationInstanceId].Stop();
-                _instancesInMemory.Remove(applicationInstanceId);
-            });
+            return Task.Run(
+                () =>
+                {
+                    this.InstancesInMemory[applicationInstanceId].Stop();
+                    this.InstancesInMemory.Remove(applicationInstanceId);
+                });
         }
 
         public Task Redeploy(int applicationInstanceId)
         {
-            return Task.Run(() =>
-            {
-                _instancesInMemory[applicationInstanceId].Stop();
-                _instancesInMemory.Remove(applicationInstanceId);
+            return Task.Run(
+                () =>
+                {
+                    this.InstancesInMemory[applicationInstanceId].Stop();
+                    this.InstancesInMemory.Remove(applicationInstanceId);
 
-                Deploy(applicationInstanceId);
-                Start(applicationInstanceId);
-            });
+                    this.Deploy(applicationInstanceId);
+                    this.Start(applicationInstanceId);
+                });
         }
 
         public Task Restart(int applicationInstanceId)
         {
-            return Task.Run(() =>
-            {
-                _instancesInMemory[applicationInstanceId].Stop();
-                _instancesInMemory[applicationInstanceId].Start();
-            });
+            return Task.Run(
+                () =>
+                {
+                    this.InstancesInMemory[applicationInstanceId].Stop();
+                    this.InstancesInMemory[applicationInstanceId].Start();
+                });
         }
 
         public Task RestartAll()
         {
-            foreach (var instanceInMemory in this._instancesInMemory.Keys)
+            foreach (var instanceInMemory in this.InstancesInMemory.Keys)
             {
-                Restart(instanceInMemory);
+                this.Restart(instanceInMemory);
             }
-            
-            return  Task.CompletedTask;
+
+            return Task.CompletedTask;
         }
 
         public Task RemoveAll()
         {
-            foreach (var instanceInMemory in this._instancesInMemory.Keys)
+            foreach (var instanceInMemory in this.InstancesInMemory.Keys)
             {
-                Stop(instanceInMemory);
+                this.Stop(instanceInMemory);
             }
-            _instancesInMemory.Clear();
-            return  Task.CompletedTask;
+
+            this.InstancesInMemory.Clear();
+            return Task.CompletedTask;
+        }
+
+        public IContainer GetApplicationInstanceContainer(int applicationInstanceId)
+        {
+            return this.InstancesInMemory[applicationInstanceId].Container;
         }
     }
 }

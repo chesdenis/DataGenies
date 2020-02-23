@@ -6,18 +6,19 @@ namespace DataGenies.Core.Models
     {
         public BehaviourTemplateEntity()
         {
-            BehaviourInstances =new HashSet<BehaviourInstanceEntity>();
+            this.BehaviourInstances = new HashSet<BehaviourInstanceEntity>();
         }
-        
+
         public int Id { get; set; }
+
         public string Name { get; set; }
-        
+
         public string Version { get; set; }
 
         public string AssemblyPath { get; set; }
 
         public string ConfigTemplateJson { get; set; }
-        
+
         public virtual ICollection<BehaviourInstanceEntity> BehaviourInstances { get; set; }
 
         public bool IsMatch(BehaviourTemplateEntity behaviourEntity)

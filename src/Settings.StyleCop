@@ -92,6 +92,11 @@
                        <BooleanProperty Name="Enabled">True</BooleanProperty>
                    </RuleSettings>
                </Rule>
+               <Rule Name="FileMustHaveHeader">
+                   <RuleSettings>
+                       <BooleanProperty Name="Enabled">False</BooleanProperty>
+                   </RuleSettings>
+               </Rule>
            </Rules>
             <AnalyzerSettings />
         </Analyzer>
@@ -407,7 +412,7 @@
                         <BooleanProperty Name="Enabled">True</BooleanProperty>
                     </RuleSettings>
                 </Rule>
-                <Rule Name="ElementsMustAppearInTheCorrectOrder">
+                <Rule Name="SA1201ElementsMustAppearInTheCorrectOrder">
                     <RuleSettings>
                         <BooleanProperty Name="Enabled">True</BooleanProperty>
                     </RuleSettings>
@@ -569,7 +574,7 @@
                 </Rule>
                 <Rule Name="UseTrailingCommasInMultiLineInitializers">
                     <RuleSettings>
-                        <BooleanProperty Name="Enabled">True</BooleanProperty>
+                        <BooleanProperty Name="Enabled">False</BooleanProperty>
                     </RuleSettings>
                 </Rule>
                 <Rule Name="TupleTypesInSignaturesShouldHaveElementNames">

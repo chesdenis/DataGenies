@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,40 @@ namespace DataGenies.Core.Scanners
 
         public AssemblyScanner(DataGeniesOptions options)
         {
-            _options = options;
+            this._options = options;
+        }
+
+        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
+        {
+            var types = this.GetAssemblyTypes(assemblyFullPath)
+                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
+
+            foreach (var type in types)
+            {
+                yield return new ApplicationTemplateInfo
+                {
+                    AssemblyPath = assemblyFullPath,
+                    TemplateName = type.Name,
+                    AssemblyVersion = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
+                };
+            }
+        }
+
+        public IEnumerable<BehaviourInfo> ScanBehaviourTemplates(string assemblyFullPath)
+        {
+            var types = this.GetAssemblyTypes(assemblyFullPath)
+                .Where(w => w.IsClass)
+                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(BehaviourTemplateAttribute)));
+
+            foreach (var type in types)
+            {
+                yield return new BehaviourInfo
+                {
+                    AssemblyPath = assemblyFullPath,
+                    BehaviourName = type.Name,
+                    AssemblyVersion = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
+                };
+            }
         }
 
         public virtual IEnumerable<Type> GetAssemblyTypes(string assemblyFullPath)
@@ -25,43 +57,11 @@ namespace DataGenies.Core.Scanners
                 .Where(w => w.IsClass);
         }
 
-        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
-        { 
-            var types = GetAssemblyTypes(assemblyFullPath)
-                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
-
-            foreach (var type in types)
-            {
-                yield return new ApplicationTemplateInfo
-                {
-                    AssemblyPath = assemblyFullPath,
-                    TemplateName = type.Name,
-                    AssemblyVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
-                };
-            }
-        }
-
-        public IEnumerable<BehaviourInfo> ScanBehaviourTemplates(string assemblyFullPath)
-        {
-            var types = GetAssemblyTypes(assemblyFullPath)
-                .Where(w => w.IsClass)
-                .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(BehaviourTemplateAttribute)));
-
-            foreach (var type in types)
-            {
-                yield return new BehaviourInfo()
-                {
-                    AssemblyPath = assemblyFullPath,
-                    BehaviourName = type.Name,
-                    AssemblyVersion = GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
-                };
-            }
-        }
- 
         private string GetApplicationTypeVersionFromPackagePath(string packagePath)
         {
             var relativePath = packagePath.Replace(this._options.DropFolderOptions.Path, string.Empty);
-            var packageVersion = relativePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)[0];
+            var packageVersion =
+                relativePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)[0];
 
             return packageVersion;
         }

@@ -10,15 +10,15 @@ namespace DataGenies.Core.Behaviours
         IManagedService ManagedService { get; set; }
 
         void Execute();
-    
+
         void Execute(IContainer container);
 
         void Execute(MqMessage message);
 
         void Execute(Exception exception);
-        
+
         void Execute(IContainer container, Exception exception);
-        
+
         void Execute(MqMessage message, Exception exception);
     }
 }
