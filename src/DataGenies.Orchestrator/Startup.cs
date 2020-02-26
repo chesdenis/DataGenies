@@ -1,3 +1,5 @@
+using DataGenies.Core.InMemory;
+using DataGenies.Core.Orchestrators;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -21,6 +23,7 @@ namespace DataGenies.Orchestrator
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSingleton<IOrchestrator, InMemoryOrchestrator>();
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
