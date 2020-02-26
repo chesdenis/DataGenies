@@ -8,6 +8,5 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
-      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
     </ItemGroup>
 </Project>

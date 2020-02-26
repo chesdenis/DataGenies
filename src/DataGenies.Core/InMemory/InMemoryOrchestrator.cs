@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DataGenies.Core.Behaviours;
-using DataGenies.Core.Containers;
-using DataGenies.Core.Models;
-using DataGenies.Core.Orchestrators;
-using DataGenies.Core.Scanners;
-using DataGenies.Core.Services;
-
-namespace DataGenies.Core.InMemory
+﻿namespace DataGenies.Core.InMemory
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using DataGenies.Core.Behaviours;
+    using DataGenies.Core.Containers;
+    using DataGenies.Core.Models;
+    using DataGenies.Core.Orchestrators;
+    using DataGenies.Core.Scanners;
+    using DataGenies.Core.Services;
+
     public class InMemoryOrchestrator : IOrchestrator
     {
         private readonly IApplicationTemplatesScanner applicationTemplatesScanner;

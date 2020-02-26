@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using DataGenies.Core.Attributes;
-
-namespace DataGenies.Core.Behaviours.BuiltIn
+﻿namespace DataGenies.Core.Behaviours.BuiltIn
 {
+    using System;
+    using System.Diagnostics;
+    using DataGenies.Core.Attributes;
+
     [BehaviourTemplate]
     public class EstimateMessageProcessingTimeBehaviourTemplate : WrapperBehaviourTemplate
     {

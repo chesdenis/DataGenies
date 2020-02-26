@@ -9,8 +9,4 @@
       <Folder Include="ServiceFabric" />
     </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
-    </ItemGroup>
-
 </Project>

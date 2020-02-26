@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-
-namespace DataGenies.Orchestrator.Controllers
+﻿namespace DataGenies.Orchestrator.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
@@ -32,7 +31,7 @@ namespace DataGenies.Orchestrator.Controllers
                     {
                         Date = DateTime.Now.AddDays(index),
                         TemperatureC = rng.Next(-20, 55),
-                        Summary = Summaries[rng.Next(Summaries.Length)]
+                        Summary = Summaries[rng.Next(Summaries.Length)],
                     })
                 .ToArray();
         }
