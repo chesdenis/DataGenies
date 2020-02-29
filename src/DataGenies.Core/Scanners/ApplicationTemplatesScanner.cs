@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,42 +12,38 @@ namespace DataGenies.Core.Scanners
     {
         private readonly IAssemblyScanner _assemblyScanner;
         private readonly IFileSystemRepository _fileSystemRepository;
-        private readonly DataGeniesOptions _options;
+      
 
         public ApplicationTemplatesScanner(
-            DataGeniesOptions options,
             IFileSystemRepository fileSystemRepository,
             IAssemblyScanner assemblyScanner)
         {
-            this._options = options;
             this._fileSystemRepository = fileSystemRepository;
             this._assemblyScanner = assemblyScanner;
         }
 
-        public IEnumerable<ApplicationTemplateEntity> ScanTemplates()
+        public IEnumerable<ApplicationTemplateEntity> ScanTemplates(string dropFolder)
         {
-            return this._options.DropFolderOptions.UseZippedPackages
-                ? this.ScanTemplatesInsideZippedPackages()
-                : this.ScanTemplatesAsRegularPackages();
+            return this.ScanAsRegularPackages(dropFolder);
         }
 
         public Type FindType(ApplicationTemplateEntity applicationTemplateEntity)
         {
-            var allTemplates = this.ScanTemplates();
-            var matchTemplate = allTemplates.First(f => f.IsMatch(applicationTemplateEntity));
+            var applicationTemplates = this._assemblyScanner.ScanApplicationTemplates(applicationTemplateEntity.AssemblyPath);
+            var matchTemplate = applicationTemplates.First(f => f.IsMatch(applicationTemplateEntity));
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
 
             return templateType;
         }
 
-        private IEnumerable<ApplicationTemplateEntity> ScanTemplatesInsideZippedPackages()
+        private IEnumerable<ApplicationTemplateEntity> ScanInsideZippedPackages(string dropFolder)
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<ApplicationTemplateEntity> ScanTemplatesAsRegularPackages()
+        private IEnumerable<ApplicationTemplateEntity> ScanAsRegularPackages(string dropFolder)
         {
-            var assemblies = this._fileSystemRepository.GetFilesInFolder(this._options.DropFolderOptions.Path, "*.dll");
+            var assemblies = this._fileSystemRepository.GetFilesInFolder(dropFolder, "*.dll|*.exe");
 
             foreach (var assemblyPath in assemblies)
             {
@@ -56,8 +53,8 @@ namespace DataGenies.Core.Scanners
                 {
                     yield return new ApplicationTemplateEntity
                     {
-                        Name = appTypeInfo.TemplateName,
-                        Version = appTypeInfo.AssemblyVersion,
+                        Name = appTypeInfo.Name,
+                        Version = appTypeInfo.Version,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };
                 }

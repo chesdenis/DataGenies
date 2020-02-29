@@ -6,7 +6,7 @@ namespace DataGenies.Core.Scanners
 {
     public interface IApplicationTemplatesScanner
     {
-        IEnumerable<ApplicationTemplateEntity> ScanTemplates();
+        IEnumerable<ApplicationTemplateEntity> ScanTemplates(string dropFolder);
 
         Type FindType(ApplicationTemplateEntity applicationTemplateEntity);
     }

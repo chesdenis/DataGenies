@@ -10,30 +10,23 @@ namespace DataGenies.Core.Scanners
 {
     public class AssemblyScanner : IAssemblyScanner
     {
-        private readonly DataGeniesOptions _options;
-
-        public AssemblyScanner(DataGeniesOptions options)
-        {
-            this._options = options;
-        }
-
-        public IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath)
+        public IEnumerable<ApplicationTemplateEntity> ScanApplicationTemplates(string assemblyFullPath)
         {
             var types = this.GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.GetCustomAttributes().Any(ww => ww.GetType() == typeof(ApplicationTemplateAttribute)));
 
             foreach (var type in types)
             {
-                yield return new ApplicationTemplateInfo
+                yield return new ApplicationTemplateEntity
                 {
                     AssemblyPath = assemblyFullPath,
-                    TemplateName = type.Name,
-                    AssemblyVersion = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
+                    Name = type.Name,
+                    Version = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
                 };
             }
         }
 
-        public IEnumerable<BehaviourInfo> ScanBehaviourTemplates(string assemblyFullPath)
+        public IEnumerable<BehaviourTemplateEntity> ScanBehaviourTemplates(string assemblyFullPath)
         {
             var types = this.GetAssemblyTypes(assemblyFullPath)
                 .Where(w => w.IsClass)
@@ -41,11 +34,11 @@ namespace DataGenies.Core.Scanners
 
             foreach (var type in types)
             {
-                yield return new BehaviourInfo
+                yield return new BehaviourTemplateEntity
                 {
                     AssemblyPath = assemblyFullPath,
-                    BehaviourName = type.Name,
-                    AssemblyVersion = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
+                    Name = type.Name,
+                    Version = this.GetApplicationTypeVersionFromPackagePath(assemblyFullPath)
                 };
             }
         }
@@ -59,9 +52,8 @@ namespace DataGenies.Core.Scanners
 
         private string GetApplicationTypeVersionFromPackagePath(string packagePath)
         {
-            var relativePath = packagePath.Replace(this._options.DropFolderOptions.Path, string.Empty);
             var packageVersion =
-                relativePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries)[0];
+                packagePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries).Last();
 
             return packageVersion;
         }

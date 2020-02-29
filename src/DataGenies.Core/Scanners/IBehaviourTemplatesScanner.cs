@@ -6,7 +6,7 @@ namespace DataGenies.Core.Scanners
 {
     public interface IBehaviourTemplatesScanner
     {
-        IEnumerable<BehaviourTemplateEntity> ScanTemplates();
+        IEnumerable<BehaviourTemplateEntity> ScanTemplates(string dropFolder);
 
         Type FindType(BehaviourTemplateEntity behaviourTemplateEntity);
     }

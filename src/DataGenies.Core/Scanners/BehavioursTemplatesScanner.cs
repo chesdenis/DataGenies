@@ -11,28 +11,23 @@ namespace DataGenies.Core.Scanners
     {
         private readonly IAssemblyScanner _assemblyScanner;
         private readonly IFileSystemRepository _fileSystemRepository;
-        private readonly DataGeniesOptions _options;
 
         public BehavioursTemplatesScanner(
-            DataGeniesOptions options,
             IFileSystemRepository fileSystemRepository,
             IAssemblyScanner assemblyScanner)
         {
-            this._options = options;
             this._fileSystemRepository = fileSystemRepository;
             this._assemblyScanner = assemblyScanner;
         }
 
-        public IEnumerable<BehaviourTemplateEntity> ScanTemplates()
+        public IEnumerable<BehaviourTemplateEntity> ScanTemplates(string dropFolder)
         {
-            return this._options.DropFolderOptions.UseZippedPackages
-                ? this.ScanInsideZippedPackages()
-                : this.ScanAsRegularPackages();
+            return this.ScanAsRegularPackages(dropFolder);
         }
 
         public Type FindType(BehaviourTemplateEntity behaviourTemplateEntity)
         {
-            var allTemplates = this.ScanTemplates();
+            var allTemplates =  this._assemblyScanner.ScanBehaviourTemplates(behaviourTemplateEntity.AssemblyPath);
             var matchTemplate = allTemplates.First(f => f.IsMatch(behaviourTemplateEntity));
             var templateType = Assembly.LoadFile(matchTemplate.AssemblyPath).GetType(matchTemplate.Name, true);
 
@@ -44,9 +39,9 @@ namespace DataGenies.Core.Scanners
             throw new NotImplementedException();
         }
 
-        private IEnumerable<BehaviourTemplateEntity> ScanAsRegularPackages()
+        private IEnumerable<BehaviourTemplateEntity> ScanAsRegularPackages(string dropFolder)
         {
-            var assemblies = this._fileSystemRepository.GetFilesInFolder(this._options.DropFolderOptions.Path, "*.dll");
+            var assemblies = this._fileSystemRepository.GetFilesInFolder(dropFolder, "*.dll|*.exe");
 
             foreach (var assemblyPath in assemblies)
             {
@@ -56,8 +51,8 @@ namespace DataGenies.Core.Scanners
                 {
                     yield return new BehaviourTemplateEntity
                     {
-                        Name = appTypeInfo.BehaviourName,
-                        Version = appTypeInfo.AssemblyVersion,
+                        Name = appTypeInfo.Name,
+                        Version = appTypeInfo.Version,
                         AssemblyPath = appTypeInfo.AssemblyPath
                     };
                 }

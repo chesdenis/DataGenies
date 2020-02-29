@@ -5,8 +5,8 @@ namespace DataGenies.Core.Scanners
 {
     public interface IAssemblyScanner
     {
-        IEnumerable<ApplicationTemplateInfo> ScanApplicationTemplates(string assemblyFullPath);
+        IEnumerable<ApplicationTemplateEntity> ScanApplicationTemplates(string assemblyFullPath);
 
-        IEnumerable<BehaviourInfo> ScanBehaviourTemplates(string assemblyFullPath);
+        IEnumerable<BehaviourTemplateEntity> ScanBehaviourTemplates(string assemblyFullPath);
     }
 }

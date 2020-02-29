@@ -23,11 +23,10 @@ namespace DataGenies.Core.Tests.Unit.Scanners
                 .Returns(filesListInDropFolder);
             
             var assemblyTypesProvider = Substitute.For<IAssemblyScanner>();
-            var options = new DataGeniesOptions();
-            
+
             // Act
-            var sut = new BehavioursTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
-            var data = sut.ScanTemplates().ToList();
+            var sut = new BehavioursTemplatesScanner(fileSystemRepository, assemblyTypesProvider);
+            var data = sut.ScanTemplates("dropFolderPath").ToList();
 
             // Assert
             Assert.IsNotNull(data);
@@ -50,26 +49,25 @@ namespace DataGenies.Core.Tests.Unit.Scanners
             
             var assemblyTypesProvider = Substitute.For<IAssemblyScanner>();
             assemblyTypesProvider.ScanBehaviourTemplates(Arg.Is(filesListInDropFolder[0])).Returns(
-                new List<BehaviourInfo>
+                new List<BehaviourTemplateEntity>
                 {
-                    new BehaviourInfo
+                    new BehaviourTemplateEntity
                     {
                         AssemblyPath = filesListInDropFolder[0],
-                        BehaviourName = "Type1",
-                        AssemblyVersion = "20190102.1"
+                        Name = "Type1",
+                        Version = "20190102.1"
                     },
-                    new BehaviourInfo
+                    new BehaviourTemplateEntity
                     {
                         AssemblyPath = filesListInDropFolder[1],
-                        BehaviourName = "Type2",
-                        AssemblyVersion = "20190102.1"
+                        Name = "Type2",
+                        Version = "20190102.1"
                     }
                 });
-            var options = new DataGeniesOptions();
             
             // Act
-            var sut = new BehavioursTemplatesScanner(options, fileSystemRepository, assemblyTypesProvider);
-            var data = sut.ScanTemplates().ToList();
+            var sut = new BehavioursTemplatesScanner(fileSystemRepository, assemblyTypesProvider);
+            var data = sut.ScanTemplates("dropFolderPath").ToList();
 
             // Assert
             Assert.IsNotNull(data);

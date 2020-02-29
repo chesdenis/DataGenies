@@ -18,7 +18,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
         public void ShouldScanApplicationTemplates()
         {
             // Arrange
-            var sut =  Substitute.ForPartsOf<AssemblyScanner>(new DataGeniesOptions());
+            var sut =  Substitute.ForPartsOf<AssemblyScanner>();
             sut.GetAssemblyTypes(Arg.Any<string>()).Returns(new List<Type>()
             {
                 typeof(AssemblyScanner),
@@ -37,7 +37,7 @@ namespace DataGenies.Core.Tests.Unit.Scanners
         public void ShouldScanBehaviours()
         {
             // Arrange
-            var sut =  Substitute.ForPartsOf<AssemblyScanner>(new DataGeniesOptions());
+            var sut =  Substitute.ForPartsOf<AssemblyScanner>();
             sut.GetAssemblyTypes(Arg.Any<string>()).Returns(new List<Type>()
             {
                 typeof(AssemblyScanner),
