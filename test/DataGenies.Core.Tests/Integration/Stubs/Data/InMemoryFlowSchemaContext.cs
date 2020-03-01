@@ -3,7 +3,7 @@ using DataGenies.Core.Models;
 
 namespace DataGenies.Core.Tests.Integration.Stubs.Data
 {
-    public class InMemorySchemaDataContext : ISchemaDataContext
+    public class InMemoryFlowSchemaContext : IFlowSchemaContext
     {
         public InMemoryDbSet<ApplicationTemplateEntity> ApplicationTemplates { get; }
         public InMemoryDbSet<ApplicationInstanceEntity> ApplicationInstances { get; }
@@ -11,7 +11,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         public InMemoryDbSet<BehaviourTemplateEntity> BehaviourTemplates { get; }
         public InMemoryDbSet<BehaviourInstanceEntity> BehaviourInstances { get; }
         
-        public InMemorySchemaDataContext()
+        public InMemoryFlowSchemaContext()
         {
             this.ApplicationTemplates = new InMemoryDbSet<ApplicationTemplateEntity>();
             this.ApplicationInstances = new InMemoryDbSet<ApplicationInstanceEntity>();
@@ -20,10 +20,10 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
             this.BehaviourInstances = new InMemoryDbSet<BehaviourInstanceEntity>();
         }
 
-        IQueryable<ApplicationTemplateEntity> ISchemaDataContext.ApplicationTemplates => ApplicationTemplates;
-        IQueryable<ApplicationInstanceEntity> ISchemaDataContext.ApplicationInstances => ApplicationInstances;
-        IQueryable<BindingEntity> ISchemaDataContext.Bindings => Bindings;
-        IQueryable<BehaviourTemplateEntity> ISchemaDataContext.BehaviourTemplates => BehaviourTemplates;
-        IQueryable<BehaviourInstanceEntity> ISchemaDataContext.BehaviourInstances => BehaviourInstances;
+        IQueryable<ApplicationTemplateEntity> IFlowSchemaContext.ApplicationTemplates => ApplicationTemplates;
+        IQueryable<ApplicationInstanceEntity> IFlowSchemaContext.ApplicationInstances => ApplicationInstances;
+        IQueryable<BindingEntity> IFlowSchemaContext.Bindings => Bindings;
+        IQueryable<BehaviourTemplateEntity> IFlowSchemaContext.BehaviourTemplates => BehaviourTemplates;
+        IQueryable<BehaviourInstanceEntity> IFlowSchemaContext.BehaviourInstances => BehaviourInstances;
     }
 }

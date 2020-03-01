@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using DataGenies.Core.Models;
 using DataGenies.Core.Publishers;
 
-namespace DataGenies.Core.Tests.Integration.Stubs.Mq
+namespace DataGenies.Core.InMemory.Messaging
 {
     public class InMemoryPublisher : IPublisher
     {

@@ -18,15 +18,15 @@
 
         private readonly ManagedServiceBuilder managedServiceBuilder;
 
-        private readonly ISchemaDataContext schemaDataContext;
+        private readonly IFlowSchemaContext _flowSchemaContext;
 
         public InMemoryOrchestrator(
-            ISchemaDataContext schemaDataContext,
+            IFlowSchemaContext flowSchemaContext,
             IApplicationTemplatesScanner applicationTemplatesScanner,
             IBehaviourTemplatesScanner behaviourTemplatesScanner,
             ManagedServiceBuilder managedServiceBuilder)
         {
-            this.schemaDataContext = schemaDataContext;
+            this._flowSchemaContext = flowSchemaContext;
 
             this.applicationTemplatesScanner = applicationTemplatesScanner;
             this.behaviourTemplatesScanner = behaviourTemplatesScanner;
@@ -61,7 +61,7 @@
         public Task Deploy(int applicationInstanceId)
         {
             var applicationInstanceInfo =
-                this.schemaDataContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
+                this._flowSchemaContext.ApplicationInstances.First(f => f.Id == applicationInstanceId);
 
             var templateType = this.applicationTemplatesScanner.FindType(applicationInstanceInfo.TemplateEntity);
 

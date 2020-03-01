@@ -8,7 +8,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
 {
     public class InMemorySchemaDataBuilder
     {
-        private readonly InMemorySchemaDataContext _inMemorySchemaDataContext;
+        private readonly InMemoryFlowSchemaContext _inMemoryFlowSchemaContext;
 
         private ApplicationTemplateEntity _scopedApplicationTemplateEntity;
         private ApplicationInstanceEntity _scopedApplicationInstanceEntity;
@@ -19,9 +19,9 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
 
         private string _scopedConfigTemplateJson = "{}";
 
-        public InMemorySchemaDataBuilder(ISchemaDataContext schemaDataContext)
+        public InMemorySchemaDataBuilder(IFlowSchemaContext flowSchemaContext)
         {
-            _inMemorySchemaDataContext = (InMemorySchemaDataContext)schemaDataContext;
+            _inMemoryFlowSchemaContext = (InMemoryFlowSchemaContext)flowSchemaContext;
         }
 
         public InMemorySchemaDataBuilder UsingConfigTemplate<T>(T config) where T : class
@@ -47,14 +47,14 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         {
             _scopedApplicationTemplateEntity = new ApplicationTemplateEntity
             {
-                Id = id ?? this._inMemorySchemaDataContext.ApplicationTemplates.Count() + 1,
+                Id = id ?? this._inMemoryFlowSchemaContext.ApplicationTemplates.Count() + 1,
                 Name = templateName, 
                 Version = templateVersion,
                 ConfigTemplateJson = this._scopedConfigTemplateJson,
                 AssemblyPath = string.Empty
             };
             
-            _inMemorySchemaDataContext.ApplicationTemplates.Add(_scopedApplicationTemplateEntity);
+            _inMemoryFlowSchemaContext.ApplicationTemplates.Add(_scopedApplicationTemplateEntity);
 
             return this;
         }
@@ -63,14 +63,14 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         {
             this._scopedBehaviourTemplateEntity = new BehaviourTemplateEntity
             {
-                Id = id ?? _inMemorySchemaDataContext.BehaviourTemplates.Count() + 1,
+                Id = id ?? _inMemoryFlowSchemaContext.BehaviourTemplates.Count() + 1,
                 Name = behaviourName,
                 Version = behaviourVersion,
                 ConfigTemplateJson = this._scopedConfigTemplateJson,
                 AssemblyPath = string.Empty
             };
 
-            _inMemorySchemaDataContext.BehaviourTemplates.Add(_scopedBehaviourTemplateEntity);
+            _inMemoryFlowSchemaContext.BehaviourTemplates.Add(_scopedBehaviourTemplateEntity);
 
             return this;
         }
@@ -79,7 +79,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         {
             _scopedApplicationInstanceEntity = new ApplicationInstanceEntity
             {
-                Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
+                Id = id ?? this._inMemoryFlowSchemaContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedApplicationTemplateEntity.Id,
                 Name = instanceName,
                 InstanceCount = 1,
@@ -88,7 +88,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
                 Behaviours = new List<BehaviourInstanceEntity>()
             };
              
-            _inMemorySchemaDataContext.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
+            _inMemoryFlowSchemaContext.ApplicationInstances.Add(_scopedApplicationInstanceEntity);
 
             return this;
         }
@@ -97,7 +97,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         {
             this._scopedBehaviourInstanceEntity = new BehaviourInstanceEntity
             {
-                Id = id ?? this._inMemorySchemaDataContext.ApplicationInstances.Count() + 1,
+                Id = id ?? this._inMemoryFlowSchemaContext.ApplicationInstances.Count() + 1,
                 TemplateId = this._scopedBehaviourTemplateEntity.Id,
                 Name = instanceName,
                 ParametersDictAsJson = this._scopedParametersDictAsJson,
@@ -109,7 +109,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
             
             this._scopedParametersDictAsJson = "{}";
             
-            _inMemorySchemaDataContext.BehaviourInstances.Add(_scopedBehaviourInstanceEntity);
+            _inMemoryFlowSchemaContext.BehaviourInstances.Add(_scopedBehaviourInstanceEntity);
              
             return this;
         }
@@ -122,13 +122,13 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
             if (!string.IsNullOrEmpty(behaviourInstance))
             {
                 behaviourInstanceEntity =
-                    this._inMemorySchemaDataContext.BehaviourInstances.First(f => f.Name == behaviourInstance);
+                    this._inMemoryFlowSchemaContext.BehaviourInstances.First(f => f.Name == behaviourInstance);
             }
 
             if (!string.IsNullOrEmpty(applicationInstance))
             {
                 applicationInstanceEntity =
-                    this._inMemorySchemaDataContext.ApplicationInstances.First(f => f.Name == applicationInstance);
+                    this._inMemoryFlowSchemaContext.ApplicationInstances.First(f => f.Name == applicationInstance);
             }
 
             applicationInstanceEntity.Behaviours.Add(behaviourInstanceEntity);
@@ -141,7 +141,7 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         public InMemorySchemaDataBuilder UsingExistingApplicationInstance(string instanceName)
         {
             _scopedApplicationInstanceEntity =
-                this._inMemorySchemaDataContext.ApplicationInstances.First(f => f.Name == instanceName);
+                this._inMemoryFlowSchemaContext.ApplicationInstances.First(f => f.Name == instanceName);
 
             return this;
         }
@@ -149,29 +149,29 @@ namespace DataGenies.Core.Tests.Integration.Stubs.Data
         public InMemorySchemaDataBuilder UsingExistingBehaviourInstance(string instanceName)
         {
             this._scopedBehaviourInstanceEntity =
-                this._inMemorySchemaDataContext.BehaviourInstances.First(f => f.Name == instanceName);
+                this._inMemoryFlowSchemaContext.BehaviourInstances.First(f => f.Name == instanceName);
 
             return this;
         }
 
         public InMemorySchemaDataBuilder UsingExistedApplicationTemplate(string templateName)
         {
-            _scopedApplicationTemplateEntity = this._inMemorySchemaDataContext.ApplicationTemplates.First(f => f.Name == templateName);
+            _scopedApplicationTemplateEntity = this._inMemoryFlowSchemaContext.ApplicationTemplates.First(f => f.Name == templateName);
             return this;
         }
         
         public InMemorySchemaDataBuilder UsingExistedBehaviourTemplate(string templateName)
         {
-            this._scopedBehaviourTemplateEntity = this._inMemorySchemaDataContext.BehaviourTemplates.First(f => f.Name == templateName);
+            this._scopedBehaviourTemplateEntity = this._inMemoryFlowSchemaContext.BehaviourTemplates.First(f => f.Name == templateName);
             return this;
         }
 
         public InMemorySchemaDataBuilder ConfigureBinding(string publisherInstanceName, string receiverInstanceName, string receiverRoutingKey)
         {
-            var publisherInstance = _inMemorySchemaDataContext.ApplicationInstances.First(f => f.Name == publisherInstanceName);
-            var receiverInstance = _inMemorySchemaDataContext.ApplicationInstances.First(f => f.Name == receiverInstanceName);
+            var publisherInstance = _inMemoryFlowSchemaContext.ApplicationInstances.First(f => f.Name == publisherInstanceName);
+            var receiverInstance = _inMemoryFlowSchemaContext.ApplicationInstances.First(f => f.Name == receiverInstanceName);
 
-            _inMemorySchemaDataContext.Bindings.Add(new BindingEntity
+            _inMemoryFlowSchemaContext.Bindings.Add(new BindingEntity
             {
                 ReceiverId = receiverInstance.Id,
                 PublisherId = publisherInstance.Id,

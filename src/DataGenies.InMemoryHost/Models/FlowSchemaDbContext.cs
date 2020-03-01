@@ -2,11 +2,11 @@
 using DataGenies.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DataGenies.Orchestrator.Models
+namespace DataGenies.InMemoryHost.Models
 {
-    public class SchemaDbDataContext : DbContext, ISchemaDataContext
+    public class FlowSchemaDbContext : DbContext, IFlowSchemaContext
     {
-        public SchemaDbDataContext(DbContextOptions<SchemaDbDataContext> options)
+        public FlowSchemaDbContext(DbContextOptions<FlowSchemaDbContext> options)
             : base(options)
         {
 
@@ -43,10 +43,10 @@ namespace DataGenies.Orchestrator.Models
         public DbSet<BehaviourInstanceEntity> BehaviourInstances { get; set; }
         public DbSet<BindingEntity> Bindings { get; set; }
 
-        IQueryable<ApplicationInstanceEntity> ISchemaDataContext.ApplicationInstances => this.ApplicationInstances;
-        IQueryable<ApplicationTemplateEntity> ISchemaDataContext.ApplicationTemplates => this.ApplicationTemplates;
-        IQueryable<BehaviourInstanceEntity> ISchemaDataContext.BehaviourInstances => this.BehaviourInstances;
-        IQueryable<BehaviourTemplateEntity> ISchemaDataContext.BehaviourTemplates => this.BehaviourTemplates;
-        IQueryable<BindingEntity> ISchemaDataContext.Bindings => this.Bindings;
+        IQueryable<ApplicationInstanceEntity> IFlowSchemaContext.ApplicationInstances => this.ApplicationInstances;
+        IQueryable<ApplicationTemplateEntity> IFlowSchemaContext.ApplicationTemplates => this.ApplicationTemplates;
+        IQueryable<BehaviourInstanceEntity> IFlowSchemaContext.BehaviourInstances => this.BehaviourInstances;
+        IQueryable<BehaviourTemplateEntity> IFlowSchemaContext.BehaviourTemplates => this.BehaviourTemplates;
+        IQueryable<BindingEntity> IFlowSchemaContext.Bindings => this.Bindings;
     }
 }

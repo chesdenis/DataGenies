@@ -1,7 +1,14 @@
+using DataGenies.Core.Configurators;
 using DataGenies.Core.InMemory;
+using DataGenies.Core.InMemory.Messaging;
 using DataGenies.Core.Models;
 using DataGenies.Core.Orchestrators;
-using DataGenies.Orchestrator.Models;
+using DataGenies.Core.Publishers;
+using DataGenies.Core.Receivers;
+using DataGenies.Core.Repositories;
+using DataGenies.Core.Scanners;
+using DataGenies.Core.Services;
+using DataGenies.InMemoryHost.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,13 +33,30 @@ namespace DataGenies.InMemoryHost
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton<IOrchestrator, InMemoryOrchestrator>();
-
-            services.AddDbContext<ISchemaDataContext, SchemaDbDataContext>(
+            
+            services.AddDbContext<IFlowSchemaContext, FlowSchemaDbContext>(
                 optionsBuilder =>
                     optionsBuilder.UseSqlServer(
-                        @"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;ConnectRetryCount=0"));
+                        this.Configuration.GetSection("DataGeniesConfig")
+                            .GetValue<string>("SqlServerConnectionString")));
 
+            services.AddScoped<ManagedServiceBuilder>();
+            services.AddSingleton<InMemoryMqBroker>();
+
+            services.AddScoped<IMqConfigurator, InMemoryMqConfigurator>();
+            services.AddScoped<IBindingConfigurator, BindingConfigurator>();
+            
+            services.AddSingleton<IReceiverBuilder, InMemoryReceiverBuilder>();
+            services.AddSingleton<IPublisherBuilder, InMemoryPublisherBuilder>();
+            
+            services.AddSingleton<IOrchestrator, InMemoryOrchestrator>();
+            services.AddSingleton<IApplicationTemplatesScanner, ApplicationTemplatesScanner>();
+            services.AddSingleton<IBehaviourTemplatesScanner, BehavioursTemplatesScanner>();
+            
+            services.AddScoped<IFileSystemRepository, FileSystemRepository>();
+            services.AddScoped<IAssemblyScanner, AssemblyScanner>();
+
+          
 
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });

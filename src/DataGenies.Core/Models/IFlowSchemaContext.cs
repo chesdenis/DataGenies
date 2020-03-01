@@ -2,7 +2,7 @@
 
 namespace DataGenies.Core.Models
 {
-    public interface ISchemaDataContext
+    public interface IFlowSchemaContext
     {
         IQueryable<ApplicationTemplateEntity> ApplicationTemplates { get; }
 

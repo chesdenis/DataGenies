@@ -2,12 +2,12 @@
 using DataGenies.Core.Behaviours;
 using DataGenies.Core.Configurators;
 using DataGenies.Core.InMemory;
+using DataGenies.Core.InMemory.Messaging;
 using DataGenies.Core.Models;
 using DataGenies.Core.Scanners;
 using DataGenies.Core.Services;
 using DataGenies.Core.Tests.Integration.Stubs;
 using DataGenies.Core.Tests.Integration.Stubs.Data;
-using DataGenies.Core.Tests.Integration.Stubs.Mq;
 using NSubstitute;
 
 namespace DataGenies.Core.Tests.Integration
@@ -20,7 +20,7 @@ namespace DataGenies.Core.Tests.Integration
 
         protected IBindingConfigurator BindingConfigurator;
         
-        protected InMemorySchemaDataContext InMemorySchemaContext;
+        protected InMemoryFlowSchemaContext InMemoryFlowSchemaContext;
         
         protected InMemorySchemaDataBuilder InMemorySchemaDataBuilder;
 
@@ -37,13 +37,13 @@ namespace DataGenies.Core.Tests.Integration
             ApplicationTemplatesScanner = Substitute.For<IApplicationTemplatesScanner>();
             BehaviourTemplatesScanner = Substitute.For<IBehaviourTemplatesScanner>();
            
-            InMemorySchemaContext = new InMemorySchemaDataContext();
-            InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemorySchemaContext);
+            InMemoryFlowSchemaContext = new InMemoryFlowSchemaContext();
+            InMemorySchemaDataBuilder = new InMemorySchemaDataBuilder(InMemoryFlowSchemaContext);
             InMemoryMqConfigurator = new InMemoryMqConfigurator(InMemoryMqBroker);
             
-            BindingConfigurator = new BindingConfigurator(InMemorySchemaContext, InMemoryMqConfigurator);
+            BindingConfigurator = new BindingConfigurator(InMemoryFlowSchemaContext, InMemoryMqConfigurator);
             
-            Orchestrator = new InMemoryOrchestrator(InMemorySchemaContext,
+            Orchestrator = new InMemoryOrchestrator(InMemoryFlowSchemaContext,
                 ApplicationTemplatesScanner,
                 BehaviourTemplatesScanner,
                

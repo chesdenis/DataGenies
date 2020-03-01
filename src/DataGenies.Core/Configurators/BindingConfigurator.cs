@@ -6,22 +6,22 @@ namespace DataGenies.Core.Configurators
     public class BindingConfigurator : IBindingConfigurator
     {
         private readonly IMqConfigurator mqConfigurator;
-        private readonly ISchemaDataContext schemaDataContext;
+        private readonly IFlowSchemaContext _flowSchemaContext;
 
         public BindingConfigurator(
-            ISchemaDataContext schemaDataContext,
+            IFlowSchemaContext flowSchemaContext,
             IMqConfigurator mqConfigurator)
         {
-            this.schemaDataContext = schemaDataContext;
+            this._flowSchemaContext = flowSchemaContext;
             this.mqConfigurator = mqConfigurator;
         }
 
         public BindingNetwork ConfigureBindingNetworkFor(int applicationInstanceEntityId)
         {
-            var publishersBindingEntities = this.schemaDataContext.Bindings
+            var publishersBindingEntities = this._flowSchemaContext.Bindings
                 .Where(w => w.ReceiverId == applicationInstanceEntityId);
 
-            var receiversBindingEntities = this.schemaDataContext.Bindings
+            var receiversBindingEntities = this._flowSchemaContext.Bindings
                 .Where(w => w.PublisherId == applicationInstanceEntityId);
 
             var bindingReferences = publishersBindingEntities.Select(
