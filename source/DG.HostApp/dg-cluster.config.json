@@ -1,0 +1,13 @@
+﻿{
+  "ApplicationType" : {
+    "Name": "HelloWorldApp"
+  },
+  "ApplicationInstances" :
+  [
+    {
+      "Name" : "ThisIsMyHelloWorldApplication",
+      "HostingModel": "InMemory",
+      "Count": "1"
+    }
+  ]
+}

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using DG.HostApp.Data;
+using DG.HostApp.Services;
 
 namespace DG.HostApp
 {
@@ -29,6 +30,7 @@ namespace DG.HostApp
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddHostedService<ServiceWatcher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
