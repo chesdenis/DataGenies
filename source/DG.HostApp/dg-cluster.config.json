@@ -1,13 +1,44 @@
 ﻿{
-  "ApplicationType" : {
-    "Name": "HelloWorldApp"
+  "Nodes": {
+    "Node1": {
+      "HostName": "localhost",
+      "Port": 5001,
+      "HostingModel": "InMemory"
+    },
+    "Node2": {
+      "HostName": "localhost",
+      "Port": 5033,
+      "HostingModel": "InMemory"
+    }
   },
   "ApplicationInstances" :
   [
     {
-      "Name" : "ThisIsMyHelloWorldApplication",
+      "Name" : "ThisIsMyHelloWorldApplication1",
+      "Type": "HelloWorldApp",
       "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node1"
+      ],
       "Count": "1"
+    },
+    {
+      "Name" : "ThisIsMyHelloWorldApplication2",
+      "Type": "HelloWorldApp",
+      "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node2"
+      ],
+      "Count": "5"
+    },
+    {
+      "Name" : "ThisIsMyHelloWorldApplication3",
+      "Type": "HelloWorldApp",
+      "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node*"
+      ],
+      "Count": "-1"
     }
   ]
 }
