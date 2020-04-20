@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DG.HostApp", "DG.HostApp\DG.HostApp.csproj", "{950E9F2C-0142-40A0-B5B7-3359350A4D8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DG.HostApp", "source\DG.HostApp\DG.HostApp.csproj", "{950E9F2C-0142-40A0-B5B7-3359350A4D8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DG.Core", "DG.Core\DG.Core.csproj", "{1B18637C-1675-447F-ACE3-617B450D4A7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DG.Core", "source\DG.Core\DG.Core.csproj", "{1B18637C-1675-447F-ACE3-617B450D4A7D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DG.Core.Tests", "DG.Core.Tests\DG.Core.Tests.csproj", "{E3323ADC-AF2D-4F92-A493-19F30499CF92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DG.Core.Tests", "source\DG.Core.Tests\DG.Core.Tests.csproj", "{E3323ADC-AF2D-4F92-A493-19F30499CF92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DG.HostApp.Tests", "DG.HostApp.Tests\DG.HostApp.Tests.csproj", "{30ECD404-63AE-40FA-9437-B607C8D8305C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DG.HostApp.Tests", "source\DG.HostApp.Tests\DG.HostApp.Tests.csproj", "{30ECD404-63AE-40FA-9437-B607C8D8305C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
