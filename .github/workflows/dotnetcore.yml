@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore "source/DG.sln"
+      run: dotnet restore "DG.sln"
     - name: Build
-      run: dotnet build "source/DG.sln" --configuration Release --no-restore
+      run: dotnet build "DG.sln" --configuration Release --no-restore
     - name: Test
-      run: dotnet test "source/DG.sln" --no-restore --verbosity normal
+      run: dotnet test "DG.sln" --no-restore --verbosity normal
