@@ -1,10 +1,10 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-
-namespace DG.HostApp.Services
+﻿namespace DG.HostApp.Services
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Hosting;
+
     public class ServiceWatcher : IHostedService
     {
         public Task StartAsync(CancellationToken cancellationToken)

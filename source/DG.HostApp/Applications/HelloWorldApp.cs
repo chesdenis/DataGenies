@@ -1,8 +1,8 @@
-﻿using System;
-using DG.Core.Attributes;
-
-namespace DG.HostApp.Applications
+﻿namespace DG.HostApp.Applications
 {
+    using System;
+    using DG.Core.Attributes;
+
     [Application]
     public class HelloWorldApp
     {
@@ -11,7 +11,7 @@ namespace DG.HostApp.Applications
         {
             Console.WriteLine("Hello World!");
         }
-    
+
         [Stop]
         public void OnStop()
         {
