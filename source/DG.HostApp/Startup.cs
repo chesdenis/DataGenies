@@ -4,6 +4,7 @@ namespace DG.HostApp
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using DG.Core.ConfigManagers;
     using DG.HostApp.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Components;
@@ -27,6 +28,7 @@ namespace DG.HostApp
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHostedService<ServiceWatcher>();
+            services.AddScoped<IClusterConfigManager, ClusterConfigManager>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
