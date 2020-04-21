@@ -1,12 +1,12 @@
-﻿@page "/clusterconfigmanager"
+﻿@page "/clusterconfigeditor"
 
 @using DG.Core.ConfigManagers
 @using DG.Core.Models
 
 @inject IClusterConfigManager clusterConfigManager
 <h1>Cluster configuration manager</h1>
-<button class="btn btn-primary" @onclick="AddNode">Add Node</button>
-<button class="btn btn-primary" @onclick="AddApplicationInstance">Add Application instance</button>
+<button class="btn btn-outline-primary" @onclick="AddNode">Add Node</button>
+<button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
 @if (clusterConfig == null)
 {
     <p><em>Please, read the config file</em></p>
@@ -19,7 +19,6 @@ else
         <b>HashMd5:</b> @clusterConfig.HashMD5
     </p>
     <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
-        <InputText id="HashMd5" @bind-Value="clusterConfig.HashMD5" />
         <h3>Nodes:</h3>
         @foreach (var node in clusterConfig.Nodes)
         {
@@ -35,37 +34,39 @@ else
         {
             <p>
                 <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
-                <b>Type:</b> @applicationInstance.Type<br />
-                <b>Hosting model:</b> @applicationInstance.HostingModel<br />
+                <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
+                <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
                 <b>Placement policies:</b><br />
+
+                @foreach (var placement in applicationInstance.PlacementPolicies)
+                {
+                    <span style=" margin-left:40px">
+                        <b>=></b>@placement;<br />
+                    </span>
+                }
+
                 <span style=" margin-left:40px">
-                    @foreach (var placement in applicationInstance.PlacementPolicies)
-                    {
-                        <b>=></b> @placement<br />
-                    }
+                    <b>=></b><InputText @bind-Value="newPlacement" />
+                    <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
                 </span>
-                <b>Count:</b> @applicationInstance.Count
+                <b>Count:</b> <InputNumber @bind-Value=" applicationInstance.Count" />
             </p>
         }
         <p>
-            <button type="submit">Save changes</button>
+            <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
         </p>
     </EditForm>
 
 }
 @code {
     private ClusterConfig clusterConfig;
-
+    private string newPlacement;
     protected override void OnInitialized()
     {
         ReadConfig();
     }
 
     private void WriteConfig()
-    {
-
-    }
-    private void submitChanges()
     {
         this.clusterConfigManager.WriteConfig(clusterConfig);
     }
@@ -95,7 +96,7 @@ else
                 Name = "NewAppication",
                 Type = "AppType",
                 HostingModel = "HostingModel",
-                PlacementPolicies = new List<string>() { "Node1" }
+                PlacementPolicies = new List<string>() { }
             });
     }
 }

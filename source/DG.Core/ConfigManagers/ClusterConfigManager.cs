@@ -1,6 +1,11 @@
 ﻿namespace DG.Core.ConfigManagers
 {
+    using System;
     using System.IO;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Formatters.Binary;
+    using System.Security.Cryptography;
+    using System.Text;
     using DG.Core.Models;
     using Newtonsoft.Json;
 
