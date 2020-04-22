@@ -16,7 +16,7 @@ namespace DG.Core.Orchestrators
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
             var instances = this.inMemoryInstances[uniqueId];
 
-            if (!instances.Any() || !instances.All(x => x.GetType().HasMethodAttribute(typeof(ReportStateAttribute))))
+            if (!instances.Any() || !instances.All(x => x.GetType().HasMethodAttribute(typeof(StateReportAttribute))))
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(uniqueId), "Can't find any instances");
@@ -24,7 +24,7 @@ namespace DG.Core.Orchestrators
 
             foreach (var instance in instances)
             {
-                yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(ReportStateAttribute));
+                yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(StateReportAttribute));
             }
         }
 
@@ -43,26 +43,12 @@ namespace DG.Core.Orchestrators
  
         public void Start(string application, string instanceName)
         {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-
-            var instances = this.inMemoryInstances[uniqueId];
-
-            foreach (var instance in instances)
-            {
-                instance.InvokeMethod(typeof(StartAttribute));
-            }
+            throw new NotImplementedException();
         }
  
         public void Stop(string application, string instanceName)
         {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-
-            var instances = this.inMemoryInstances[uniqueId];
-
-            foreach (var instance in instances)
-            {
-                instance.InvokeMethod(typeof(StopAttribute));
-            }
+            throw new NotImplementedException();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace DG.Core.Attributes
 {
-    public class ReportStateAttribute : Attribute
+    public class StateReportAttribute : Attribute
     {
     }
 }

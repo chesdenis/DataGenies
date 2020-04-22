@@ -10,17 +10,7 @@ namespace DG.Core.Extensions
         {
             return $"{application}/{instanceName}";
         }
-
-        public static void InvokeMethod(this object instance, Type attributeType)
-        {
-            var methodToExecute = instance
-                .GetType()
-                .GetMethods()
-                .First(f => f.GetCustomAttributes(attributeType, true).Any());
-                
-            methodToExecute.Invoke(instance, new object[] { });
-        }
-
+        
         public static T ExecuteFunctionWithoutArgs<T>(this object instance, Type attributeType)
         {
             var functionToExecute = instance
