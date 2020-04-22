@@ -13,6 +13,25 @@ namespace DG.Core.Tests.Unit
 {
     public class InMemoryApplicationOrchestratorTests  
     {
+        [Theory]
+        [InlineData("appName", "intanceNameWith//DoubleBackslashes")]
+        [InlineData("appName", "intanceNameWith/Backslash")]
+        [InlineData("appName", "intanceNameWith'Ampersand")]
+        [InlineData("appName", "intanceNameWith\\Slash")]
+        public void ShouldWorkWithApplicationsWithSpecializedNames(string applicationName, string instanceName)
+        {
+            // Arrange
+            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
+            inMemoryOrchestrator.Register(applicationName, typeof(AppA), instanceName);
+            
+            // Act
+            var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
+        
+            // Assert
+            reports.Should().HaveCount(1);
+            reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
+        }
+
         [Fact]
         public void ShouldGetInstanceStateInCaseOfStringDataInStateReport()
         {
