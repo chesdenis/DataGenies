@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using DG.Core.ConfigManagers;
 using DG.Core.Orchestrators;
+using DG.Core.Repositories;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -38,6 +40,8 @@ namespace DG.HostApp
             
             services.AddControllers();
             services.AddScoped<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            services.AddSingleton<HttpClient>();
+            services.AddScoped<IClusterConfigRepository, ClusterConfigRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

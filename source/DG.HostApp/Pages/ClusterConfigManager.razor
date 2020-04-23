@@ -1,10 +1,11 @@
 ﻿@page "/clusterconfigeditor"
 
-@using DG.Core.ConfigManagers
-@using DG.Core.Models
+@using System.Text;
+@using DG.Core.Models;
 @using Newtonsoft.Json;
+@using System.Net.Http;
+@inject HttpClient Http
 
-@inject IClusterConfigManager clusterConfigManager
 <h1>Cluster configuration manager</h1>
 <button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
 <button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
@@ -12,7 +13,7 @@
 <br />
 @if (clusterConfig == null)
 {
-    <p><em>Please, read the config file</em></p>
+    <p><em>Loading configuration...</em></p>
 }
 else
 {
@@ -20,8 +21,8 @@ else
     {
         <h2>Cluster configuration:</h2>
         <EditForm Model="@rawConfigAsJsonString">
-            <InputTextArea  @bind-Value="rawConfigAsJsonString" /> <br /> 
-            <button class="btn btn-outline-primary" @onclick="WriteConfigWithRawJson">Save changes</button>
+            <InputTextArea @bind-Value="rawConfigAsJsonString" /> <br />
+            <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
         </EditForm>
     }
     else
@@ -79,26 +80,45 @@ else
         </EditForm>
     }
 }
+
 @code {
     private ClusterConfig clusterConfig;
     private string newPlacement;
     private string rawConfigAsJsonString;
     private bool rawView = false;
+    private string uriClusterConfigManager = "https://localhost:5001/api/ClusterConfigManager";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        ReadConfig();
+        await ReadConfig();
     }
 
-    private void WriteConfig()
+    private async Task WriteConfig()
     {
-        this.clusterConfigManager.WriteConfig(clusterConfig);
+        if (rawView == false)
+        {
+            rawConfigAsJsonString = await Http.GetStringAsync(uriClusterConfigManager);
+        }
+        await WriteConfigApiCall();
     }
 
-    private void ReadConfig()
+    private async Task WriteConfigApiCall()
     {
-        clusterConfig = await Http.GetJsonAsync<ClusterConfig>("api/TodoItems");
-        //clusterConfig = clusterConfigManager.ReadConfig();
+        var httpRequestMessage = new HttpRequestMessage()
+        {
+            Method = new HttpMethod("POST"),
+            RequestUri = new Uri(uriClusterConfigManager),
+            Content = new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json")
+        };
+
+        await Http.SendAsync(httpRequestMessage);
+        //var response = await Http.PostAsync(uriClusterConfigManager, new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json"));
+    }
+
+    private async Task ReadConfig()
+    {
+        rawConfigAsJsonString = await Http.GetStringAsync(uriClusterConfigManager);
+        clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
     }
 
     private void SetRawView()
@@ -109,13 +129,8 @@ else
 
     private void SetFormView()
     {
-        this. clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+        this.clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
         this.rawView = false;
-    }
-
-    private void WriteConfigWithRawJson()
-    {
-
     }
 
     private void AddNode()
@@ -141,5 +156,4 @@ else
                 PlacementPolicies = new List<string>() { }
             });
     }
-
 }

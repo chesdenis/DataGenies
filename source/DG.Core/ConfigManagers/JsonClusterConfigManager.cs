@@ -1,30 +1,38 @@
 ﻿namespace DG.Core.ConfigManagers
 {
-    using System;
-    using System.IO;
-    using System.Runtime.Serialization;
-    using System.Runtime.Serialization.Formatters.Binary;
-    using System.Security.Cryptography;
-    using System.Text;
     using DG.Core.Models;
+    using DG.Core.Repositories;
     using Newtonsoft.Json;
 
     public class JsonClusterConfigManager : IClusterConfigManager
     {
-        private const string ClusterConfigPath = @".\dg-cluster.config.json";
+        private readonly IClusterConfigRepository clusterConfigRepository;
 
-        public ClusterConfig ReadConfig()
+        public JsonClusterConfigManager(IClusterConfigRepository clusterConfigRepository)
         {
-            string clusterConfigAsJson = File.ReadAllText(ClusterConfigPath);
-            var clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(clusterConfigAsJson);
+            this.clusterConfigRepository = clusterConfigRepository;
+        }
 
-            return clusterConfig;
+        public ClusterConfig GetConfig()
+        {
+            return this.clusterConfigRepository.GetClusterConfig();
+        }
+
+        public string GetConfigAsJson()
+        {
+            var clusterConfig = this.clusterConfigRepository.GetClusterConfig();
+            return JsonConvert.SerializeObject(clusterConfig);
         }
 
         public void WriteConfig(ClusterConfig clusterConfig)
         {
-            string clusterConfigAsJson = JsonConvert.SerializeObject(clusterConfig);
-            File.WriteAllText(ClusterConfigPath, clusterConfigAsJson);
+            this.clusterConfigRepository.UpdateClusterConfig(clusterConfig);
+        }
+
+        public void WriteConfigAsJson(string clusterConfigAsJson)
+        {
+            var clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(clusterConfigAsJson);
+            this.clusterConfigRepository.UpdateClusterConfig(clusterConfig);
         }
     }
 }
