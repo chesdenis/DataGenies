@@ -28,7 +28,7 @@ namespace DG.HostApp
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddHostedService<ServiceWatcher>();
-            services.AddScoped<IClusterConfigManager, ClusterConfigManager>();
+            services.AddScoped<IClusterConfigManager, JsonClusterConfigManager>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

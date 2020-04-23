@@ -9,7 +9,7 @@
     using DG.Core.Models;
     using Newtonsoft.Json;
 
-    public class ClusterConfigManager : IClusterConfigManager
+    public class JsonClusterConfigManager : IClusterConfigManager
     {
         private const string ClusterConfigPath = @".\dg-cluster.config.json";
 

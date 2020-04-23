@@ -15,7 +15,7 @@
     {
         public string NodeName;
         public string HostName;
-        public int Port;
+        public ushort Port;
         public string HostingModel;
     }
 

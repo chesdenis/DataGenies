@@ -2,65 +2,89 @@
 
 @using DG.Core.ConfigManagers
 @using DG.Core.Models
+@using Newtonsoft.Json;
 
 @inject IClusterConfigManager clusterConfigManager
 <h1>Cluster configuration manager</h1>
-<button class="btn btn-outline-primary" @onclick="AddNode">Add Node</button>
-<button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
+<button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
+<button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
+<br />
+<br />
 @if (clusterConfig == null)
 {
     <p><em>Please, read the config file</em></p>
 }
 else
 {
-    <h2>Cluster configuration:</h2>
-    <p>
-        <b>Last update:</b> @clusterConfig.LastUpdateTime
-        <b>HashMd5:</b> @clusterConfig.HashMD5
-    </p>
-    <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
-        <h3>Nodes:</h3>
-        @foreach (var node in clusterConfig.Nodes)
-        {
-            <p>
-                <b>Node name:</b> <InputText @bind-Value="node.NodeName" /><br />
-                <b>Host name:</b> <InputText @bind-Value="node.HostName" /><br />
-                <b>Port:</b> <InputNumber @bind-Value="node.Port" /><br />
-                <b>Hosting model:</b> <InputText @bind-Value="node.HostingModel" />
-            </p>
-        }
-        <h3>Application instances:</h3>
-        @foreach (var applicationInstance in clusterConfig.ApplicationInstances)
-        {
-            <p>
-                <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
-                <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
-                <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
-                <b>Placement policies:</b><br />
-
-                @foreach (var placement in applicationInstance.PlacementPolicies)
-                {
-                    <span style=" margin-left:40px">
-                        <b>=></b>@placement;<br />
-                    </span>
-                }
-
-                <span style=" margin-left:40px">
-                    <b>=></b><InputText @bind-Value="newPlacement" />
-                    <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
-                </span>
-                <b>Count:</b> <InputNumber @bind-Value=" applicationInstance.Count" />
-            </p>
-        }
+    if (rawView == true)
+    {
+        <h2>Cluster configuration:</h2>
+        <EditForm Model="@rawConfigAsJsonString">
+            <InputTextArea  @bind-Value="rawConfigAsJsonString" /> <br /> 
+            <button class="btn btn-outline-primary" @onclick="WriteConfigWithRawJson">Save changes</button>
+        </EditForm>
+    }
+    else
+    {
+        <h2>Cluster configuration:</h2>
         <p>
-            <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
+            <b>Last update:</b> @clusterConfig.LastUpdateTime
+            <b>HashMd5:</b> @clusterConfig.HashMD5
         </p>
-    </EditForm>
+        <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
+            <h3>Nodes:</h3>
+            @foreach (var node in clusterConfig.Nodes)
+            {
+                <p>
+                    <b>Node name:</b> <InputText @bind-Value="node.NodeName" /><br />
+                    <b>Host name:</b> <InputText @bind-Value="node.HostName" /><br />
 
+                    <b>Hosting model:</b> <InputText @bind-Value="node.HostingModel" />
+                </p>
+            }
+
+            <button class="btn btn-outline-primary" @onclick="AddNode">Add Node</button>
+            <br />
+            <br />
+
+            <h3>Application instances:</h3>
+            @foreach (var applicationInstance in clusterConfig.ApplicationInstances)
+            {
+                <p>
+                    <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
+                    <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
+                    <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
+                    <b>Placement policies:</b><br />
+
+                    @foreach (var placement in applicationInstance.PlacementPolicies)
+                    {
+                        <span style=" margin-left:40px">
+                            <b>=></b>@placement;<br />
+                        </span>
+                    }
+
+                    <span style=" margin-left:40px">
+                        <b>=></b><InputText @bind-Value="newPlacement" />
+                        <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
+                    </span>
+                    <b>Count:</b> <InputNumber @bind-Value=" applicationInstance.Count" />
+                </p>
+            }
+            <button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
+            <br />
+            <br />
+            <p>
+                <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
+            </p>
+        </EditForm>
+    }
 }
 @code {
     private ClusterConfig clusterConfig;
     private string newPlacement;
+    private string rawConfigAsJsonString;
+    private bool rawView = false;
+
     protected override void OnInitialized()
     {
         ReadConfig();
@@ -73,7 +97,25 @@ else
 
     private void ReadConfig()
     {
-        clusterConfig = clusterConfigManager.ReadConfig();
+        clusterConfig = await Http.GetJsonAsync<ClusterConfig>("api/TodoItems");
+        //clusterConfig = clusterConfigManager.ReadConfig();
+    }
+
+    private void SetRawView()
+    {
+        rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
+        this.rawView = true;
+    }
+
+    private void SetFormView()
+    {
+        this. clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+        this.rawView = false;
+    }
+
+    private void WriteConfigWithRawJson()
+    {
+
     }
 
     private void AddNode()
@@ -99,4 +141,5 @@ else
                 PlacementPolicies = new List<string>() { }
             });
     }
+
 }
