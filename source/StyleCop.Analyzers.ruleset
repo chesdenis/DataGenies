@@ -79,10 +79,13 @@
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1305" Action="Warning" />
     <Rule Id="SA1412" Action="None" />
+	<Rule Id="SA1402" Action="None" />
     <Rule Id="SA1600" Action="None" />
     <Rule Id="SA1609" Action="Warning" />
 	<Rule Id="SA1633" Action="None" />
 	<Rule Id="SA0001" Action="None" />
+	<Rule Id="SA1028" Action="None" />
+	<Rule Id="SA1200" Action="None" />
   </Rules>
   <Rules AnalyzerId="DocumentationAnalyzers" RuleNamespace="DocumentationAnalyzers">
     <Rule Id="DOC100" Action="Warning" />
