@@ -21,11 +21,11 @@ else
     {
         <h2>Cluster configuration:</h2>
         <EditForm Model="@rawConfigAsJsonString">
-            <InputTextArea @bind-Value="rawConfigAsJsonString" /> <br />
+            <InputTextArea style="height: 600px; width: 70%; resize:both;" @bind-Value="rawConfigAsJsonString" /> <br />
             <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
         </EditForm>
     }
-    else
+else
     {
         <h2>Cluster configuration:</h2>
         <p>
@@ -106,7 +106,7 @@ else
     {
         var httpRequestMessage = new HttpRequestMessage()
         {
-            Method = new HttpMethod("POST"),
+            Method = HttpMethod.Post,
             RequestUri = new Uri(uriClusterConfigManager),
             Content = new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json")
         };
