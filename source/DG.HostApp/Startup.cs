@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DG.Core.ConfigManagers;
 using DG.Core.Orchestrators;
 using DG.Core.Repositories;
+using DG.Core.Services;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -34,14 +35,15 @@ namespace DG.HostApp
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-           
+
             services.AddHostedService<ServiceWatcher>();
             services.AddScoped<IClusterConfigManager, JsonClusterConfigManager>();
-            
+
             services.AddControllers();
             services.AddScoped<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
             services.AddSingleton<HttpClient>();
             services.AddScoped<IClusterConfigRepository, ClusterConfigRepository>();
+            services.AddScoped<ISystemClock, SystemClock>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

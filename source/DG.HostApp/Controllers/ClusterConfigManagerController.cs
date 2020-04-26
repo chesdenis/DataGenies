@@ -16,7 +16,7 @@
         }
 
         [HttpGet]
-        public ActionResult<string> GetClusterConfig()
+        public ActionResult<string> GetClusterConfigAsJson()
         {
             return this.Ok(this.clusterConfigManager.GetConfigAsJson());
         }
@@ -24,7 +24,7 @@
         [HttpPost]
         public ActionResult PostClusterConfig([FromBody] ClusterConfig clusterConfig)
         {
-            this.clusterConfigManager.WriteConfigAsJson(null);
+            this.clusterConfigManager.WriteConfig(clusterConfig);
             return this.Ok();
         }
     }

@@ -20,9 +20,9 @@ else
     if (rawView == true)
     {
         <h2>Cluster configuration:</h2>
-        <EditForm Model="@rawConfigAsJsonString">
-            <InputTextArea style="height: 600px; width: 70%; resize:both;" @bind-Value="rawConfigAsJsonString" /> <br />
-            <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
+        <EditForm Model="@rawConfigAsJsonString" OnValidSubmit="@WriteConfig">
+            <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJsonString" /> <br />
+            <button class="btn btn-outline-primary" type="submit">Update config</button>
         </EditForm>
     }
 else
@@ -75,7 +75,7 @@ else
             <br />
             <br />
             <p>
-                <button class="btn btn-outline-primary" @onclick="WriteConfig">Save changes</button>
+                <button class="btn btn-outline-primary" type="submit">Update config</button>
             </p>
         </EditForm>
     }
@@ -97,7 +97,7 @@ else
     {
         if (rawView == false)
         {
-            rawConfigAsJsonString = await Http.GetStringAsync(uriClusterConfigManager);
+            rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
         }
         await WriteConfigApiCall();
     }

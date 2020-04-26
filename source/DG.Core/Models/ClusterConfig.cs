@@ -5,26 +5,36 @@
 
     public class ClusterConfig
     {
-        public DateTime LastUpdateTime;
-        public string HashMD5;
-        public List<Node> Nodes;
-        public List<ApplicationInstance> ApplicationInstances;
+        public DateTime LastUpdateTime { get; set; }
+
+        public string HashMD5 { get; set; }
+
+        public List<Node> Nodes { get; set; }
+
+        public List<ApplicationInstance> ApplicationInstances { get; set; }
     }
 
     public class Node
     {
-        public string NodeName;
-        public string HostName;
-        public ushort Port;
-        public string HostingModel;
+        public string NodeName { get; set; }
+
+        public string HostName { get; set; }
+
+        public ushort Port { get; set; }
+
+        public string HostingModel { get; set; }
     }
 
     public class ApplicationInstance
-{
-        public string Name;
-        public string Type;
-        public string HostingModel;
-        public List<string> PlacementPolicies;
-        public int Count;
+    {
+        public string Name { get; set; }
+
+        public string Type { get; set; }
+
+        public string HostingModel { get; set; }
+
+        public List<string> PlacementPolicies { get; set; }
+
+        public int Count { get; set; }
     }
 }
