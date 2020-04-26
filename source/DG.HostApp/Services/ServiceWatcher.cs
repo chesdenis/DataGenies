@@ -1,15 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DG.Core.Model.ClusterConfig;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-
-namespace DG.HostApp.Services
+﻿namespace DG.HostApp.Services
 {
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using DG.Core.Model.ClusterConfig;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Options;
 
     public class ServiceWatcher : IHostedService
     {

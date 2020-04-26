@@ -12,6 +12,6 @@ namespace DG.Core.Model.ClusterConfig
 
         public List<string> PlacementPolicies { get; set; }
 
-        public int Count { get; set; }
+        public string Count { get; set; }
     }
 }

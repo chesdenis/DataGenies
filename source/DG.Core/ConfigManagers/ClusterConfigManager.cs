@@ -11,6 +11,8 @@ namespace DG.Core.ConfigManagers
     {
         private readonly IClusterConfigRepository clusterConfigRepository;
 
+        private ClusterConfig configCache = null;
+
         public ClusterConfigManager(IClusterConfigRepository clusterConfigRepository)
         {
             this.clusterConfigRepository = clusterConfigRepository;
@@ -18,7 +20,21 @@ namespace DG.Core.ConfigManagers
         
         public ClusterConfig GetConfig()
         {
-            return this.clusterConfigRepository.GetClusterConfig();
+            try
+            {
+                var clusterConfig = this.clusterConfigRepository.GetClusterConfig();
+                this.configCache = clusterConfig;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                if (this.configCache == null)
+                {
+                    throw;
+                }
+            }
+            
+            return this.configCache;
         }
 
         public Nodes GetNodes()
@@ -49,22 +65,24 @@ namespace DG.Core.ConfigManagers
         
         public string GetMd5Hash()
         {
-            var configInput = this.GetConfigInput();
+            var clusterConfig = this.GetConfig();
+            var configInput = this.ConstructItemsForHash(clusterConfig);
             return this.GetMd5Hash(configInput);
         }
         
         public bool VerifyMd5Hash()
         {
-            var hashToVerify = this.GetConfig().HashMD5;
-            var configInput = this.GetConfigInput();
+            var clusterConfig = this.GetConfig();
+            var hashToVerify = clusterConfig.HashMD5;
+            var configInput = this.ConstructItemsForHash(clusterConfig);
             
             return this.VerifyMd5Hash(configInput, hashToVerify);
         }
         
-        private string GetConfigInput()
+        private string ConstructItemsForHash(ClusterConfig clusterConfig)
         {
-            var nodes = this.GetNodes();
-            var applicationInstances = this.GetApplicationInstances();
+            var nodes = clusterConfig.Nodes;
+            var applicationInstances = clusterConfig.ApplicationInstances;
 
             var nodesAsJson = JsonSerializer.Serialize(nodes);
             var applicationInstancesAsJson = JsonSerializer.Serialize(applicationInstances);

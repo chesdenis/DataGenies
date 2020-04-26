@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using DG.Core.Model.ClusterConfig;
 
@@ -16,7 +17,11 @@ namespace DG.Core.Repositories
 
         public void UpdateClusterConfig(ClusterConfig clusterConfig)
         {
-            string clusterConfigAsJson = JsonSerializer.Serialize(clusterConfig);
+            string clusterConfigAsJson =
+                JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                });
             File.WriteAllText(ClusterConfigPath, clusterConfigAsJson);
         }
     }
