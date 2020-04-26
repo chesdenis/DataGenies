@@ -20,7 +20,8 @@
             IDictionary<string, object> sectionValues = new Dictionary<string, object>();
             foreach (ConfigurationSection configurationSection in configurationSections)
             {
-                sectionValues = this.ScanSection(configurationSection);
+                var sectionData = this.ScanSection(configurationSection);
+                sectionValues = sectionValues.Concat(sectionData).ToDictionary(kv => kv.Key, kv => kv.Value);
             }
 
             return sectionValues;

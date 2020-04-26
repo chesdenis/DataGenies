@@ -6,7 +6,7 @@
     {
         private readonly IConfigScanner configScanner;
         private readonly string sectionName = "ApplicationInstances";
-        private readonly IDictionary<string, object> applicationInstancesData = new Dictionary<string, object>();
+        private readonly IDictionary<string, object> applicationInstancesConfiguration = new Dictionary<string, object>();
 
         public ApplicationInstancesScanner(IConfigScanner configScanner)
         {
@@ -32,7 +32,7 @@
                         var instanceType = instanceFieldsData["Type"];
                         var instanceName = instanceFieldsData["Name"];
                         var newInstanceKey = instanceType + "^" + instanceName;
-                        this.applicationInstancesData.Add(newInstanceKey, instanceFieldsData);
+                        this.applicationInstancesConfiguration.Add(newInstanceKey, instanceFieldsData);
                     }
                 }
             }
@@ -46,7 +46,7 @@
         public IDictionary<string, string> GetFieldValuesFromApps(string fieldName)
         {
             IDictionary<string, string> fieldValues = new Dictionary<string, string>();
-            foreach (var instance in this.applicationInstancesData)
+            foreach (var instance in this.applicationInstancesConfiguration)
             {
                 var fields = instance.Value;
                 var fieldValue = ((IDictionary<string, object>)fields)[fieldName];
