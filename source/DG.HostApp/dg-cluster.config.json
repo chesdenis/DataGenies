@@ -1,6 +1,6 @@
-﻿{
+{
   "LastUpdateTime": "2012-04-23T18:25:43.511Z",
-  "HashMD5": "69962c35fe7516a7db2c00289837328a",
+  "HashMD5": "110be0e61d9d8fb640c81da3a9ee9e70",
   "Nodes": [
     {
       "NodeName": "Node1",
@@ -15,10 +15,9 @@
       "HostingModel": "InMemory"
     }
   ],
-  "ApplicationInstances" :
-  [
+  "ApplicationInstances": [
     {
-      "Name" : "ThisIsMyHelloWorldApplication1",
+      "Name": "ThisIsMyHelloWorldApplication1",
       "Type": "HelloWorldApp",
       "HostingModel": "InMemory",
       "PlacementPolicies": [
@@ -27,7 +26,7 @@
       "Count": "1"
     },
     {
-      "Name" : "ThisIsMyHelloWorldApplication2",
+      "Name": "ThisIsMyHelloWorldApplication2",
       "Type": "HelloWorldApp",
       "HostingModel": "InMemory",
       "PlacementPolicies": [
@@ -36,7 +35,7 @@
       "Count": "5"
     },
     {
-      "Name" : "ThisIsMyHelloWorldApplication3",
+      "Name": "ThisIsMyHelloWorldApplication3",
       "Type": "HelloWorldApp",
       "HostingModel": "InMemory",
       "PlacementPolicies": [

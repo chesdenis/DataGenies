@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
@@ -11,6 +12,58 @@ namespace DG.Core.Tests.Unit
 {
     public class ClusterConfigManagerTests
     {
+        [Fact]
+        public void InCaseOfJsonErrorShouldFailIfMissingCorrectClusterConfigCache()
+        {
+            // Arrange
+            var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            configRepositoryMock.Setup(x => x.GetClusterConfig())
+                .Throws(new Exception("Can't read or deserialize cluster config"));
+            
+            // Act
+            var sut = new ClusterConfigManager(configRepositoryMock.Object);
+
+            // Assert
+            Assert.Throws<Exception>(() => sut.GetConfig());
+        }
+        
+        [Fact]
+        public void InCaseOfJsonErrorShouldUseClusterConfigCache()
+        {
+            // Arrange
+            var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var sampleConfig = this.GetSampleConfig();
+            configRepositoryMock.Setup(x => x.GetClusterConfig())
+                .Returns(sampleConfig);
+            
+            // Act
+            var sut = new ClusterConfigManager(configRepositoryMock.Object);
+            var config = sut.GetConfig();
+            configRepositoryMock.Setup(x => x.GetClusterConfig())
+                .Throws(new Exception("Can't read or deserialize cluster config"));
+            config = sut.GetConfig();
+            
+            // Assert
+            config.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void OnVerifyHashShouldReadConfigInformationFromRepository()
+        {
+            // Arrange
+            var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var sampleConfig = this.GetSampleConfig();
+            configRepositoryMock.Setup(x => x.GetClusterConfig())
+                .Returns(sampleConfig);
+            
+            // Act
+            var sut = new ClusterConfigManager(configRepositoryMock.Object);
+            sut.VerifyMd5Hash();
+
+            // Assert
+            configRepositoryMock.Verify(x=>x.GetClusterConfig(), Times.Exactly(1));
+        }
+
         [Fact]
         public void ShouldReportVerifyMd5HashOnceWeHaveDifferentConfigs()
         {
@@ -193,7 +246,7 @@ namespace DG.Core.Tests.Unit
                 {
                     Name = "SampleAppInstanceA",
                     Type = "HelloWorld",
-                    Count = 2,
+                    Count = "2",
                     HostingModel = "TestHostingModel",
                     PlacementPolicies = new List<string>()
                     {
@@ -204,7 +257,7 @@ namespace DG.Core.Tests.Unit
                 {
                     Name = "SampleAppInstanceB",
                     Type = "HelloWorld",
-                    Count = 3,
+                    Count = "3",
                     HostingModel = "TestHostingModel",
                     PlacementPolicies = new List<string>()
                     {
