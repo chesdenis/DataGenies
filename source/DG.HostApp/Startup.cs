@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
@@ -23,6 +26,7 @@ namespace DG.HostApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
             services.AddRazorPages();
             services.AddServerSideBlazor();
            
@@ -30,6 +34,10 @@ namespace DG.HostApp
             services.AddControllers();
 
             services.AddScoped<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            
+            services.Configure<Nodes>(this.Configuration.GetSection("Nodes"));
+
+            services.AddSingleton<IConfiguration>(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

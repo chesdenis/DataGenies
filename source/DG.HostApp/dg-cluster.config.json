@@ -1,18 +1,20 @@
 ﻿{
   "LastUpdateTime": "2012-04-23T18:25:43.511Z",
   "HashMD5": "69962c35fe7516a7db2c00289837328a",
-  "Nodes": {
-    "Node1": {
+  "Nodes": [
+    {
+      "NodeName": "Node1",
       "HostName": "localhost",
       "Port": 5001,
       "HostingModel": "InMemory"
     },
-    "Node2": {
+    {
+      "NodeName": "Node2",
       "HostName": "localhost",
       "Port": 5033,
       "HostingModel": "InMemory"
     }
-  },
+  ],
   "ApplicationInstances" :
   [
     {
