@@ -1,1 +1,48 @@
-{"LastUpdateTime":"2020-04-27T00:59:14.4244879+03:00","HashMD5":"A76FDDC36A1AD23BF2F1EA43DF045BD2","Nodes":[{"NodeName":"NameTest","HostName":"localhost","Port":5001,"HostingModel":"InMemory"},{"NodeName":"Name2","HostName":"localhost","Port":5033,"HostingModel":"InMemory"}],"ApplicationInstances":[{"Name":"ThisIsMyHelloWorldApplication1","Type":"HelloWorldApp","HostingModel":"InMemory","PlacementPolicies":["Node1"],"Count":1},{"Name":"ThisIsMyHelloWorldApplication2","Type":"HelloWorldApp","HostingModel":"InMemory","PlacementPolicies":["Node2"],"Count":5},{"Name":"ThisIsMyHelloWorldApplication3","Type":"HelloWorldApp","HostingModel":"InMemory","PlacementPolicies":["Node*"],"Count":-1}]}
+﻿{
+  "LastUpdateTime": "2012-04-23T18:25:43.511Z",
+  "HashMD5": "69962c35fe7516a7db2c00289837328a",
+  "Nodes": [
+    {
+      "NodeName": "Node1",
+      "HostName": "localhost",
+      "Port": 5001,
+      "HostingModel": "InMemory"
+    },
+    {
+      "NodeName": "Node2",
+      "HostName": "localhost",
+      "Port": 5033,
+      "HostingModel": "InMemory"
+    }
+  ],
+  "ApplicationInstances" :
+  [
+    {
+      "Name" : "ThisIsMyHelloWorldApplication1",
+      "Type": "HelloWorldApp",
+      "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node1"
+      ],
+      "Count": "1"
+    },
+    {
+      "Name" : "ThisIsMyHelloWorldApplication2",
+      "Type": "HelloWorldApp",
+      "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node2"
+      ],
+      "Count": "5"
+    },
+    {
+      "Name" : "ThisIsMyHelloWorldApplication3",
+      "Type": "HelloWorldApp",
+      "HostingModel": "InMemory",
+      "PlacementPolicies": [
+        "Node*"
+      ],
+      "Count": "-1"
+    }
+  ]
+}

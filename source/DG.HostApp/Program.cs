@@ -20,6 +20,10 @@ namespace DG.HostApp
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(x =>
+                {
+                    x.AddJsonFile("dg-cluster.config.json", false, true);
+                })
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }
