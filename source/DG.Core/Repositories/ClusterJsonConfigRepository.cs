@@ -7,7 +7,7 @@ namespace DG.Core.Repositories
 {
     public class ClusterJsonConfigRepository : IClusterConfigRepository
     {
-        private const string ClusterConfigPath = @"dg-cluster.config.json";
+        public const string ClusterConfigPath = @"dg-cluster.config.json";
 
         public ClusterConfig GetClusterConfig()
         {

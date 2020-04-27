@@ -1,9 +1,9 @@
 {
     "CurrentHost": {
-        "Name": "Node1",
-        "HostAddress": null,
-        "Port": 0,
-        "HostingModel": null
+      "Name": "Node1",
+      "HostAddress": "localhost",
+      "Port": 5001,
+      "HostingModel": "InMemory"
     },
     "ClusterDefinition": {
         "HashMD5": "123",
