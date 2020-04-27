@@ -17,12 +17,19 @@ namespace DG.HostApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult<string> GetClusterConfig()
+        [Route("GetConfig")]
+        public ActionResult<string> GetConfig()
         {
-            return this.Ok(JsonSerializer.Serialize(this.clusterConfigManager.GetConfig()));
+            return this.Ok(JsonSerializer.Serialize(
+                this.clusterConfigManager.GetConfig(),
+                new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                }));
         }
 
         [HttpPost]
+        [Route("WriteConfig")]
         public ActionResult WriteConfig([FromBody] ClusterConfig clusterConfig)
         {
             this.clusterConfigManager.WriteConfig(clusterConfig);
@@ -30,16 +37,18 @@ namespace DG.HostApp.Controllers
         }
         
         [HttpPost]
-        public ActionResult WriteClusterDefinition([FromBody] ClusterConfig clusterConfig)
+        [Route("WriteClusterDefinition")]
+        public ActionResult WriteClusterDefinition([FromBody] ClusterDefinition clusterDefinition)
         {
-            this.clusterConfigManager.WriteConfig(clusterConfig);
+            this.clusterConfigManager.WriteClusterDefinition(clusterDefinition);
             return this.Ok();
         }
         
         [HttpPost]
-        public ActionResult SyncConfigsAcrossHosts()
+        [Route("SyncClusterDefinitionAcrossHosts")]
+        public ActionResult SyncClusterDefinitionAcrossHosts()
         {
-            this.clusterConfigManager.SyncConfigsAcrossHosts();
+            this.clusterConfigManager.SyncClusterDefinitionAcrossHosts();
             return this.Ok();
         }
     }

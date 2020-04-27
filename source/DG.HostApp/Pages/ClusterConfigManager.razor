@@ -1,10 +1,11 @@
 ﻿@page "/clusterconfigeditor"
-
-@using System.Text;
-@using DG.Core.Models;
-@using Newtonsoft.Json;
-@using System.Net.Http;
-@inject HttpClient Http
+@using System.Text.Json
+@using DG.Core.Model.ClusterConfig
+@using DG.Core.Services
+@using DG.HostApp.Extensions
+@using Microsoft.Extensions.Options
+@inject IHttpService httpService
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
 
 <h1>Cluster configuration manager</h1>
 <button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
@@ -20,8 +21,8 @@ else
     if (rawView == true)
     {
         <h2>Cluster configuration:</h2>
-        <EditForm Model="@rawConfigAsJsonString" OnValidSubmit="@WriteConfig">
-            <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJsonString" /> <br />
+        <EditForm Model="@rawConfigAsJson" OnValidSubmit="@WriteConfig">
+            <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJson" /> <br />
             <button class="btn btn-outline-primary" type="submit">Update config</button>
         </EditForm>
     }
@@ -29,27 +30,28 @@ else
     {
         <h2>Cluster configuration:</h2>
         <p>
-            <b>Last update:</b> @clusterConfig.LastUpdateTime
-            <b>HashMd5:</b> @clusterConfig.HashMD5
+            <b>Current Host:</b>
+            <b>Name:</b> @clusterConfig.CurrentHost.Name
+            <b>HashMd5:</b> @clusterConfig.ClusterDefinition.HashMD5
         </p>
         <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
-            <h3>Nodes:</h3>
-            @foreach (var node in clusterConfig.Nodes)
+            <h3>Hosts:</h3>
+            @foreach (var host in clusterConfig.ClusterDefinition.Hosts)
             {
                 <p>
-                    <b>Node name:</b> <InputText @bind-Value="node.NodeName" /><br />
-                    <b>Host name:</b> <InputText @bind-Value="node.HostName" /><br />
+                    <b>Host name:</b> <InputText @bind-Value="host.Name" /><br />
+                    <b>Host address:</b> <InputText @bind-Value="host.HostAddress" /><br />
 
-                    <b>Hosting model:</b> <InputText @bind-Value="node.HostingModel" />
+                    <b>Hosting model:</b> <InputText @bind-Value="host.HostingModel" />
                 </p>
             }
 
-            <button class="btn btn-outline-primary" @onclick="AddNode">Add Node</button>
+            <button class="btn btn-outline-primary" @onclick="AddHost">Add Host</button>
             <br />
             <br />
 
             <h3>Application instances:</h3>
-            @foreach (var applicationInstance in clusterConfig.ApplicationInstances)
+            @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
             {
                 <p>
                     <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
@@ -68,7 +70,7 @@ else
                         <b>=></b><InputText @bind-Value="newPlacement" />
                         <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
                     </span>
-                    <b>Count:</b> <InputNumber @bind-Value=" applicationInstance.Count" />
+                    <b>Count:</b> <InputText @bind-Value="applicationInstance.Count" />
                 </p>
             }
             <button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
@@ -80,66 +82,53 @@ else
         </EditForm>
     }
 }
-
 @code {
     private ClusterConfig clusterConfig;
     private string newPlacement;
-    private string rawConfigAsJsonString;
+    private string rawConfigAsJson = "{}";
     private bool rawView = false;
-    private string uriClusterConfigManager = "https://localhost:5001/api/ClusterConfigManager";
 
     protected override async Task OnInitializedAsync()
     {
         await ReadConfig();
+        SetFormView();
     }
 
     private async Task WriteConfig()
     {
         if (rawView == false)
         {
-            rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
+           rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
         }
-        await WriteConfigApiCall();
+
+        await httpService.Post(currentHost.Value.WriteConfig(), rawConfigAsJson);
+        await httpService.Post(currentHost.Value.SyncClusterDefinitionAcrossHosts(), string.Empty);
     }
-
-    private async Task WriteConfigApiCall()
-    {
-        var httpRequestMessage = new HttpRequestMessage()
-        {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri(uriClusterConfigManager),
-            Content = new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json")
-        };
-
-        await Http.SendAsync(httpRequestMessage);
-        //var response = await Http.PostAsync(uriClusterConfigManager, new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json"));
-    }
-
+ 
     private async Task ReadConfig()
     {
-        rawConfigAsJsonString = await Http.GetStringAsync(uriClusterConfigManager);
-        clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+        rawConfigAsJson = await httpService.Get(currentHost.Value.GetConfig());
     }
 
     private void SetRawView()
     {
-        rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
+        rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
         this.rawView = true;
     }
 
     private void SetFormView()
     {
-        this.clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+        this.clusterConfig = JsonSerializer.Deserialize<ClusterConfig>(rawConfigAsJson);
         this.rawView = false;
     }
 
-    private void AddNode()
+    private void AddHost()
     {
-        clusterConfig.Nodes.Add(
-            new Node
+        clusterConfig.ClusterDefinition.Hosts.Add(
+            new Host
             {
-                NodeName = "NewNode",
-                HostName = "HostName",
+                Name = "NewHost",
+                HostAddress = "HostName",
                 Port = 0,
                 HostingModel = "HostingModel"
             });
@@ -147,7 +136,7 @@ else
 
     private void AddApplicationInstance()
     {
-        clusterConfig.ApplicationInstances.Add(
+        clusterConfig.ClusterDefinition.ApplicationInstances.Add(
             new ApplicationInstance
             {
                 Name = "NewAppication",

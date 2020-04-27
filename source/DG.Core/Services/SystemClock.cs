@@ -4,9 +4,6 @@
 
     public class SystemClock : ISystemClock
     {
-        public DateTime Now
-        {
-            get { return DateTime.Now; }
-        }
+        public DateTime Now => DateTime.Now;
     }
 }

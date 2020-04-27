@@ -1,44 +1,46 @@
 {
-    "CurrentHost": {
-      "Name": "Node1",
-      "HostAddress": "localhost",
-      "Port": 5001,
-      "HostingModel": "InMemory"
-    },
-    "ClusterDefinition": {
-        "HashMD5": "123",
-        "LastUpdateTime": "2013-01-01T01:01:01",
-        "Hosts": [{
-                "Name": "Node1",
-                "HostAddress": "localhost",
-                "Port": 5001,
-                "HostingModel": "InMemory"
-            },
-            {
-                "Name": "Node2",
-                "HostAddress": "localhost",
-                "Port": 5021,
-                "HostingModel": "InMemory"
-            }
+  "CurrentHost": {
+    "Name": "Node1",
+    "HostAddress": "localhost",
+    "Port": 5001,
+    "HostingModel": "InMemory"
+  },
+  "ClusterDefinition": {
+    "HashMD5": "123",
+    "LastUpdateTime": "2013-01-01T01:01:01",
+    "Hosts": [
+      {
+        "Name": "Node1",
+        "HostAddress": "localhost",
+        "Port": 5001,
+        "HostingModel": "InMemory"
+      },
+      {
+        "Name": "Node2",
+        "HostAddress": "localhost",
+        "Port": 5023,
+        "HostingModel": "InMemory"
+      }
+    ],
+    "ApplicationInstances": [
+      {
+        "Name": "SampleAppInstanceA",
+        "Type": "HelloWorld",
+        "HostingModel": "TestHostingModel",
+        "PlacementPolicies": [
+          "Node1"
         ],
-        "ApplicationInstances": [{
-                "Name": "SampleAppInstanceA",
-                "Type": "HelloWorld",
-                "HostingModel": "TestHostingModel",
-                "PlacementPolicies": [
-                    "Node1"
-                ],
-                "Count": "2"
-            },
-            {
-                "Name": "SampleAppInstanceB",
-                "Type": "HelloWorld",
-                "HostingModel": "TestHostingModel",
-                "PlacementPolicies": [
-                    "Node2"
-                ],
-                "Count": "3"
-            }
-        ]
-    }
+        "Count": "2"
+      },
+      {
+        "Name": "SampleAppInstanceB",
+        "Type": "HelloWorld",
+        "HostingModel": "TestHostingModel",
+        "PlacementPolicies": [
+          "Node2"
+        ],
+        "Count": "3"
+      }
+    ]
+  }
 }

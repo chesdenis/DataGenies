@@ -35,12 +35,13 @@ namespace DG.HostApp
             services.AddControllers();
 
             services.AddSingleton<IHttpService, HttpService>();
+            services.AddSingleton<ISystemClock, SystemClock>();
             
             services.AddSingleton<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
             services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
             
-            services.Configure<Hosts>(this.Configuration.GetSection("Nodes"));
+            services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
 
             services.AddSingleton(this.Configuration);
         }
@@ -67,9 +68,9 @@ namespace DG.HostApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-                endpoints.MapControllers();
             });
         }
     }

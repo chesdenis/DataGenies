@@ -14,16 +14,57 @@ namespace DG.Core.Tests.Unit
     public class ClusterConfigManagerTests
     {
         [Fact]
+        public void ShouldGetProperClusterConfig()
+        {
+            // Arrange
+            var httpService = new Mock<IHttpService>();
+            var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
+
+            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(this.GetSampleConfig);
+            
+            // Act
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
+            var result = sut.GetConfig();
+        
+            // Assert
+            result.CalculateMd5Hash().Should().Be(this.GetSampleConfig().CalculateMd5Hash());
+        }
+        
+        [Fact]
+        public void ShouldWriteProperSignedClusterConfigObject()
+        {
+            // Arrange
+            var httpService = new Mock<IHttpService>();
+            var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(this.GetSampleConfig);
+            var systemClockMock = new Mock<ISystemClock>();
+
+            // Act
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
+            var configToWrite = this.GetSampleConfig();
+            sut.WriteConfig(configToWrite);
+        
+            // Assert
+            configRepositoryMock.Verify(
+                x => x.UpdateClusterConfig(
+                It.Is<ClusterConfig>(
+                    xx => xx.CalculateMd5Hash() == configToWrite.CalculateMd5Hash())), Times.Once());
+        }
+        
+        [Fact]
         public void InCaseOfJsonErrorShouldFailIfMissingCorrectClusterConfigCache()
         {
             // Arrange
             var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
+            
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Throws(new Exception("Can't read or deserialize cluster config"));
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
 
             // Assert
             Assert.Throws<Exception>(() => sut.GetConfig());
@@ -35,12 +76,13 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
             var sampleConfig = this.GetSampleConfig();
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Returns(sampleConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
             var config = sut.GetConfig();
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Throws(new Exception("Can't read or deserialize cluster config"));
@@ -56,6 +98,8 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
+            
             var hostConfig = this.GetSampleConfig();
 
             configRepositoryMock.Setup(x =>
@@ -69,7 +113,7 @@ namespace DG.Core.Tests.Unit
             configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
 
             var originalHash = sut.GetConfig().ClusterDefinition.HashMD5;
             
@@ -95,24 +139,26 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
+            
             var hostConfig = this.GetSampleConfig();
             configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
-            sut.SyncConfigsAcrossHosts();
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
+            sut.SyncClusterDefinitionAcrossHosts();
             
             // Assert
             httpService.Verify(
                 x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetHostListeningAddress()}/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetClusterConfigManagerEndpoint()}/WriteClusterDefinition"),
                     It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
                     It.IsAny<string>()),
                 Times.Once());
             
             httpService.Verify(
                 x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetHostListeningAddress()}/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetClusterConfigManagerEndpoint()}/WriteClusterDefinition"),
                     It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
                     It.IsAny<string>()),
                 Times.Never);
@@ -124,6 +170,8 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
+            var systemClockMock = new Mock<ISystemClock>();
+            
             var hostConfig = this.GetSampleConfig();
             
             configRepositoryMock.Setup(x =>
@@ -137,7 +185,7 @@ namespace DG.Core.Tests.Unit
             configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
 
             var configToUpdate = this.GetSampleConfig();
             configToUpdate.ClusterDefinition.Hosts[0].Name += " - renamed";

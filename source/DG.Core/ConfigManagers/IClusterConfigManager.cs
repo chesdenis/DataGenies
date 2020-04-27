@@ -14,6 +14,6 @@ namespace DG.Core.ConfigManagers
 
         void WriteClusterDefinition(ClusterDefinition clusterDefinition);
 
-        void SyncConfigsAcrossHosts();
+        void SyncClusterDefinitionAcrossHosts();
     }
 }

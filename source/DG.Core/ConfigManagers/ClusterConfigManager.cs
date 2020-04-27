@@ -11,13 +11,15 @@ namespace DG.Core.ConfigManagers
     {
         private readonly IClusterConfigRepository clusterConfigRepository;
         private readonly IHttpService httpService;
+        private readonly ISystemClock systemClock;
 
         private ClusterConfig configCache;
 
-        public ClusterConfigManager(IClusterConfigRepository clusterConfigRepository, IHttpService httpService)
+        public ClusterConfigManager(IClusterConfigRepository clusterConfigRepository, IHttpService httpService, ISystemClock systemClock)
         {
             this.clusterConfigRepository = clusterConfigRepository;
             this.httpService = httpService;
+            this.systemClock = systemClock;
         }
         
         public ClusterConfig GetConfig()
@@ -68,13 +70,13 @@ namespace DG.Core.ConfigManagers
             {
                 currentConfig.ClusterDefinition = clusterDefinition;
                 currentConfig.ClusterDefinition.HashMD5 = clusterDefinition.CalculateMd5Hash();
-                currentConfig.ClusterDefinition.LastUpdateTime = DateTime.UtcNow;
+                currentConfig.ClusterDefinition.LastUpdateTime = this.systemClock.Now;
                 
                 this.WriteConfig(currentConfig);
             }
         }
 
-        public void SyncConfigsAcrossHosts()
+        public void SyncClusterDefinitionAcrossHosts()
         {
             var currentHost = this.GetHost();
             
@@ -88,7 +90,7 @@ namespace DG.Core.ConfigManagers
                 try
                 {
                     Task.Run(() => this.httpService.Post(
-                        $"{host.GetHostListeningAddress()}/WriteClusterDefinition",
+                        $"{host.GetClusterConfigManagerEndpoint()}/WriteClusterDefinition",
                         this.GetClusterDefinition().ToJson()));
                 }
                 catch (Exception ex)
