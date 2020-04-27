@@ -47,7 +47,7 @@
 
         private ClusterConfig fakeClusterConfig = new ClusterConfig()
         {
-            LastUpdateTime = new DateTime(1985, 04, 26, 23, 50, 09),
+            LastUpdateTime = new DateTime(2020, 04, 26, 23, 50, 09),
             HashMD5 = "58DF38BD34418F93E6CC84A0658F4ADE",
             Nodes = new List<Node>()
                 {

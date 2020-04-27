@@ -13,7 +13,6 @@
         {
             string clusterConfigAsJson = File.ReadAllText(ClusterConfigPath);
             return JsonConvert.DeserializeObject<ClusterConfig>(clusterConfigAsJson);
-
         }
 
         public void UpdateClusterConfig(ClusterConfig clusterConfig)
