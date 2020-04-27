@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Core.ConfigManagers;
+using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
 using DG.Core.Services;
@@ -104,10 +105,17 @@ namespace DG.Core.Tests.Unit
             // Assert
             httpService.Verify(
                 x => x.Post(
-                    It.Is<string>(xx => xx == "http://localhost:5021/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetHostListeningAddress()}/WriteClusterDefinition"),
                     It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
                     It.IsAny<string>()),
                 Times.Once());
+            
+            httpService.Verify(
+                x => x.Post(
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetHostListeningAddress()}/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
+                    It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]

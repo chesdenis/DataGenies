@@ -1,3 +1,8 @@
+using System.Runtime.CompilerServices;
+using DG.Core.Extensions;
+using DG.Core.Model.ClusterConfig;
+using DG.Core.Repositories;
+
 namespace DG.HostApp
 {
     using System;
@@ -24,6 +29,13 @@ namespace DG.HostApp
                 {
                     x.AddJsonFile("dg-cluster.config.json", false, true);
                 })
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                    
+                    webBuilder.UseUrls(GetClusterConfig().CurrentHost.GetHostListeningAddress());
+                });
+
+        public static ClusterConfig GetClusterConfig() => File.ReadAllText(ClusterJsonConfigRepository.ClusterConfigPath).FromJson<ClusterConfig>();
     }
 }

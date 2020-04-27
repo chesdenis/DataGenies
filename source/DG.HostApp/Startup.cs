@@ -2,6 +2,7 @@ using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
 using DG.Core.Repositories;
+using DG.Core.Services;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,9 +34,11 @@ namespace DG.HostApp
             services.AddHostedService<ServiceWatcher>();
             services.AddControllers();
 
+            services.AddSingleton<IHttpService, HttpService>();
+            
             services.AddSingleton<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
-            services.AddScoped<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
             
             services.Configure<Hosts>(this.Configuration.GetSection("Nodes"));
 

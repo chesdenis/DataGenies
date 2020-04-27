@@ -84,11 +84,11 @@ namespace DG.Core.ConfigManagers
                 {
                     continue;
                 }
-            
+
                 try
                 {
                     Task.Run(() => this.httpService.Post(
-                        $"http://{host.HostAddress}:{host.Port}/WriteClusterDefinition",
+                        $"{host.GetHostListeningAddress()}/WriteClusterDefinition",
                         this.GetClusterDefinition().ToJson()));
                 }
                 catch (Exception ex)
