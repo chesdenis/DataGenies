@@ -1,47 +1,44 @@
 {
-  "LastUpdateTime": "2012-04-23T18:25:43.511Z",
-  "HashMD5": "110be0e61d9d8fb640c81da3a9ee9e70",
-  "Nodes": [
-    {
-      "NodeName": "Node1",
-      "HostName": "localhost",
-      "Port": 5001,
-      "HostingModel": "InMemory"
+    "CurrentHost": {
+        "Name": "Node1",
+        "HostAddress": null,
+        "Port": 0,
+        "HostingModel": null
     },
-    {
-      "NodeName": "Node2",
-      "HostName": "localhost",
-      "Port": 5033,
-      "HostingModel": "InMemory"
+    "ClusterDefinition": {
+        "HashMD5": "123",
+        "LastUpdateTime": "2013-01-01T01:01:01",
+        "Hosts": [{
+                "Name": "Node1",
+                "HostAddress": "localhost",
+                "Port": 5001,
+                "HostingModel": "InMemory"
+            },
+            {
+                "Name": "Node2",
+                "HostAddress": "localhost",
+                "Port": 5021,
+                "HostingModel": "InMemory"
+            }
+        ],
+        "ApplicationInstances": [{
+                "Name": "SampleAppInstanceA",
+                "Type": "HelloWorld",
+                "HostingModel": "TestHostingModel",
+                "PlacementPolicies": [
+                    "Node1"
+                ],
+                "Count": "2"
+            },
+            {
+                "Name": "SampleAppInstanceB",
+                "Type": "HelloWorld",
+                "HostingModel": "TestHostingModel",
+                "PlacementPolicies": [
+                    "Node2"
+                ],
+                "Count": "3"
+            }
+        ]
     }
-  ],
-  "ApplicationInstances": [
-    {
-      "Name": "ThisIsMyHelloWorldApplication1",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node1"
-      ],
-      "Count": "1"
-    },
-    {
-      "Name": "ThisIsMyHelloWorldApplication2",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node2"
-      ],
-      "Count": "5"
-    },
-    {
-      "Name": "ThisIsMyHelloWorldApplication3",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node*"
-      ],
-      "Count": "-1"
-    }
-  ]
 }

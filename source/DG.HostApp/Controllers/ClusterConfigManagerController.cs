@@ -1,4 +1,5 @@
-﻿using DG.Core.ConfigManagers;
+﻿using System.Text.Json;
+using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,13 +19,27 @@ namespace DG.HostApp.Controllers
         [HttpGet]
         public ActionResult<string> GetClusterConfig()
         {
-            return this.Ok(this.clusterConfigManager.GetConfigAsJson());
+            return this.Ok(JsonSerializer.Serialize(this.clusterConfigManager.GetConfig()));
         }
 
         [HttpPost]
-        public ActionResult PostClusterConfig([FromBody] ClusterConfig clusterConfig)
+        public ActionResult WriteConfig([FromBody] ClusterConfig clusterConfig)
         {
-            this.clusterConfigManager.WriteConfigAsJson(null);
+            this.clusterConfigManager.WriteConfig(clusterConfig);
+            return this.Ok();
+        }
+        
+        [HttpPost]
+        public ActionResult WriteClusterDefinition([FromBody] ClusterConfig clusterConfig)
+        {
+            this.clusterConfigManager.WriteConfig(clusterConfig);
+            return this.Ok();
+        }
+        
+        [HttpPost]
+        public ActionResult SyncConfigsAcrossHosts()
+        {
+            this.clusterConfigManager.SyncConfigsAcrossHosts();
             return this.Ok();
         }
     }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
+using DG.Core.Services;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -16,12 +16,13 @@ namespace DG.Core.Tests.Unit
         public void InCaseOfJsonErrorShouldFailIfMissingCorrectClusterConfigCache()
         {
             // Arrange
+            var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Throws(new Exception("Can't read or deserialize cluster config"));
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
 
             // Assert
             Assert.Throws<Exception>(() => sut.GetConfig());
@@ -31,207 +32,156 @@ namespace DG.Core.Tests.Unit
         public void InCaseOfJsonErrorShouldUseClusterConfigCache()
         {
             // Arrange
+            var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
             var sampleConfig = this.GetSampleConfig();
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Returns(sampleConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
             var config = sut.GetConfig();
             configRepositoryMock.Setup(x => x.GetClusterConfig())
                 .Throws(new Exception("Can't read or deserialize cluster config"));
-            config = sut.GetConfig();
+            var configFromCache = sut.GetConfig();
             
             // Assert
-            config.Should().NotBeNull();
+            configFromCache.Should().NotBeNull();
         }
 
         [Fact]
-        public void OnVerifyHashShouldReadConfigInformationFromRepository()
+        public void ShouldWriteHashStringInCaseOfAnyUpdateOfClusterDefinition()
         {
             // Arrange
+            var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var sampleConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig())
-                .Returns(sampleConfig);
+            var hostConfig = this.GetSampleConfig();
+
+            configRepositoryMock.Setup(x =>
+                x.UpdateClusterConfig(It.IsAny<ClusterConfig>()))
+                .Callback<ClusterConfig>(x =>
+            {
+                hostConfig.ClusterDefinition = x.ClusterDefinition;
+                hostConfig.CurrentHost = x.CurrentHost;
+            });
+           
+            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
-            sut.VerifyMd5Hash();
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
 
+            var originalHash = sut.GetConfig().ClusterDefinition.HashMD5;
+            
+            var configToUpdate = this.GetSampleConfig();
+            
+            configToUpdate.ClusterDefinition.Hosts.RemoveAt(0);
+            sut.WriteClusterDefinition(configToUpdate.ClusterDefinition);
+            var md5HashRemovedInstance = sut.GetConfig().ClusterDefinition.HashMD5;
+            
+            configToUpdate = this.GetSampleConfig();
+            configToUpdate.ClusterDefinition.Hosts[0].Name += " - renamed";
+            sut.WriteClusterDefinition(configToUpdate.ClusterDefinition);
+            var md5HashRenamedInstance = sut.GetConfig().ClusterDefinition.HashMD5;
+            
             // Assert
-            configRepositoryMock.Verify(x=>x.GetClusterConfig(), Times.Exactly(1));
-        }
-
-        [Fact]
-        public void ShouldReportVerifyMd5HashOnceWeHaveDifferentConfigs()
-        {
-            // Arrange
-            var sampleConfigA = this.GetSampleConfig();
-            var sampleConfigB = this.GetSampleConfig();
-            var sampleConfigC = this.GetSampleConfig();
-
-            sampleConfigA.Nodes[0].NodeName += " - renamed";
-            sampleConfigB.Nodes.RemoveAt(0);
-            sampleConfigC.Nodes.RemoveAt(0);
-            
-            var configRepositoryMockA = new Mock<IClusterConfigRepository>();
-            var configRepositoryMockB = new Mock<IClusterConfigRepository>();
-            var configRepositoryMockC = new Mock<IClusterConfigRepository>();
-            
-            configRepositoryMockA.Setup(x => x.GetClusterConfig()).Returns(sampleConfigA);
-            configRepositoryMockB.Setup(x => x.GetClusterConfig()).Returns(sampleConfigB);
-            configRepositoryMockC.Setup(x => x.GetClusterConfig()).Returns(sampleConfigC);
-            
-            // Act
-            var configManagerOnNodeA = new ClusterConfigManager(configRepositoryMockA.Object);
-            var configManagerOnNodeB = new ClusterConfigManager(configRepositoryMockB.Object);
-            var configManagerOnNodeC = new ClusterConfigManager(configRepositoryMockC.Object);
-
-            var hashOnNodeA = configManagerOnNodeA.GetMd5Hash();
-            var hashOnNodeB = configManagerOnNodeB.GetMd5Hash();
-            var hashOnNodeC = configManagerOnNodeC.GetMd5Hash();
-
-            // put same hash for each config - for config A it should report fail for verify hash
-            sampleConfigA.HashMD5 = hashOnNodeB;
-            sampleConfigB.HashMD5 = hashOnNodeB;
-            sampleConfigC.HashMD5 = hashOnNodeB;
-
-            var configAVerifyResults = configManagerOnNodeA.VerifyMd5Hash();
-            var configBVerifyResults = configManagerOnNodeB.VerifyMd5Hash();
-            var configCVerifyResults = configManagerOnNodeC.VerifyMd5Hash();
-
-            // Assert
-            configAVerifyResults.Should().BeFalse();
-            configBVerifyResults.Should().BeTrue();
-            configCVerifyResults.Should().BeTrue();
-            hashOnNodeA.Should().NotBe(hashOnNodeB);
-            hashOnNodeC.Should().Be(hashOnNodeB);
-        }
-
-        [Fact]
-        public void ShouldHashDifferentOnEachNodesUpdates()
-        {
-            // Arrange
-            var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var sampleConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(sampleConfig);
-            
-            // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
-            var md5HashA = sut.GetMd5Hash();
-            
-            sampleConfig.Nodes.RemoveAt(0);
-            var md5HashRemovedInstance = sut.GetMd5Hash();
-
-            sampleConfig.Nodes[0].HostName += " - renamed";
-            var md5HashRenamedInstance = sut.GetMd5Hash();
-
-            // Assert
-            md5HashA.Should().NotBe(md5HashRemovedInstance);
-            md5HashA.Should().NotBe(md5HashRenamedInstance);
+            originalHash.Should().NotBe(md5HashRemovedInstance);
             md5HashRemovedInstance.Should().NotBe(md5HashRenamedInstance);
         }
-        
+
         [Fact]
-        public void ShouldHashDifferentOnEachApplicationInstancesUpdates()
+        public void ShouldCallWriteConfigEndpointsForOtherHosts()
         {
             // Arrange
+            var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var sampleConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(sampleConfig);
+            var hostConfig = this.GetSampleConfig();
+            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
-            var md5HashA = sut.GetMd5Hash();
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
+            sut.SyncConfigsAcrossHosts();
             
-            sampleConfig.ApplicationInstances.RemoveAt(0);
-            var md5HashRemovedInstance = sut.GetMd5Hash();
-
-            sampleConfig.ApplicationInstances[0].Name += " - renamed";
-            var md5HashRenamedInstance = sut.GetMd5Hash();
-
             // Assert
-            md5HashA.Should().NotBe(md5HashRemovedInstance);
-            md5HashA.Should().NotBe(md5HashRenamedInstance);
-            md5HashRemovedInstance.Should().NotBe(md5HashRenamedInstance);
+            httpService.Verify(
+                x => x.Post(
+                    It.Is<string>(xx => xx == "http://localhost:5021/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
+                    It.IsAny<string>()),
+                Times.Once());
         }
-        
+
         [Fact]
-        public void ShouldHashEqualIfApplicationInstancesHaveNoUpdates()
+        public void ShouldSkipWriteInCaseOfNoUpdateInClusterDefinition()
         {
             // Arrange
+            var httpService = new Mock<IHttpService>();
             var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var sampleConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(sampleConfig);
+            var hostConfig = this.GetSampleConfig();
+            
+            configRepositoryMock.Setup(x =>
+                    x.UpdateClusterConfig(It.IsAny<ClusterConfig>()))
+                .Callback<ClusterConfig>(x =>
+                {
+                    hostConfig.ClusterDefinition = x.ClusterDefinition;
+                    hostConfig.CurrentHost = x.CurrentHost;
+                });
+           
+            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
             
             // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
-            var md5HashA = sut.GetMd5Hash();
+            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object);
 
-            sampleConfig.ApplicationInstances[0].Name += " - renamed";
-            var md5HashRenamedInstance = sut.GetMd5Hash();
-
-            var restoredValue = sampleConfig.ApplicationInstances[0].Name.Replace(" - renamed", string.Empty);
-            sampleConfig.ApplicationInstances[0].Name = restoredValue;
-            var md5HashRestoredInstance = sut.GetMd5Hash();
-
+            var configToUpdate = this.GetSampleConfig();
+            configToUpdate.ClusterDefinition.Hosts[0].Name += " - renamed";
+            sut.WriteClusterDefinition(configToUpdate.ClusterDefinition);
+            sut.WriteClusterDefinition(configToUpdate.ClusterDefinition);
+            sut.WriteClusterDefinition(configToUpdate.ClusterDefinition);
+             
             // Assert
-            md5HashA.Should().Be(md5HashRestoredInstance);
-            md5HashA.Should().NotBe(md5HashRenamedInstance);
+            configRepositoryMock.Verify(x => x.UpdateClusterConfig(It.IsAny<ClusterConfig>()), Times.Once());
         }
         
-        [Fact]
-        public void ShouldHashEqualIfNodesHaveNoUpdates()
-        {
-            // Arrange
-            var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var sampleConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(sampleConfig);
-            
-            // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object);
-            var md5HashA = sut.GetMd5Hash();
-
-            sampleConfig.Nodes[0].NodeName += " - renamed";
-            var md5HashRenamedInstance = sut.GetMd5Hash();
-
-            var restoredValue = sampleConfig.Nodes[0].NodeName.Replace(" - renamed", string.Empty);
-            sampleConfig.Nodes[0].NodeName = restoredValue;
-            var md5HashRestoredInstance = sut.GetMd5Hash();
-
-            // Assert
-            md5HashA.Should().Be(md5HashRestoredInstance);
-            md5HashA.Should().NotBe(md5HashRenamedInstance);
-        }
-
         private ClusterConfig GetSampleConfig()
         {
             return new ClusterConfig()
             {
-                Nodes = this.GetSampleNodes(),
-                ApplicationInstances = this.GetSampleApplicationInstances(),
-                HashMD5 = "123",
-                LastUpdateTime = new DateTime(2013, 1, 1, 1, 1, 1),
-            };
-        }
-
-        private Nodes GetSampleNodes()
-        {
-            return new Nodes()
-            {
-                new Node()
+                CurrentHost = new Host()
                 {
-                    NodeName = "Node1",
-                    HostName = "localhost",
+                    Name = "Node1",
+                    HostAddress = "localhost",
                     Port = 5001,
                     HostingModel = "InMemory",
                 },
-                new Node()
+                ClusterDefinition = this.GetSampleClusterDefinition(),
+            };
+        }
+
+        private ClusterDefinition GetSampleClusterDefinition()
+        {
+            return new ClusterDefinition()
+            {
+                HashMD5 = "123",
+                LastUpdateTime = new DateTime(2013, 1, 1, 1, 1, 1),
+                Hosts = this.GetSampleHosts(),
+                ApplicationInstances = this.GetSampleApplicationInstances(),
+            };
+        }
+
+        private Hosts GetSampleHosts()
+        {
+            return new Hosts()
+            {
+                new Host()
                 {
-                    NodeName = "Node2",
-                    HostName = "localhost",
+                    Name = "Node1",
+                    HostAddress = "localhost",
+                    Port = 5001,
+                    HostingModel = "InMemory",
+                },
+                new Host()
+                {
+                    Name = "Node2",
+                    HostAddress = "localhost",
                     Port = 5021,
                     HostingModel = "InMemory",
                 },

@@ -5,19 +5,15 @@ namespace DG.Core.ConfigManagers
     public interface IClusterConfigManager
     {
         ClusterConfig GetConfig();
-        
-        Nodes GetNodes();
 
-        ApplicationInstances GetApplicationInstances();
+        Host GetHost();
 
-        string GetConfigAsJson();
-
-        string GetMd5Hash();
-        
-        bool VerifyMd5Hash();
+        ClusterDefinition GetClusterDefinition();
         
         void WriteConfig(ClusterConfig clusterConfig);
 
-        void WriteConfigAsJson(string clusterConfigAsJson);
+        void WriteClusterDefinition(ClusterDefinition clusterDefinition);
+
+        void SyncConfigsAcrossHosts();
     }
 }
