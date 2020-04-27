@@ -22,7 +22,9 @@ namespace DG.Core.Extensions
 
             if (result is string resultAsString)
             {
-                return JsonSerializer.Deserialize<T>(resultAsString);
+                return JsonSerializer.Deserialize<T>(
+                    resultAsString,
+                    new JsonSerializerOptions() { IgnoreNullValues = true });
             }
             
             return (T)result;
