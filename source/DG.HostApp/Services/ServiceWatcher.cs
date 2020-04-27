@@ -12,9 +12,9 @@
     {
         private readonly IConfiguration configuration;
 
-        private readonly IOptions<Nodes> clusterNodesCollection;
+        private readonly IOptions<Hosts> clusterNodesCollection;
 
-        public ServiceWatcher(IConfiguration configuration, IOptions<Nodes> clusterNodesCollection)
+        public ServiceWatcher(IConfiguration configuration, IOptions<Hosts> clusterNodesCollection)
         {
             this.configuration = configuration;
             this.clusterNodesCollection = clusterNodesCollection;
@@ -26,7 +26,7 @@
                 () =>
             {
                 var nodes = this.clusterNodesCollection.Value;
-                nodes.ForEach(x => Console.WriteLine(x.NodeName));
+                nodes.ForEach(x => Console.WriteLine(x.Name));
             }, cancellationToken);
         }
 

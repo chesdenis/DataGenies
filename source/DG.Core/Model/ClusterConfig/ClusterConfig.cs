@@ -1,15 +1,12 @@
 ﻿using System;
+using DG.Core.Model.Markers;
 
 namespace DG.Core.Model.ClusterConfig
 {
-    public class ClusterConfig
+    public class ClusterConfig : IHashComputable, IJsonSerializable
     {
-        public DateTime LastUpdateTime { get; set; }
+        public Host CurrentHost { get; set; }
 
-        public string HashMD5 { get; set; }
-
-        public Nodes Nodes { get; set; }
-
-        public ApplicationInstances ApplicationInstances { get; set; }
+        public ClusterDefinition ClusterDefinition { get; set; }
     }
 }

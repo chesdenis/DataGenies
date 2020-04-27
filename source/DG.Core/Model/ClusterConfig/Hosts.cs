@@ -2,7 +2,7 @@
 
 namespace DG.Core.Model.ClusterConfig
 {
-     public class Nodes : List<Node>
+     public class Hosts : List<Host>
      {
      }
 }

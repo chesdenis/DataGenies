@@ -1,21 +1,23 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
+using System.Threading.Tasks;
+using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
+using DG.Core.Services;
 
 namespace DG.Core.ConfigManagers
 {
     public class ClusterConfigManager : IClusterConfigManager
     {
         private readonly IClusterConfigRepository clusterConfigRepository;
+        private readonly IHttpService httpService;
 
-        private ClusterConfig configCache = null;
+        private ClusterConfig configCache;
 
-        public ClusterConfigManager(IClusterConfigRepository clusterConfigRepository)
+        public ClusterConfigManager(IClusterConfigRepository clusterConfigRepository, IHttpService httpService)
         {
             this.clusterConfigRepository = clusterConfigRepository;
+            this.httpService = httpService;
         }
         
         public ClusterConfig GetConfig()
@@ -23,7 +25,10 @@ namespace DG.Core.ConfigManagers
             try
             {
                 var clusterConfig = this.clusterConfigRepository.GetClusterConfig();
-                this.configCache = clusterConfig;
+                if (clusterConfig != null)
+                {
+                    this.configCache = clusterConfig;
+                }
             }
             catch (Exception ex)
             {
@@ -37,79 +42,60 @@ namespace DG.Core.ConfigManagers
             return this.configCache;
         }
 
-        public Nodes GetNodes()
+        public Host GetHost()
         {
-            return this.GetConfig().Nodes;
+            return this.GetConfig().CurrentHost;
         }
 
-        public ApplicationInstances GetApplicationInstances()
+        public ClusterDefinition GetClusterDefinition()
         {
-            return this.GetConfig().ApplicationInstances;
+            return this.GetConfig().ClusterDefinition;
         }
 
-        public string GetConfigAsJson()
-        {
-            return JsonSerializer.Serialize(this.GetConfig());
-        }
-        
         public void WriteConfig(ClusterConfig clusterConfig)
         {
             this.clusterConfigRepository.UpdateClusterConfig(clusterConfig);
         }
 
-        public void WriteConfigAsJson(string clusterConfigAsJson)
+        public void WriteClusterDefinition(ClusterDefinition clusterDefinition)
         {
-            var clusterConfig = JsonSerializer.Deserialize<ClusterConfig>(clusterConfigAsJson);
-            this.clusterConfigRepository.UpdateClusterConfig(clusterConfig);
-        }
-        
-        public string GetMd5Hash()
-        {
-            var clusterConfig = this.GetConfig();
-            var configInput = this.ConstructItemsForHash(clusterConfig);
-            return this.GetMd5Hash(configInput);
-        }
-        
-        public bool VerifyMd5Hash()
-        {
-            var clusterConfig = this.GetConfig();
-            var hashToVerify = clusterConfig.HashMD5;
-            var configInput = this.ConstructItemsForHash(clusterConfig);
-            
-            return this.VerifyMd5Hash(configInput, hashToVerify);
-        }
-        
-        private string ConstructItemsForHash(ClusterConfig clusterConfig)
-        {
-            var nodes = clusterConfig.Nodes;
-            var applicationInstances = clusterConfig.ApplicationInstances;
+            var currentConfig = this.GetConfig();
 
-            var nodesAsJson = JsonSerializer.Serialize(nodes);
-            var applicationInstancesAsJson = JsonSerializer.Serialize(applicationInstances);
+            var currentClusterDefinitionHash = currentConfig.ClusterDefinition.CalculateMd5Hash();
+            var newClusterDefinitionHash = clusterDefinition.CalculateMd5Hash();
 
-            return string.Concat(nodesAsJson, applicationInstancesAsJson);
-        }
-
-        private string GetMd5Hash(string input)
-        {
-            using MD5 md5Hash = MD5.Create();
-            
-            var data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(input));
-            var md5AsStringBuilder = new StringBuilder();
-            foreach (var t in data)
+            if (currentClusterDefinitionHash != newClusterDefinitionHash)
             {
-                md5AsStringBuilder.Append(t.ToString("x2"));
+                currentConfig.ClusterDefinition = clusterDefinition;
+                currentConfig.ClusterDefinition.HashMD5 = clusterDefinition.CalculateMd5Hash();
+                currentConfig.ClusterDefinition.LastUpdateTime = DateTime.UtcNow;
+                
+                this.WriteConfig(currentConfig);
             }
-
-            return md5AsStringBuilder.ToString();
         }
-        
-        private bool VerifyMd5Hash(string input, string hash)
-        {
-            var hashOfInput = this.GetMd5Hash(input);
-            var comparer = StringComparer.OrdinalIgnoreCase;
 
-            return comparer.Compare(hashOfInput, hash) == 0;
+        public void SyncConfigsAcrossHosts()
+        {
+            var currentHost = this.GetHost();
+            
+            foreach (var host in this.GetConfig().ClusterDefinition.Hosts)
+            {
+                if (host.Name.ToLowerInvariant() == currentHost.Name.ToLowerInvariant())
+                {
+                    continue;
+                }
+            
+                try
+                {
+                    Task.Run(() => this.httpService.Post(
+                        $"http://{host.HostAddress}:{host.Port}/WriteClusterDefinition",
+                        this.GetClusterDefinition().ToJson()));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
         }
     }
 }
