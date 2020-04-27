@@ -1,0 +1,159 @@
+﻿@page "/clusterconfigeditor"
+
+@using System.Text;
+@using DG.Core.Models;
+@using Newtonsoft.Json;
+@using System.Net.Http;
+@inject HttpClient Http
+
+<h1>Cluster configuration manager</h1>
+<button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
+<button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
+<br />
+<br />
+@if (clusterConfig == null)
+{
+    <p><em>Loading configuration...</em></p>
+}
+else
+{
+    if (rawView == true)
+    {
+        <h2>Cluster configuration:</h2>
+        <EditForm Model="@rawConfigAsJsonString" OnValidSubmit="@WriteConfig">
+            <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJsonString" /> <br />
+            <button class="btn btn-outline-primary" type="submit">Update config</button>
+        </EditForm>
+    }
+else
+    {
+        <h2>Cluster configuration:</h2>
+        <p>
+            <b>Last update:</b> @clusterConfig.LastUpdateTime
+            <b>HashMd5:</b> @clusterConfig.HashMD5
+        </p>
+        <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
+            <h3>Nodes:</h3>
+            @foreach (var node in clusterConfig.Nodes)
+            {
+                <p>
+                    <b>Node name:</b> <InputText @bind-Value="node.NodeName" /><br />
+                    <b>Host name:</b> <InputText @bind-Value="node.HostName" /><br />
+
+                    <b>Hosting model:</b> <InputText @bind-Value="node.HostingModel" />
+                </p>
+            }
+
+            <button class="btn btn-outline-primary" @onclick="AddNode">Add Node</button>
+            <br />
+            <br />
+
+            <h3>Application instances:</h3>
+            @foreach (var applicationInstance in clusterConfig.ApplicationInstances)
+            {
+                <p>
+                    <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
+                    <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
+                    <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
+                    <b>Placement policies:</b><br />
+
+                    @foreach (var placement in applicationInstance.PlacementPolicies)
+                    {
+                        <span style=" margin-left:40px">
+                            <b>=></b>@placement;<br />
+                        </span>
+                    }
+
+                    <span style=" margin-left:40px">
+                        <b>=></b><InputText @bind-Value="newPlacement" />
+                        <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
+                    </span>
+                    <b>Count:</b> <InputNumber @bind-Value=" applicationInstance.Count" />
+                </p>
+            }
+            <button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
+            <br />
+            <br />
+            <p>
+                <button class="btn btn-outline-primary" type="submit">Update config</button>
+            </p>
+        </EditForm>
+    }
+}
+
+@code {
+    private ClusterConfig clusterConfig;
+    private string newPlacement;
+    private string rawConfigAsJsonString;
+    private bool rawView = false;
+    private string uriClusterConfigManager = "https://localhost:5001/api/ClusterConfigManager";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadConfig();
+    }
+
+    private async Task WriteConfig()
+    {
+        if (rawView == false)
+        {
+            rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
+        }
+        await WriteConfigApiCall();
+    }
+
+    private async Task WriteConfigApiCall()
+    {
+        var httpRequestMessage = new HttpRequestMessage()
+        {
+            Method = HttpMethod.Post,
+            RequestUri = new Uri(uriClusterConfigManager),
+            Content = new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json")
+        };
+
+        await Http.SendAsync(httpRequestMessage);
+        //var response = await Http.PostAsync(uriClusterConfigManager, new StringContent(rawConfigAsJsonString, Encoding.UTF8, "application/json"));
+    }
+
+    private async Task ReadConfig()
+    {
+        rawConfigAsJsonString = await Http.GetStringAsync(uriClusterConfigManager);
+        clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+    }
+
+    private void SetRawView()
+    {
+        rawConfigAsJsonString = JsonConvert.SerializeObject(clusterConfig);
+        this.rawView = true;
+    }
+
+    private void SetFormView()
+    {
+        this.clusterConfig = JsonConvert.DeserializeObject<ClusterConfig>(rawConfigAsJsonString);
+        this.rawView = false;
+    }
+
+    private void AddNode()
+    {
+        clusterConfig.Nodes.Add(
+            new Node
+            {
+                NodeName = "NewNode",
+                HostName = "HostName",
+                Port = 0,
+                HostingModel = "HostingModel"
+            });
+    }
+
+    private void AddApplicationInstance()
+    {
+        clusterConfig.ApplicationInstances.Add(
+            new ApplicationInstance
+            {
+                Name = "NewAppication",
+                Type = "AppType",
+                HostingModel = "HostingModel",
+                PlacementPolicies = new List<string>() { }
+            });
+    }
+}
