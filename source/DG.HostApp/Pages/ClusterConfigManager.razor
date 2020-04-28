@@ -10,8 +10,18 @@
 <h1>Cluster configuration manager</h1>
 <button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
 <button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
+<button class="btn btn-outline-primary" @onclick="ToggleFileUploadView">Upload JsonConfig</button>
 <br />
 <br />
+
+@if (fileUploadView == true)
+{
+    <div class="drag-drop-zone">
+        <InputFile OnChange="ViewFile" />
+        @status
+    </div>
+}
+
 @if (clusterConfig == null)
 {
     <p><em>Loading configuration...</em></p>
@@ -26,7 +36,7 @@ else
             <button class="btn btn-outline-primary" type="submit">Update config</button>
         </EditForm>
     }
-else
+    else
     {
         <h2>Cluster configuration:</h2>
         <p>
@@ -90,14 +100,54 @@ else
 }
 @code {
     private ClusterConfig clusterConfig;
+
     private string newPlacement;
     private string rawConfigAsJson = "{}";
+
+    private bool fileUploadView = false;
+    private const int MaxFileSize = 1 * 1024 * 1024; // 1MB
+    private const string DefaultStatus = "Drop a text file here to view it, or click to choose a file";
+    private string fileToBigStatus = $"That's too big. Max size: {MaxFileSize} bytes.";
+    private const string LoadingStatus = "Loading...";
+    private string status = DefaultStatus;
+
+    private string uriClusterConfigManager = "https://localhost:5001/api/ClusterConfigManager";
     private bool rawView = false;
 
     protected override async Task OnInitializedAsync()
     {
         await ReadConfig();
         SetFormView();
+    }
+
+    async Task ViewFile(IFileListEntry[] files)
+    {
+        string fileTextContents;
+
+        var file = files.FirstOrDefault();
+        if (file == null)
+        {
+            return;
+        }
+        else if (file.Size > MaxFileSize)
+        {
+            status = fileToBigStatus;
+        }
+        else
+        {
+            status = LoadingStatus;
+
+            using (var reader = new StreamReader(file.Data))
+            {
+                fileTextContents = await reader.ReadToEndAsync();
+            }
+
+            status = DefaultStatus;
+            rawConfigAsJsonString = fileTextContents;
+
+            rawView = true;
+            fileUploadView = false;
+        }
     }
 
     private async Task WriteConfig()
@@ -129,6 +179,12 @@ else
     }
 
     private void AddHost()
+    private void ToggleFileUploadView()
+    {
+        this.fileUploadView = !this.fileUploadView;
+    }
+
+    private void AddNode()
     {
         clusterConfig.ClusterDefinition.Hosts.Add(
             new Host
