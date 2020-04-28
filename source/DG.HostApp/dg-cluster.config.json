@@ -1,25 +1,28 @@
 {
   "CurrentHost": {
     "Name": "Node1",
-    "HostAddress": "localhost",
-    "Port": 5001,
-    "HostingModel": "InMemory"
+    "HostingModel": "InMemory",
+    "ListeningUrls": "http://*:5001",
+    "LocalAddress": "http://localhost:5001",
+    "PublicAddress": "http://192.168.0.103:5001"
   },
   "ClusterDefinition": {
-    "HashMD5": "123",
-    "LastUpdateTime": "2013-01-01T01:01:01",
+    "HashMD5": "2d9de79f6768b677fc8e7dc645fcfb0d",
+    "LastUpdateTime": "2020-04-28T21:37:00.8971439+03:00",
     "Hosts": [
       {
         "Name": "Node1",
-        "HostAddress": "localhost",
-        "Port": 5001,
-        "HostingModel": "InMemory"
+        "HostingModel": "InMemory",
+        "ListeningUrls": "http://*:5001",
+        "LocalAddress": "http://localhost:5001",
+        "PublicAddress": "http://192.168.0.103:5001"
       },
       {
         "Name": "Node2",
-        "HostAddress": "localhost",
-        "Port": 5023,
-        "HostingModel": "InMemory"
+        "HostingModel": "InMemory",
+        "ListeningUrls": "http://*:5023",
+        "LocalAddress": "http://localhost:5023",
+        "PublicAddress": "http://192.168.0.108:5023"
       }
     ],
     "ApplicationInstances": [
@@ -31,15 +34,6 @@
           "Node1"
         ],
         "Count": "2"
-      },
-      {
-        "Name": "SampleAppInstanceB",
-        "Type": "HelloWorld",
-        "HostingModel": "TestHostingModel",
-        "PlacementPolicies": [
-          "Node2"
-        ],
-        "Count": "3"
       }
     ]
   }

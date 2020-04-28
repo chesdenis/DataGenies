@@ -1,23 +1,34 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using DG.Core.Model.ClusterConfig;
 
 namespace DG.Core.Extensions
 {
     public static class HostExtensions
     {
-        public static string GetHostListeningAddress(this Host host)
+        public static string[] GetHostListeningAddress(this Host host)
         {
-            return $"http://{host.HostAddress}:{host.Port}";
+            return host.ListeningUrls.Split(';', StringSplitOptions.RemoveEmptyEntries);
         }
 
-        public static string GetHostApiAddress(this Host host)
+        public static string GetLocalApiAddress(this Host host)
         {
-            return $"{host.GetHostListeningAddress()}/api";
+            return $"{host.LocalAddress}/api";
         }
 
-        public static string GetClusterConfigManagerEndpoint(this Host host)
+        public static string GetPublicApiAddress(this Host host)
         {
-            return $"{host.GetHostListeningAddress()}/api/ClusterConfigManager";
+            return $"{host.PublicAddress}/api";
+        }
+
+        public static string GetClusterConfigManagerLocalEndpoint(this Host host)
+        {
+            return $"{host.GetLocalApiAddress()}/ClusterConfigManager";
+        }
+        
+        public static string GetClusterConfigManagerPublicEndpoint(this Host host)
+        {
+            return $"{host.GetPublicApiAddress()}/ClusterConfigManager";
         }
     }
 }

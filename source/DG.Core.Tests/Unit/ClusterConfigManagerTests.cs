@@ -151,14 +151,14 @@ namespace DG.Core.Tests.Unit
             // Assert
             httpService.Verify(
                 x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetClusterConfigManagerEndpoint()}/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition"),
                     It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
                     It.IsAny<string>()),
                 Times.Once());
             
             httpService.Verify(
                 x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetClusterConfigManagerEndpoint()}/WriteClusterDefinition"),
+                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition"),
                     It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
                     It.IsAny<string>()),
                 Times.Never);
@@ -204,8 +204,9 @@ namespace DG.Core.Tests.Unit
                 CurrentHost = new Host()
                 {
                     Name = "Node1",
-                    HostAddress = "localhost",
-                    Port = 5001,
+                    ListeningUrls = "http://localhost:5001;https://localhost:5002",
+                    LocalAddress = "http://localhost:5001",
+                    PublicAddress = "http://some-domaing:5002",
                     HostingModel = "InMemory",
                 },
                 ClusterDefinition = this.GetSampleClusterDefinition(),
@@ -230,15 +231,17 @@ namespace DG.Core.Tests.Unit
                 new Host()
                 {
                     Name = "Node1",
-                    HostAddress = "localhost",
-                    Port = 5001,
+                    ListeningUrls = "http://localhost:5001;https://localhost:5002",
+                    LocalAddress = "http://localhost:5001",
+                    PublicAddress = "http://some-domaing:5002",
                     HostingModel = "InMemory",
                 },
                 new Host()
                 {
                     Name = "Node2",
-                    HostAddress = "localhost",
-                    Port = 5021,
+                    ListeningUrls = "http://localhost:5021;https://localhost:5022",
+                    LocalAddress = "http://localhost:5021",
+                    PublicAddress = "http://some-domaing:5021",
                     HostingModel = "InMemory",
                 },
             };

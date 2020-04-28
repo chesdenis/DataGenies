@@ -1,4 +1,5 @@
-﻿using DG.Core.Model.ClusterConfig;
+﻿using System.Threading.Tasks;
+using DG.Core.Model.ClusterConfig;
 
 namespace DG.Core.ConfigManagers
 {
@@ -14,6 +15,6 @@ namespace DG.Core.ConfigManagers
 
         void WriteClusterDefinition(ClusterDefinition clusterDefinition);
 
-        void SyncClusterDefinitionAcrossHosts();
+        Task SyncClusterDefinitionAcrossHosts();
     }
 }
