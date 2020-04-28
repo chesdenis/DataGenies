@@ -76,7 +76,7 @@ namespace DG.Core.ConfigManagers
             }
         }
 
-        public void SyncClusterDefinitionAcrossHosts()
+        public async Task SyncClusterDefinitionAcrossHosts()
         {
             var currentHost = this.GetHost();
             
@@ -89,8 +89,8 @@ namespace DG.Core.ConfigManagers
 
                 try
                 {
-                    Task.Run(() => this.httpService.Post(
-                        $"{host.GetClusterConfigManagerEndpoint()}/WriteClusterDefinition",
+                    await Task.Run(() => this.httpService.Post(
+                        $"{host.GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition",
                         this.GetClusterDefinition().ToJson()));
                 }
                 catch (Exception ex)

@@ -6,15 +6,15 @@ namespace DG.HostApp.Extensions
     internal static class ClusterConfigManagerControllerExtensions
     {
         public static string GetConfig(this Host host) =>
-            $"{host.GetClusterConfigManagerEndpoint()}/GetConfig";  
+            $"{host.GetClusterConfigManagerLocalEndpoint()}/GetConfig";  
         
         public static string WriteConfig(this Host host) =>
-            $"{host.GetClusterConfigManagerEndpoint()}/WriteConfig"; 
+            $"{host.GetClusterConfigManagerLocalEndpoint()}/WriteConfig"; 
         
         public static string WriteClusterDefinition(this Host host) =>
-            $"{host.GetClusterConfigManagerEndpoint()}/WriteClusterDefinition";
+            $"{host.GetClusterConfigManagerLocalEndpoint()}/WriteClusterDefinition";
         
         public static string SyncClusterDefinitionAcrossHosts(this Host host) =>
-            $"{host.GetClusterConfigManagerEndpoint()}/SyncClusterDefinitionAcrossHosts";
+            $"{host.GetClusterConfigManagerPublicEndpoint()}/SyncClusterDefinitionAcrossHosts";
     }
 }

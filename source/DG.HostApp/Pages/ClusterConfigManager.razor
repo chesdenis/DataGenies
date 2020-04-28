@@ -33,15 +33,21 @@ else
             <b>Current Host:</b>
             <b>Name:</b> @clusterConfig.CurrentHost.Name
             <b>HashMd5:</b> @clusterConfig.ClusterDefinition.HashMD5
+            
         </p>
         <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
+            <h3>Current Host:</h3>
+            <b>Listening urls (separated by ;):</b> <InputText @bind-Value="clusterConfig.CurrentHost.ListeningUrls" /><br />
+            <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.LocalAddress" /><br />
+            <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.PublicAddress" /><br />
             <h3>Hosts:</h3>
             @foreach (var host in clusterConfig.ClusterDefinition.Hosts)
             {
                 <p>
                     <b>Host name:</b> <InputText @bind-Value="host.Name" /><br />
-                    <b>Host address:</b> <InputText @bind-Value="host.HostAddress" /><br />
-
+                    <b>Listening urls (separated by ;):</b> <InputText @bind-Value="host.ListeningUrls" /><br />
+                    <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="host.LocalAddress" /><br />
+                    <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="host.PublicAddress" /><br />
                     <b>Hosting model:</b> <InputText @bind-Value="host.HostingModel" />
                 </p>
             }
@@ -128,9 +134,6 @@ else
             new Host
             {
                 Name = "NewHost",
-                HostAddress = "HostName",
-                Port = 0,
-                HostingModel = "HostingModel"
             });
     }
 
@@ -140,8 +143,6 @@ else
             new ApplicationInstance
             {
                 Name = "NewAppication",
-                Type = "AppType",
-                HostingModel = "HostingModel",
                 PlacementPolicies = new List<string>() { }
             });
     }
