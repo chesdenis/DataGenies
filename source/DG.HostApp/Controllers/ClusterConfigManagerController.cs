@@ -1,9 +1,10 @@
-﻿namespace DG.HostApp.Controllers
-{
-    using DG.Core.ConfigManagers;
-    using DG.Core.Models;
-    using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
+using DG.Core.ConfigManagers;
+using DG.Core.Model.ClusterConfig;
+using Microsoft.AspNetCore.Mvc;
 
+namespace DG.HostApp.Controllers
+{
     [Route("api/[controller]")]
     [ApiController]
     public class ClusterConfigManagerController : ControllerBase
@@ -16,15 +17,38 @@
         }
 
         [HttpGet]
-        public ActionResult<string> GetClusterConfigAsJson()
+        [Route("GetConfig")]
+        public ActionResult<string> GetConfig()
         {
-            return this.Ok(this.clusterConfigManager.GetConfigAsJson());
+            return this.Ok(JsonSerializer.Serialize(
+                this.clusterConfigManager.GetConfig(),
+                new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                }));
         }
 
         [HttpPost]
-        public ActionResult PostClusterConfig([FromBody] ClusterConfig clusterConfig)
+        [Route("WriteConfig")]
+        public ActionResult WriteConfig([FromBody] ClusterConfig clusterConfig)
         {
             this.clusterConfigManager.WriteConfig(clusterConfig);
+            return this.Ok();
+        }
+        
+        [HttpPost]
+        [Route("WriteClusterDefinition")]
+        public ActionResult WriteClusterDefinition([FromBody] ClusterDefinition clusterDefinition)
+        {
+            this.clusterConfigManager.WriteClusterDefinition(clusterDefinition);
+            return this.Ok();
+        }
+        
+        [HttpPost]
+        [Route("SyncClusterDefinitionAcrossHosts")]
+        public ActionResult SyncClusterDefinitionAcrossHosts()
+        {
+            this.clusterConfigManager.SyncClusterDefinitionAcrossHosts();
             return this.Ok();
         }
     }

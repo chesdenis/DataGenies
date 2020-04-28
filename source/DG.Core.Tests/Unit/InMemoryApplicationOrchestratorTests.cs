@@ -101,9 +101,12 @@ namespace DG.Core.Tests.Unit
     internal class AppA
     {
         [StateReport]
-        public string ReportStateSampleFunction()
+        public StateReport ReportStateSampleFunction()
         {
-            return "{'Status':'0'}";
+            return new StateReport()
+            {
+                Status = Status.Finished,
+            };
         }
     }
     

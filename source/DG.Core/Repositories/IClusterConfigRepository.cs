@@ -1,7 +1,7 @@
-﻿namespace DG.Core.Repositories
-{
-    using DG.Core.Models;
+﻿using DG.Core.Model.ClusterConfig;
 
+namespace DG.Core.Repositories
+{
     public interface IClusterConfigRepository
     {
         ClusterConfig GetClusterConfig();
