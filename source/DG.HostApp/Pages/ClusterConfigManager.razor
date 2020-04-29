@@ -143,7 +143,7 @@ else
             }
 
             status = DefaultStatus;
-            rawConfigAsJsonString = fileTextContents;
+            rawConfigAsJson = fileTextContents;
 
             rawView = true;
             fileUploadView = false;
@@ -183,7 +183,7 @@ else
         this.fileUploadView = !this.fileUploadView;
     }
 
-    private void AddNode()
+    private void AddHost()
     {
         clusterConfig.ClusterDefinition.Hosts.Add(
             new Host
