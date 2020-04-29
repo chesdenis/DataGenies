@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using DG.Core.Extensions;
-    using System.Linq;
 
     public class ApplicationInstancesScanner : IApplicationInstancesScanner
     {
