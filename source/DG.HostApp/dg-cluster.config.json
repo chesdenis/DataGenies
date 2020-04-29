@@ -1,46 +1,40 @@
-﻿{
-  "LastUpdateTime": "2012-04-23T18:25:43.511Z",
-  "HashMD5": "69962c35fe7516a7db2c00289837328a",
-  "Nodes": {
-    "Node1": {
-      "HostName": "localhost",
-      "Port": 5001,
-      "HostingModel": "InMemory"
-    },
-    "Node2": {
-      "HostName": "localhost",
-      "Port": 5033,
-      "HostingModel": "InMemory"
-    }
+{
+  "CurrentHost": {
+    "Name": "Node1",
+    "HostingModel": "InMemory",
+    "ListeningUrls": "http://*:5001",
+    "LocalAddress": "http://localhost:5001",
+    "PublicAddress": "http://192.168.0.103:5001"
   },
-  "ApplicationInstances" :
-  [
-    {
-      "Name" : "ThisIsMyHelloWorldApplication1",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node1"
-      ],
-      "Count": "1"
-    },
-    {
-      "Name" : "ThisIsMyHelloWorldApplication2",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node2"
-      ],
-      "Count": "5"
-    },
-    {
-      "Name" : "ThisIsMyHelloWorldApplication3",
-      "Type": "HelloWorldApp",
-      "HostingModel": "InMemory",
-      "PlacementPolicies": [
-        "Node*"
-      ],
-      "Count": "-1"
-    }
-  ]
+  "ClusterDefinition": {
+    "HashMD5": "2d9de79f6768b677fc8e7dc645fcfb0d",
+    "LastUpdateTime": "2020-04-28T21:37:00.8971439+03:00",
+    "Hosts": [
+      {
+        "Name": "Node1",
+        "HostingModel": "InMemory",
+        "ListeningUrls": "http://*:5001",
+        "LocalAddress": "http://localhost:5001",
+        "PublicAddress": "http://192.168.0.103:5001"
+      },
+      {
+        "Name": "Node2",
+        "HostingModel": "InMemory",
+        "ListeningUrls": "http://*:5023",
+        "LocalAddress": "http://localhost:5023",
+        "PublicAddress": "http://192.168.0.108:5023"
+      }
+    ],
+    "ApplicationInstances": [
+      {
+        "Name": "SampleAppInstanceA",
+        "Type": "HelloWorld",
+        "HostingModel": "TestHostingModel",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Count": "2"
+      }
+    ]
+  }
 }

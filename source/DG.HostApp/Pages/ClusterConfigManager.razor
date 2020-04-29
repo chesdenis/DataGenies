@@ -1,0 +1,149 @@
+﻿@page "/clusterconfigeditor"
+@using System.Text.Json
+@using DG.Core.Model.ClusterConfig
+@using DG.Core.Services
+@using DG.HostApp.Extensions
+@using Microsoft.Extensions.Options
+@inject IHttpService httpService
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+
+<h1>Cluster configuration manager</h1>
+<button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
+<button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
+<br />
+<br />
+@if (clusterConfig == null)
+{
+    <p><em>Loading configuration...</em></p>
+}
+else
+{
+    if (rawView == true)
+    {
+        <h2>Cluster configuration:</h2>
+        <EditForm Model="@rawConfigAsJson" OnValidSubmit="@WriteConfig">
+            <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJson" /> <br />
+            <button class="btn btn-outline-primary" type="submit">Update config</button>
+        </EditForm>
+    }
+else
+    {
+        <h2>Cluster configuration:</h2>
+        <p>
+            <b>Current Host:</b>
+            <b>Name:</b> @clusterConfig.CurrentHost.Name
+            <b>HashMd5:</b> @clusterConfig.ClusterDefinition.HashMD5
+            
+        </p>
+        <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
+            <h3>Current Host:</h3>
+            <b>Listening urls (separated by ;):</b> <InputText @bind-Value="clusterConfig.CurrentHost.ListeningUrls" /><br />
+            <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.LocalAddress" /><br />
+            <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.PublicAddress" /><br />
+            <h3>Hosts:</h3>
+            @foreach (var host in clusterConfig.ClusterDefinition.Hosts)
+            {
+                <p>
+                    <b>Host name:</b> <InputText @bind-Value="host.Name" /><br />
+                    <b>Listening urls (separated by ;):</b> <InputText @bind-Value="host.ListeningUrls" /><br />
+                    <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="host.LocalAddress" /><br />
+                    <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="host.PublicAddress" /><br />
+                    <b>Hosting model:</b> <InputText @bind-Value="host.HostingModel" />
+                </p>
+            }
+
+            <button class="btn btn-outline-primary" @onclick="AddHost">Add Host</button>
+            <br />
+            <br />
+
+            <h3>Application instances:</h3>
+            @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
+            {
+                <p>
+                    <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
+                    <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
+                    <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
+                    <b>Placement policies:</b><br />
+
+                    @foreach (var placement in applicationInstance.PlacementPolicies)
+                    {
+                        <span style=" margin-left:40px">
+                            <b>=></b>@placement;<br />
+                        </span>
+                    }
+
+                    <span style=" margin-left:40px">
+                        <b>=></b><InputText @bind-Value="newPlacement" />
+                        <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
+                    </span>
+                    <b>Count:</b> <InputText @bind-Value="applicationInstance.Count" />
+                </p>
+            }
+            <button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
+            <br />
+            <br />
+            <p>
+                <button class="btn btn-outline-primary" type="submit">Update config</button>
+            </p>
+        </EditForm>
+    }
+}
+@code {
+    private ClusterConfig clusterConfig;
+    private string newPlacement;
+    private string rawConfigAsJson = "{}";
+    private bool rawView = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadConfig();
+        SetFormView();
+    }
+
+    private async Task WriteConfig()
+    {
+        if (rawView == false)
+        {
+           rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
+        }
+
+        await httpService.Post(currentHost.Value.WriteConfig(), rawConfigAsJson);
+        await httpService.Post(currentHost.Value.SyncClusterDefinitionAcrossHosts(), string.Empty);
+    }
+ 
+    private async Task ReadConfig()
+    {
+        rawConfigAsJson = await httpService.Get(currentHost.Value.GetConfig());
+    }
+
+    private void SetRawView()
+    {
+        rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
+        this.rawView = true;
+    }
+
+    private void SetFormView()
+    {
+        this.clusterConfig = JsonSerializer.Deserialize<ClusterConfig>(rawConfigAsJson);
+        this.rawView = false;
+    }
+
+    private void AddHost()
+    {
+        clusterConfig.ClusterDefinition.Hosts.Add(
+            new Host
+            {
+                Name = "NewHost",
+            });
+    }
+
+    private void AddApplicationInstance()
+    {
+        clusterConfig.ClusterDefinition.ApplicationInstances.Add(
+            new ApplicationInstance
+            {
+                Name = "NewAppication",
+                PlacementPolicies = new List<string>() { }
+            });
+    }
+}

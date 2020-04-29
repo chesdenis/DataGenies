@@ -1,4 +1,8 @@
+using DG.Core.ConfigManagers;
+using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
+using DG.Core.Repositories;
+using DG.Core.Services;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,13 +27,23 @@ namespace DG.HostApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
             services.AddRazorPages();
             services.AddServerSideBlazor();
 
             services.AddHostedService<ServiceWatcher>();
             services.AddControllers();
 
-            services.AddScoped<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            services.AddSingleton<IHttpService, HttpService>();
+            services.AddSingleton<ISystemClock, SystemClock>();
+            
+            services.AddSingleton<IClusterConfigRepository, ClusterJsonConfigRepository>();
+            services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
+            services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            
+            services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
+
+            services.AddSingleton(this.Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,9 +68,9 @@ namespace DG.HostApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
-                endpoints.MapControllers();
             });
         }
     }

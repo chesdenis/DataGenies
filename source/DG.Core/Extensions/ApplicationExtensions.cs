@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace DG.Core.Extensions
 {
@@ -22,7 +22,9 @@ namespace DG.Core.Extensions
 
             if (result is string resultAsString)
             {
-                return JsonConvert.DeserializeObject<T>(resultAsString);
+                return JsonSerializer.Deserialize<T>(
+                    resultAsString,
+                    new JsonSerializerOptions() { IgnoreNullValues = true });
             }
 
             return (T)result;
