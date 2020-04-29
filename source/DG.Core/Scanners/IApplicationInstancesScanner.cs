@@ -4,7 +4,7 @@
 
     public interface IApplicationInstancesScanner
     {
-        IDictionary<string, string> GetInstancesTypeNames();
+        IDictionary<string, string> GetInstancesNamesAndTypes();
 
         IDictionary<string, string> GetFieldValuesFromApps(string fieldName);
 

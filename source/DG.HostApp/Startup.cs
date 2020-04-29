@@ -25,7 +25,7 @@ namespace DG.HostApp
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-           
+
             services.AddHostedService<ServiceWatcher>();
             services.AddControllers();
 

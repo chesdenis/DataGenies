@@ -1,13 +1,16 @@
 ﻿namespace DG.Core.Orchestrators
 {
+    using System;
     using System.Collections.Generic;
 
     public interface IApplicationInstanceOrchestrator
     {
-        void CreateSingleInstanceInMemory(string instanceKey, string type);
+        IDictionary<string, object> GetInMemoryInstancesData();
 
-        void CreateInstancesInMemory(IDictionary<string, string> instancesToCreate);
+        void CreateSingleInstanceInMemory(string instanceKet, Type instanceType);
 
-        IDictionary<string, string> PrepareInstancesDataToCreate();
+        void CreateInstancesInMemory(IDictionary<string, Type> instancesToCreate);
+
+        IDictionary<string, Type> PrepareInstancesDataToCreate();
     }
 }
