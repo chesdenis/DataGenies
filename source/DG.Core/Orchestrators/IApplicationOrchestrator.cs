@@ -9,9 +9,9 @@ namespace DG.Core.Orchestrators
         IEnumerable<StateReport> GetInstanceState(string application, string instanceName);
 
         void Register(string application, Type applicationType, string instanceName);
-        
+
         void Start(string application, string instanceName);
-        
+
         void Stop(string application, string instanceName);
     }
 }

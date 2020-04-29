@@ -11,7 +11,7 @@ using Xunit;
 
 namespace DG.Core.Tests.Unit
 {
-    public class InMemoryApplicationOrchestratorTests  
+    public class InMemoryApplicationOrchestratorTests
     {
         [Theory]
         [InlineData("appName", "intanceNameWith//DoubleBackslashes")]
@@ -23,10 +23,10 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
             inMemoryOrchestrator.Register(applicationName, typeof(AppA), instanceName);
-            
+
             // Act
             var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
-        
+
             // Assert
             reports.Should().HaveCount(1);
             reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
@@ -38,25 +38,25 @@ namespace DG.Core.Tests.Unit
             // Arrange
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
             inMemoryOrchestrator.Register("testApp", typeof(AppA), "instanceA");
-            
+
             // Act
             var reports = inMemoryOrchestrator.GetInstanceState("testApp", "instanceA").ToList();
-        
+
             // Assert
             reports.Should().HaveCount(1);
             reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
         }
-        
+
         [Fact]
         public void ShouldGetInstanceStateInCaseOfTypedDataInStateReport()
         {
             // Arrange
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
             inMemoryOrchestrator.Register("testApp", typeof(AppB), "instanceA");
-            
+
             // Act
             var reports = inMemoryOrchestrator.GetInstanceState("testApp", "instanceA").ToList();
-        
+
             // Assert
             reports.Should().HaveCount(1);
             reports.First().Should().Match<StateReport>(x => x.Status == Status.Started);
@@ -69,7 +69,7 @@ namespace DG.Core.Tests.Unit
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
             inMemoryOrchestrator.Register("testAppC", typeof(AppC), "instanceA");
             inMemoryOrchestrator.Register("testAppD", typeof(AppD), "instanceA");
-            
+
             // Act
             var reportsC = Assert.Throws<ArgumentOutOfRangeException>(() =>
                 inMemoryOrchestrator.GetInstanceState("testAppC", "instanceA").ToList());
@@ -81,22 +81,22 @@ namespace DG.Core.Tests.Unit
             reportsC.Should().BeOfType<ArgumentOutOfRangeException>();
             reportsD.Should().BeOfType<ArgumentOutOfRangeException>();
         }
-        
+
         [Fact]
         public void ShouldThrowExceptionInGetInstanceStateInCaseOfMissingApplications()
         {
             // Arrange
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
-            
+
             // Act
             var reportsC = Assert.Throws<KeyNotFoundException>(() =>
                 inMemoryOrchestrator.GetInstanceState("testAppC", "instanceA").ToList());
-            
+
             // Assert
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
     }
-    
+
     [Application]
     internal class AppA
     {
@@ -109,7 +109,7 @@ namespace DG.Core.Tests.Unit
             };
         }
     }
-    
+
     [Application]
     internal class AppB
     {
@@ -122,12 +122,12 @@ namespace DG.Core.Tests.Unit
             };
         }
     }
-    
+
     [Application]
     internal class AppC
     {
     }
-    
+
     internal class AppD
     {
     }

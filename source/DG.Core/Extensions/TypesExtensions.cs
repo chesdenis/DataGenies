@@ -28,5 +28,17 @@ namespace DG.Core.Extensions
             return type.GetMethods()
                 .Any(x => x.GetCustomAttributes(attributeType).Any());
         }
+
+        public static IEnumerable<Type> GetAssemblyTypes(string assemblyPath)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            return assembly.GetTypes();
+        }
+
+        public static Type GetType(string assemblyPath, string typeName)
+        {
+            Assembly assembly = Assembly.LoadFrom(assemblyPath);
+            return assembly.GetType(typeName);
+        }
     }
 }

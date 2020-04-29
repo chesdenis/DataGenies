@@ -30,7 +30,7 @@ namespace DG.HostApp
             services.AddOptions();
             services.AddRazorPages();
             services.AddServerSideBlazor();
-           
+
             services.AddHostedService<ServiceWatcher>();
             services.AddControllers();
 

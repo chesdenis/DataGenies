@@ -10,7 +10,7 @@ namespace DG.Core.Orchestrators
     public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
     {
         private readonly Dictionary<string, List<object>> inMemoryInstances = new Dictionary<string, List<object>>();
-         
+
         public IEnumerable<StateReport> GetInstanceState(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
@@ -36,16 +36,16 @@ namespace DG.Core.Orchestrators
             {
                 throw new ArgumentException("Already registered", nameof(instanceName));
             }
-            
+
             this.inMemoryInstances.Add(uniqueId, new List<object>());
             this.inMemoryInstances[uniqueId].Add(Activator.CreateInstance(applicationType));
         }
- 
+
         public void Start(string application, string instanceName)
         {
             throw new NotImplementedException();
         }
- 
+
         public void Stop(string application, string instanceName)
         {
             throw new NotImplementedException();

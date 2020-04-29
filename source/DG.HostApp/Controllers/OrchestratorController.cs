@@ -15,10 +15,10 @@ namespace DG.HostApp.Controllers
         {
             this.applicationOrchestrator = applicationOrchestrator;
         }
-        
+
         [HttpGet]
         public ActionResult<IEnumerable<StateReport>> GetInstanceState(
-            [FromQuery]string application, 
+            [FromQuery]string application,
             [FromQuery]string instanceName)
         {
             return new ActionResult<IEnumerable<StateReport>>(

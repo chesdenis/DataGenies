@@ -10,7 +10,7 @@ namespace DG.Core.Extensions
         {
             return $"{application}/{instanceName}";
         }
-        
+
         public static T ExecuteFunctionWithoutArgs<T>(this object instance, Type attributeType)
         {
             var functionToExecute = instance
@@ -26,7 +26,7 @@ namespace DG.Core.Extensions
                     resultAsString,
                     new JsonSerializerOptions() { IgnoreNullValues = true });
             }
-            
+
             return (T)result;
         }
     }
