@@ -31,7 +31,19 @@
         "Type": "HelloWorld",
         "HostingModel": "TestHostingModel",
         "PlacementPolicies": [
-          "Node1"
+          "Node1",
+          "Node2"
+        ],
+        "Count": "2"
+      },
+
+      {
+        "Name": "SampleAppInstanceA",
+        "Type": "HelloWorld",
+        "HostingModel": "TestHostingModel",
+        "PlacementPolicies": [
+          "Node3",
+          "Node4"
         ],
         "Count": "2"
       }

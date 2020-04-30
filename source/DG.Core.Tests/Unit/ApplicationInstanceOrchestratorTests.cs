@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
 using DG.Core.Providers;
-using DG.Core.Scanners;
 using FluentAssertions;
 using Moq;
 using Xunit;
@@ -16,9 +15,22 @@ namespace DG.Core.Tests.Unit
         public void ShouldCreateApplicationInstance()
         {
             // Arrange
-            var instancesScanner = new Mock<IApplicationInstancesScanner>();
             var typeProvider = new Mock<ITypeProvider>();
-            var instanceOrchestrator = new ApplicationInstanceOrchestrator(instancesScanner.Object, typeProvider.Object);
+            var applicationInstances = new List<ApplicationInstance>()
+            {
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "TestApp",
+                        Name = "SomeTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+            };
+
+            var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
             var instanceKey = "TestApp/SomeTestApp";
             var instanceType = typeof(TestApp);
 
@@ -36,9 +48,21 @@ namespace DG.Core.Tests.Unit
         public void ShouldThrowExceptionIfCreated()
         {
             // Arrange
-            var instancesScanner = new Mock<IApplicationInstancesScanner>();
             var typeProvider = new Mock<ITypeProvider>();
-            var instanceOrchestrator = new ApplicationInstanceOrchestrator(instancesScanner.Object, typeProvider.Object);
+            var applicationInstances = new List<ApplicationInstance>()
+            {
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "TestApp",
+                        Name = "SomeTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+            };
+            var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
             var instanceKey = "TestApp/SomeTestApp";
             var instanceType = typeof(TestApp);
 
@@ -52,9 +76,21 @@ namespace DG.Core.Tests.Unit
         public void ShouldCreateApplicationInstances()
         {
             // Arrange
-            var instancesScanner = new Mock<IApplicationInstancesScanner>();
             var typeProvider = new Mock<ITypeProvider>();
-            var instanceOrchestrator = new ApplicationInstanceOrchestrator(instancesScanner.Object, typeProvider.Object);
+            var applicationInstances = new List<ApplicationInstance>()
+            {
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "TestApp",
+                        Name = "SomeTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+            };
+            var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
             var instanceKey1 = "TestApp/SomeTestApp";
             var instanceKey2 = "SecondTestApp/SomeSecondTestApp";
             var instancesToCreate = new Dictionary<string, Type>()
@@ -80,40 +116,73 @@ namespace DG.Core.Tests.Unit
         public void ShouldPrepareInstanceDataToBeCreated()
         {
             // Arrange
-            var instancesScanner = new Mock<IApplicationInstancesScanner>();
             var typeProvider = new Mock<ITypeProvider>();
-            var instanceOrchestrator = new ApplicationInstanceOrchestrator(instancesScanner.Object, typeProvider.Object);
-
-            var instanceKey1 = "TestApp/SomeTestApp";
-            var instanceKey2 = "SecondTestApp/SomeSecondTestApp";
-            var instance1TypeName = "TestApp";
-            var instance2TypeName = "SecondTestApp";
-            var instancesKeysAndTypeNames = new Dictionary<string, string>()
+            var applicationInstances = new List<ApplicationInstance>()
             {
-                { instanceKey1, instance1TypeName },
-                { instanceKey2, instance2TypeName },
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "TestApp",
+                        Name = "SomeTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "SecondTestApp",
+                        Name = "SomeSecondTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
             };
-
-            instancesScanner.Setup(x => x.Initialize());
-            instancesScanner.Setup(x => x.GetInstancesNamesAndTypes()).Returns(instancesKeysAndTypeNames);
+            var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
             typeProvider.Setup(x => x.GetInstanceType("TestApp")).Returns(typeof(TestApp));
             typeProvider.Setup(x => x.GetInstanceType("SecondTestApp")).Returns(typeof(SecondTestApp));
 
             // Act
-            var preparedData = instanceOrchestrator.PrepareInstancesDataToCreate();
+            var preparedData = instanceOrchestrator.PrepareInstancesDataToCreate(applicationInstances);
 
             // Assert
-            preparedData.Should().Contain(new KeyValuePair<string, Type>(instanceKey1, typeof(TestApp)));
-            preparedData.Should().Contain(new KeyValuePair<string, Type>(instanceKey2, typeof(SecondTestApp)));
+            preparedData.Should().Contain(new KeyValuePair<string, Type>(
+                applicationInstances[0].Type + "/" + applicationInstances[0].Name, typeof(TestApp)));
+            preparedData.Should().Contain(new KeyValuePair<string, Type>(
+               applicationInstances[1].Type + "/" + applicationInstances[1].Name, typeof(SecondTestApp)));
         }
 
         [Fact]
         public void ShouldReturnInstancesInMemoryDictionary()
         {
-            // Arrange
-            var instancesScanner = new Mock<IApplicationInstancesScanner>();
+            // Arrange            
             var typeProvider = new Mock<ITypeProvider>();
-            var instanceOrchestrator = new ApplicationInstanceOrchestrator(instancesScanner.Object, typeProvider.Object);
+            var applicationInstances = new List<ApplicationInstance>()
+            {
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "TestApp",
+                        Name = "SomeTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+                {
+                    new ApplicationInstance()
+                     {
+                        Count = "1",
+                        HostingModel = "InMemory",
+                        Type = "SecondTestApp",
+                        Name = "SomeSecondTestApp",
+                        PlacementPolicies = new List<string>() { "Node1" },
+                     }
+                },
+            };
+            var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
 
             // Act
             var instancesInMemory = instanceOrchestrator.GetInMemoryInstancesData();

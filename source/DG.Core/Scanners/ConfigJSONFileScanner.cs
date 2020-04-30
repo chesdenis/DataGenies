@@ -8,59 +8,30 @@
     public class ConfigJSONFileScanner : IConfigScanner
     {
         private readonly string configPath;
+        private readonly char pathToSectionDelimiter = ':';
 
         public ConfigJSONFileScanner(string pathToConfig)
         {
             this.configPath = pathToConfig;
+            this.InitializeRoot();
         }
 
-        public IDictionary<string, object> GetKeyValuesFromAllSections()
+        private IConfigurationRoot ConfigurationRoot { get; set; }
+
+        public IDictionary<string, object> ConvertConfigToDictionary()
         {
-            var configurationSections = this.GetBaseConfigSections();
+            var configurationSections = this.GetFirstLevelConfigSections();
             IDictionary<string, object> sectionValues = new Dictionary<string, object>();
             foreach (ConfigurationSection configurationSection in configurationSections)
             {
-                var sectionData = this.ScanSection(configurationSection);
+                var sectionData = this.ConvertSectionToDictionary(configurationSection);
                 sectionValues = sectionValues.Concat(sectionData).ToDictionary(kv => kv.Key, kv => kv.Value);
             }
 
             return sectionValues;
         }
 
-        public IDictionary<string, object> GetFieldData(string sectionName, string fieldName)
-        {
-            IDictionary<string, object> fieldsValues = new Dictionary<string, object>();
-            var sectionDataAsDictionary = this.GetKeyValuesFromSection(sectionName);
-            foreach (var data in sectionDataAsDictionary)
-            {
-                var fields = data.Value;
-                var fieldsAsDictionary = fields as IDictionary<string, object>;
-                if (fieldsAsDictionary != null)
-                {
-                    var fieldValue = fieldsAsDictionary[fieldName];
-                    fieldsValues.Add(data.Key, fieldValue);
-                }
-            }
-
-            return fieldsValues;
-        }
-
-        public IDictionary<string, object> GetKeyValuesFromSection(string sectionName)
-        {
-            var configurationSections = this.GetBaseConfigSections();
-            IDictionary<string, object> sectionValues = new Dictionary<string, object>();
-            foreach (ConfigurationSection configurationSection in configurationSections)
-            {
-                if (configurationSection.Key == sectionName)
-                {
-                    sectionValues = this.ScanSection(configurationSection);
-                }
-            }
-
-            return sectionValues;
-        }
-
-        private IDictionary<string, object> ScanSection(IConfigurationSection section)
+        public IDictionary<string, object> ConvertSectionToDictionary(IConfigurationSection section)
         {
             var children = section.GetChildren();
             IDictionary<string, object> dictionaryInner = new Dictionary<string, object>();
@@ -69,7 +40,7 @@
             {
                 foreach (var child in children)
                 {
-                    dictionaryInner = this.ScanSection(child);
+                    dictionaryInner = this.ConvertSectionToDictionary(child);
                     if (dictionaryUpLevel.ContainsKey(section.Key))
                     {
                         IDictionary<string, object> value = (IDictionary<string, object>)dictionaryUpLevel[section.Key];
@@ -93,18 +64,43 @@
             return dictionaryUpLevel;
         }
 
-        private IEnumerable<IConfigurationSection> GetBaseConfigSections()
+        public IConfigurationSection GetConfigSectionByPath(string pathToSection)
+        {
+            IConfigurationSection section = null;
+            var pathElements = pathToSection.Split(this.pathToSectionDelimiter);
+            for (int i = 0; i < pathElements.Length; i++)
+            {
+                if (i == 0)
+                {
+                    section = this.GetFirstLevelConfigSections().Where(s => s.Key == pathElements[i]).SingleOrDefault();
+                }
+                else
+                {
+                    var sections = section.GetChildren();
+                    section = sections.Where(s => s.Key == pathElements[i]).SingleOrDefault();
+                }
+            }
+
+            return section;
+        }
+
+        private void InitializeRoot()
         {
             if (!File.Exists(this.configPath))
             {
-                throw new System.IO.FileNotFoundException();
+                throw new FileNotFoundException();
             }
 
             IConfigurationRoot configurationRoot =
                new ConfigurationBuilder().
                AddJsonFile(this.configPath).
                Build();
-            return configurationRoot.GetChildren();
+            this.ConfigurationRoot = configurationRoot;
+        }
+
+        private IEnumerable<IConfigurationSection> GetFirstLevelConfigSections()
+        {
+            return this.ConfigurationRoot.GetChildren();
         }
     }
 }

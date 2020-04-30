@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using DG.Core.Extensions;
+    using System.Reflection;
 
     public class AssemblyTypeProvider : ITypeProvider
     {
@@ -15,12 +15,14 @@
 
         public Type GetInstanceType(string typeName)
         {
-            return TypesExtensions.GetType(this.assemblyPath, typeName);
+            Assembly assembly = Assembly.LoadFrom(this.assemblyPath);
+            return assembly.GetType(typeName);
         }
 
         public IEnumerable<Type> GetTypes()
         {
-            return TypesExtensions.GetAssemblyTypes(this.assemblyPath);
+            Assembly assembly = Assembly.LoadFrom(this.assemblyPath);
+            return assembly.GetTypes();
         }
     }
 }
