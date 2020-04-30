@@ -3,21 +3,18 @@
     using System;
     using System.Collections.Generic;
     using DG.Core.Extensions;
+    using DG.Core.Model.ClusterConfig;
     using DG.Core.Providers;
-    using DG.Core.Scanners;
 
     public class ApplicationInstanceOrchestrator : IApplicationInstanceOrchestrator
     {
-        private readonly IApplicationInstancesScanner instancesScanner;
         private readonly ITypeProvider assemblyTypeProvider;
         private readonly IDictionary<string, object> inMemoryInstances =
             new Dictionary<string, object>();
 
         public ApplicationInstanceOrchestrator(
-            IApplicationInstancesScanner instancesScanner,
             ITypeProvider typeProvider)
         {
-            this.instancesScanner = instancesScanner;
             this.assemblyTypeProvider = typeProvider;
         }
 
@@ -40,16 +37,14 @@
             }
         }
 
-        public IDictionary<string, Type> PrepareInstancesDataToCreate()
+        public IDictionary<string, Type> PrepareInstancesDataToCreate(IEnumerable<ApplicationInstance> appInstances)
         {
             var instanesToCreate = new Dictionary<string, Type>();
-            this.instancesScanner.Initialize();
-            var instancesNamesAndTypes = this.instancesScanner.GetInstancesNamesAndTypes();
-            foreach (var instanceName_Type in instancesNamesAndTypes)
+            foreach (var instance in appInstances)
             {
-                var instanceTypeName = instanceName_Type.Value;
-                var instanceType = this.assemblyTypeProvider.GetInstanceType(instanceTypeName);
-                instanesToCreate.Add(instanceName_Type.Key, instanceType);
+                var instanceKey = ApplicationExtensions.ConstructUniqueId(instance.Type, instance.Name);
+                var instanceType = this.assemblyTypeProvider.GetInstanceType(instance.Type);
+                instanesToCreate.Add(instanceKey, instanceType);
             }
 
             return instanesToCreate;
