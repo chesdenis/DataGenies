@@ -8,13 +8,6 @@
     {
         public static void SetValueToPropertyWithAttribute(this object instance, Type attributeType, string propertyValueAsJson)
         {
-            var test1 = instance
-                .GetType()
-                .GetProperties();
-
-            var test2 = instance
-                .GetType();
-
             var propertyToFill = instance
                 .GetType()
                 .GetProperties()
