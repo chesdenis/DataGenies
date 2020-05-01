@@ -6,7 +6,9 @@ using DG.Core.Attributes;
 using DG.Core.Model.Enums;
 using DG.Core.Model.Output;
 using DG.Core.Orchestrators;
+using DG.Core.Scanners;
 using FluentAssertions;
+using Moq;
 using Xunit;
 
 namespace DG.Core.Tests.Unit
@@ -95,6 +97,35 @@ namespace DG.Core.Tests.Unit
             // Assert
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
+
+
+        [Fact]
+        public void ShouldSetApplicationPropertiesIfNeeded()
+        {
+            // Arrange
+            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
+            var propertiesAsJson = @"
+{
+    ""PropertyA"": ""1234"",
+    ""PropertyB"": ""12345"",
+    ""subPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
+    ""subPropertiesB"": null
+}";
+
+            var application = "testApp";
+            var instanceName = "instanceA";
+
+            // Act
+            inMemoryOrchestrator.Register(application, typeof(AppE), instanceName, propertiesAsJson);
+            var properties = inMemoryOrchestrator.GetProperties(application, instanceName);
+
+            // Assert
+            properties.Should().BeOfType<ComplexProperties>();
+            ((ComplexProperties)properties).PropertyA.Should().Be("1234");
+            ((ComplexProperties)properties).PropertyB.Should().Be("12345");
+            ((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
+            ((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
+        }
     }
 
     [Application]
@@ -130,5 +161,30 @@ namespace DG.Core.Tests.Unit
 
     internal class AppD
     {
+    }
+
+    [Application]
+    internal class AppE
+    {
+        [Properties]
+        public ComplexProperties ComplexProperties { get; set; }
+    }
+
+    internal class ComplexProperties
+    {
+        public string PropertyA { get; set; }
+
+        public string PropertyB { get; set; }
+
+        public SubProperties SubPropertiesA { get; set; }
+
+        public SubProperties SubPropertiesB { get; set; }
+    }
+
+    internal class SubProperties
+    {
+        public string SampleSubPropertyA { get; set; }
+
+        public string SampleSubPropertyB { get; set; }
     }
 }

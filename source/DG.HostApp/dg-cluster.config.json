@@ -2,9 +2,9 @@
   "CurrentHost": {
     "Name": "Node1",
     "HostingModel": "InMemory",
-    "ListeningUrls": "http://*:5001",
-    "LocalAddress": "http://localhost:5001",
-    "PublicAddress": "http://192.168.0.103:5001"
+    "ListeningUrls": "https://localhost:5001",
+    "LocalAddress": "https://localhost:5001",
+    "PublicAddress": "https://192.168.0.103:5001"
   },
   "ClusterDefinition": {
     "HashMD5": "2d9de79f6768b677fc8e7dc645fcfb0d",
@@ -13,14 +13,14 @@
       {
         "Name": "Node1",
         "HostingModel": "InMemory",
-        "ListeningUrls": "http://*:5001",
-        "LocalAddress": "http://localhost:5001",
-        "PublicAddress": "http://192.168.0.103:5001"
+        "ListeningUrls": "https://*:5001",
+        "LocalAddress": "https://localhost:5001",
+        "PublicAddress": "https://192.168.0.103:5001"
       },
       {
         "Name": "Node2",
         "HostingModel": "InMemory",
-        "ListeningUrls": "http://*:5023",
+        "ListeningUrls": "https://*:5023",
         "LocalAddress": "http://localhost:5023",
         "PublicAddress": "http://192.168.0.108:5023"
       }
@@ -30,6 +30,10 @@
         "Name": "SampleAppInstanceA",
         "Type": "HelloWorld",
         "HostingModel": "TestHostingModel",
+        "Properties": {
+          "TestPropertyA": "sampleValueA",
+          "TestPropertyB": "sampleValueB"
+        },
         "PlacementPolicies": [
           "Node1"
         ],
