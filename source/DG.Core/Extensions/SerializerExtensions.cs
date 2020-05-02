@@ -17,9 +17,8 @@ namespace DG.Core.Extensions
             return JsonSerializer.Deserialize<T>(jsonData);
         }
 
-        public static JToken GetJTokenByPath(this string jsonString, string pathToJObject)
+        public static JToken GetJTokenByPath(this JObject jObject, string pathToJObject)
         {
-            var config = JObject.Parse(jsonString);
             JToken jToken = null;
             var pathToSectionDelimiter = ':';
             var pathElements = pathToJObject.Split(pathToSectionDelimiter);
@@ -27,7 +26,7 @@ namespace DG.Core.Extensions
             {
                 if (i == 0)
                 {
-                    jToken = config[pathElements[i]];
+                    jToken = jObject[pathElements[i]];
                 }
                 else
                 {
@@ -45,9 +44,9 @@ namespace DG.Core.Extensions
             return jToken;
         }
 
-        public static object JTokenToObject(this JToken jtoken, string typeName, string assemblyPath)
+        public static T JTokenToObject<T>(this JToken jtoken)
         {
-            return jtoken.ToObject(TypesExtensions.GetInstanceType(typeName, assemblyPath));
+            return jtoken.ToObject<T>();
         }
     }
 }
