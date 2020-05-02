@@ -27,16 +27,28 @@ namespace DG.Core.Extensions
                 if (i == 0)
                 {
                     jToken = jObject[pathElements[i]];
+                    if (jToken == null)
+                    {
+                        throw new ArgumentException($"The path {pathElements[i]} is invalid");
+                    }
                 }
                 else
                 {
                     if (jToken.ToString().StartsWith("["))
                     {
                         jToken = jToken[Convert.ToInt32(pathElements[i])];
+                        if (jToken == null)
+                        {
+                            throw new ArgumentException($"The path {pathElements[i]} is invalid");
+                        }
                     }
                     else
                     {
                         jToken = jToken[pathElements[i]];
+                        if (jToken == null)
+                        {
+                            throw new ArgumentException($"The path {pathElements[i]} is invalid");
+                        }
                     }
                 }
             }
