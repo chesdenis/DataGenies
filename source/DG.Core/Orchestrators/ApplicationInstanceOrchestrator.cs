@@ -37,13 +37,13 @@
             }
         }
 
-        public IDictionary<string, Type> PrepareInstancesDataToCreate(IEnumerable<ApplicationInstance> appInstances)
+        public IDictionary<string, Type> PrepareInstancesDataToCreate(IEnumerable<ApplicationInstance> appInstances, string assemblyPath)
         {
             var instanesToCreate = new Dictionary<string, Type>();
             foreach (var instance in appInstances)
             {
                 var instanceKey = ApplicationExtensions.ConstructUniqueId(instance.Type, instance.Name);
-                var instanceType = this.assemblyTypeProvider.GetInstanceType(instance.Type);
+                var instanceType = this.assemblyTypeProvider.GetInstanceType(instance.Type, assemblyPath);
                 instanesToCreate.Add(instanceKey, instanceType);
             }
 
