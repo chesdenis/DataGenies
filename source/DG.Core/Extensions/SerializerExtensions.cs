@@ -19,20 +19,12 @@ namespace DG.Core.Extensions
 
         public static JToken GetJTokenByPath(this JObject jObject, string pathToJObject)
         {
-            JToken jToken = null;
+            
             var pathToSectionDelimiter = ':';
             var pathElements = pathToJObject.Split(pathToSectionDelimiter);
-            for (int i = 0; i < pathElements.Length; i++)
-            {
-                if (i == 0)
-                {
-                    jToken = jObject[pathElements[i]];
-                    if (jToken == null)
-                    {
-                        throw new ArgumentException($"The path {pathElements[i]} is invalid");
-                    }
-                }
-                else
+            JToken jToken = jObject[pathElements[0]];
+            for (int i = 1; i < pathElements.Length; i++)
+            {              
                 {
                     if (jToken.ToString().StartsWith("["))
                     {
