@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
-using DG.Core.Attributes;
-using DG.Core.Model.Enums;
-using DG.Core.Model.Output;
-using DG.Core.Orchestrators;
-using DG.Core.Scanners;
-using FluentAssertions;
-using Moq;
-using Xunit;
-
-namespace DG.Core.Tests.Unit
+﻿namespace DG.Core.Tests.Unit
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using DG.Core.Attributes;
+    using DG.Core.Model.Enums;
+    using DG.Core.Model.Output;
+    using DG.Core.Orchestrators;
+    using FluentAssertions;
+    using Xunit;
+
     public class InMemoryApplicationOrchestratorTests
     {
         [Theory]
@@ -98,7 +95,6 @@ namespace DG.Core.Tests.Unit
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
 
-
         [Fact]
         public void ShouldSetApplicationPropertiesIfNeeded()
         {
@@ -106,10 +102,16 @@ namespace DG.Core.Tests.Unit
             var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
             var propertiesAsJson = @"
 {
-    ""PropertyA"": ""1234"",
-    ""PropertyB"": ""12345"",
-    ""subPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
-    ""subPropertiesB"": null
+""PropertyA"":""FirstString"",
+""PropertyB"":""SecondString"",
+""IntegerProperty"":42,
+""RealProperty"":3.1415926,
+""ComplexProperyA"" : {
+    ""CmpPropertyA"": ""1234"",
+    ""CmpPropertyB"": ""12345"",
+    ""CmpsubPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
+    ""CmpsubPropertiesB"": null
+    }
 }";
 
             var application = "testApp";
@@ -117,16 +119,51 @@ namespace DG.Core.Tests.Unit
 
             // Act
             inMemoryOrchestrator.Register(application, typeof(AppE), instanceName, propertiesAsJson);
-            var properties = inMemoryOrchestrator.GetProperties(application, instanceName);
+            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
 
             // Assert
-            properties.Should().BeOfType<ComplexProperties>();
-            ((ComplexProperties)properties).PropertyA.Should().Be("1234");
-            ((ComplexProperties)properties).PropertyB.Should().Be("12345");
-            ((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
-            ((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
+            properties.Should().HaveCount(5);
+            //((ComplexProperties)properties).PropertyA.Should().Be("1234");
+            //((ComplexProperties)properties).PropertyB.Should().Be("12345");
+            //((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
+            //((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
+        }
+
+        [Fact]
+        public void ShouldThrowExceptionIfApplicationPropetyHasEmptyName()
+        {
+            // Arrange
+            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
+            var propertiesAsJson = @"
+{
+""PropertyA"":""FirstString"",
+""PropertyB"":""SecondString"",
+""IntegerProperty"":42,
+""RealProperty"":3.1415926,
+""ComplexProperyA"" : {
+    ""CmpPropertyA"": ""1234"",
+    ""CmpPropertyB"": ""12345"",
+    ""CmpsubPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
+    ""CmpsubPropertiesB"": null
+    }
+}";
+
+            var application = "testApp";
+            var instanceName = "instanceA";
+
+            // Act
+            inMemoryOrchestrator.Register(application, typeof(AppE), instanceName, propertiesAsJson);
+            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
+
+            // Assert
+            //properties.Should().BeOfType<ComplexProperties>();
+            //((ComplexProperties)properties).PropertyA.Should().Be("1234");
+            //((ComplexProperties)properties).PropertyB.Should().Be("12345");
+            //((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
+            //((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
         }
     }
+
 
     [Application]
     internal class AppA
@@ -166,25 +203,47 @@ namespace DG.Core.Tests.Unit
     [Application]
     internal class AppE
     {
-        [Properties]
-        public ComplexProperties ComplexProperties { get; set; }
+        [Property("PropertyA")]
+        public string RandomNameForProperyA { get; set; }
+
+        [Property("PropertyB")]
+        public string RandomNameForPropertyA { get; set; }
+
+        [Property("IntegerProperty")]
+        public int RandomNameForIntegerProperty { get; set; }
+
+        [Property("RealProperty")]
+        public double RandomNameForRealProperty { get; set; }
+
+        [Property("ComplexProperyA")]
+        public ComplexProperty RandomNameForComplexProperyA { get; set; }
     }
 
-    internal class ComplexProperties
+    internal class ComplexProperty
     {
-        public string PropertyA { get; set; }
+        public string CmpPropertyA { get; set; }
 
-        public string PropertyB { get; set; }
+        public string CmpPropertyB { get; set; }
 
-        public SubProperties SubPropertiesA { get; set; }
+        public SubProperty CmpSubPropertiesA { get; set; }
 
-        public SubProperties SubPropertiesB { get; set; }
+        public SubProperty CmpSubPropertiesB { get; set; }
     }
 
-    internal class SubProperties
+    internal class SubProperty
     {
         public string SampleSubPropertyA { get; set; }
 
         public string SampleSubPropertyB { get; set; }
+    }
+
+    [Application]
+    internal class AppF
+    {
+        [Property("PropertyA")]
+        public string ProperyA { get; set; }
+
+        [Property("")]
+        public string PropertyWithEmptyName { get; set; }
     }
 }
