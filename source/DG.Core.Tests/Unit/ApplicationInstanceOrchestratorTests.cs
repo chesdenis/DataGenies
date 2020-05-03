@@ -141,11 +141,11 @@ namespace DG.Core.Tests.Unit
                 },
             };
             var instanceOrchestrator = new ApplicationInstanceOrchestrator(typeProvider.Object);
-            typeProvider.Setup(x => x.GetInstanceType("TestApp")).Returns(typeof(TestApp));
-            typeProvider.Setup(x => x.GetInstanceType("SecondTestApp")).Returns(typeof(SecondTestApp));
+            typeProvider.Setup(x => x.GetInstanceType("TestApp", "DG.Core.Tests.dll")).Returns(typeof(TestApp));
+            typeProvider.Setup(x => x.GetInstanceType("SecondTestApp", "DG.Core.Tests.dll")).Returns(typeof(SecondTestApp));
 
             // Act
-            var preparedData = instanceOrchestrator.PrepareInstancesDataToCreate(applicationInstances);
+            var preparedData = instanceOrchestrator.PrepareInstancesDataToCreate(applicationInstances, "DG.Core.Tests.dll");
 
             // Assert
             preparedData.Should().Contain(new KeyValuePair<string, Type>(

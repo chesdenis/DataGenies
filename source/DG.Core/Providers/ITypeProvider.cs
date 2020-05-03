@@ -1,12 +1,10 @@
 ﻿namespace DG.Core.Providers
 {
     using System;
-    using System.Collections.Generic;
 
     public interface ITypeProvider
     {
-        public Type GetInstanceType(string typeName);
+        public Type GetInstanceType(string typeName, string assemblyPath);
 
-        public IEnumerable<Type> GetTypes();
     }
 }

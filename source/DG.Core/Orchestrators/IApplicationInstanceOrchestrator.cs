@@ -12,6 +12,6 @@
 
         void CreateInstancesInMemory(IDictionary<string, Type> instancesToCreate);
 
-        IDictionary<string, Type> PrepareInstancesDataToCreate(IEnumerable<ApplicationInstance> appInstances);
+        IDictionary<string, Type> PrepareInstancesDataToCreate(IEnumerable<ApplicationInstance> appInstances, string assemblyPath);
     }
 }
