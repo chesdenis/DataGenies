@@ -41,15 +41,14 @@ namespace DG.Core.Orchestrators
             }
         }
 
-        public object GetProperties(string application, string instanceName)
+        public IEnumerable<PropertyInfo> GetSettingsProperties(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
             return this.inMemoryInstances[uniqueId]
                 .First()
                 .GetType()
                 .GetProperties()
-                .First(f => f.GetCustomAttributes(typeof(PropertiesAttribute)).Any())
-                .GetValue(this.inMemoryInstances[uniqueId].First());
+                .Where(f => f.GetCustomAttributes(typeof(PropertyAttribute)).Any());
         }
 
         public void CollectPossibleApplicationTypes()
