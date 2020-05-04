@@ -32,24 +32,28 @@ namespace DG.Core.Tests.Unit
         }
 
         [Fact]
-        public void ShouldCreateMultipleApplicationInstancesAtSameTime()
+        public void ShouldSupportMultipleApplicationInstancesAtSameTime()
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            
+
             // Act
             inMemoryOrchestrator.Register("AppA", "instanceA");
             inMemoryOrchestrator.Register("AppB", "instanceB");
-            inMemoryOrchestrator.BuildInstance("AppA", "instanceA", string.Empty);
-            inMemoryOrchestrator.BuildInstance("AppB", "instanceB", string.Empty);
-            
+            inMemoryOrchestrator.BuildInstance("AppA", "instanceA", string.Empty, 10);
+            inMemoryOrchestrator.BuildInstance("AppB", "instanceB", string.Empty, 15);
+
             // Assert
-            inMemoryOrchestrator.GetInMemoryInstancesData().Should().HaveCount(2)
-                .And.Subject[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].First().Should()
+            var instancesData = inMemoryOrchestrator.GetInMemoryInstancesData();
+
+            instancesData.Should().HaveCount(2);
+
+            instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].Should().HaveCount(10);
+            instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].First().Should()
                 .BeOfType(typeof(AppA));
-            
-            inMemoryOrchestrator.GetInMemoryInstancesData().Should().HaveCount(2)
-                .And.Subject[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].First().Should()
+
+            instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].Should().HaveCount(15);
+            instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].First().Should()
                 .BeOfType(typeof(AppB));
         }
 
