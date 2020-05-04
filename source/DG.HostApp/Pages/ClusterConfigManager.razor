@@ -58,7 +58,6 @@ else
                     <b>Listening urls (separated by ;):</b> <InputText @bind-Value="host.ListeningUrls" /><br />
                     <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="host.LocalAddress" /><br />
                     <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="host.PublicAddress" /><br />
-                    <b>Hosting model:</b> <InputText @bind-Value="host.HostingModel" />
                 </p>
             }
 
@@ -110,8 +109,7 @@ else
     private string fileToBigStatus = $"That's too big. Max size: {MaxFileSize} bytes.";
     private const string LoadingStatus = "Loading...";
     private string status = DefaultStatus;
-
-    private string uriClusterConfigManager = "https://localhost:5001/api/ClusterConfigManager";
+    
     private bool rawView = false;
 
     protected override async Task OnInitializedAsync()

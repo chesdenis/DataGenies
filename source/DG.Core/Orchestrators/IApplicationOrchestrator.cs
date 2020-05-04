@@ -10,9 +10,13 @@
 
         object GetProperties(string application, string instanceName);
 
-        void Register(string application, Type applicationType, string instanceName);
+        void CollectPossibleApplicationTypes();
 
-        void Register(string application, Type applicationType, string instanceName, string propertiesAsJson);
+        void Register(string application, string instanceName);
+        
+        void UnRegister(string application, string instanceName);
+
+        void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1);
 
         void Start(string application, string instanceName);
 

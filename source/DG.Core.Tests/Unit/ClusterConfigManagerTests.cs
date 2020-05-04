@@ -207,7 +207,6 @@ namespace DG.Core.Tests.Unit
                     ListeningUrls = "http://localhost:5001;https://localhost:5002",
                     LocalAddress = "http://localhost:5001",
                     PublicAddress = "http://some-domaing:5002",
-                    HostingModel = "InMemory",
                 },
                 ClusterDefinition = this.GetSampleClusterDefinition(),
             };
@@ -234,7 +233,6 @@ namespace DG.Core.Tests.Unit
                     ListeningUrls = "http://localhost:5001;https://localhost:5002",
                     LocalAddress = "http://localhost:5001",
                     PublicAddress = "http://some-domaing:5002",
-                    HostingModel = "InMemory",
                 },
                 new Host()
                 {
@@ -242,7 +240,6 @@ namespace DG.Core.Tests.Unit
                     ListeningUrls = "http://localhost:5021;https://localhost:5022",
                     LocalAddress = "http://localhost:5021",
                     PublicAddress = "http://some-domaing:5021",
-                    HostingModel = "InMemory",
                 },
             };
         }

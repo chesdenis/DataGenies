@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text.Json;
+using DG.Core.Model.ClusterConfig;
 
 namespace DG.Core.Extensions
 {
@@ -9,6 +10,11 @@ namespace DG.Core.Extensions
         public static string ConstructUniqueId(string application, string instanceName)
         {
             return $"{application}/{instanceName}";
+        }
+
+        public static string ConstructUniqueId(this ApplicationInstance applicationInstance)
+        {
+            return ConstructUniqueId(applicationInstance.Type, applicationInstance.Name);
         }
 
         public static T ExecuteFunctionWithoutArgs<T>(this object instance, Type attributeType)
@@ -28,6 +34,16 @@ namespace DG.Core.Extensions
             }
 
             return (T)result;
+        }
+
+        public static void ExecuteMethodWithoutArgs(this object instance, Type attributeType)
+        {
+            var methodToExecute = instance
+                .GetType()
+                .GetMethods()
+                .First(f => f.GetCustomAttributes(attributeType, true).Any());
+
+            methodToExecute.Invoke(instance, new object[] { });
         }
     }
 }
