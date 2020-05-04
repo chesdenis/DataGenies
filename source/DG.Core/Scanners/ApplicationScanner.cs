@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Core.Attributes;
+using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Providers;
 
@@ -38,13 +40,15 @@ namespace DG.Core.Scanners
         {
             var assembliesInFolder = this.fileSystemProvider.GetAssembliesLocations(applicationTypeSource.Path);
 
-            return assembliesInFolder.SelectMany(s => this.assemblyTypeProvider.GetTypes(s));
+            return assembliesInFolder.SelectMany(s =>
+                this.assemblyTypeProvider.GetTypes(s)
+                    .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute))));
         }
 
         private IEnumerable<Type> ScanApplicationsInDirectFile(ApplicationTypeSource applicationTypeSource)
         {
             return this.assemblyTypeProvider.GetTypes(applicationTypeSource.Path)
-                .Where(f => f.Name == applicationTypeSource.Name);
+                .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute)));
         }
     }
 }

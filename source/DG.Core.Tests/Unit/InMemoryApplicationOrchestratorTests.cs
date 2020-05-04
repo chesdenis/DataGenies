@@ -189,65 +189,65 @@ namespace DG.Core.Tests.Unit
 
             return inMemoryOrchestrator;
         }
-    }
-
-    [Application]
-    internal class AppA
-    {
-        [StateReport]
-        public StateReport ReportStateSampleFunction()
+        
+        [Application]
+        internal class AppA
         {
-            return new StateReport()
+            [StateReport]
+            public StateReport ReportStateSampleFunction()
             {
-                Status = Status.Finished,
-            };
+                return new StateReport()
+                {
+                    Status = Status.Finished,
+                };
+            }
         }
-    }
 
-    [Application]
-    internal class AppB
-    {
-        [StateReport]
-        public StateReport AnotherStateSampleFunction()
+        [Application]
+        internal class AppB
         {
-            return new StateReport()
+            [StateReport]
+            public StateReport AnotherStateSampleFunction()
             {
-                Status = Status.Finished,
-            };
+                return new StateReport()
+                {
+                    Status = Status.Finished,
+                };
+            }
         }
-    }
 
-    [Application]
-    internal class AppC
-    {
-    }
+        [Application]
+        internal class AppC
+        {
+        }
 
-    internal class AppD
-    {
-    }
+        internal class AppD
+        {
+        }
 
-    [Application]
-    internal class AppE
-    {
-        [Properties]
-        public ComplexProperties ComplexProperties { get; set; }
-    }
+        [Application]
+        internal class AppE
+        {
+            [Properties]
+            public ComplexProperties ComplexProperties { get; set; }
+        }
 
-    internal class ComplexProperties
-    {
-        public string PropertyA { get; set; }
+        internal class ComplexProperties
+        {
+            public string PropertyA { get; set; }
 
-        public string PropertyB { get; set; }
+            public string PropertyB { get; set; }
 
-        public SubProperties SubPropertiesA { get; set; }
+            public SubProperties SubPropertiesA { get; set; }
 
-        public SubProperties SubPropertiesB { get; set; }
-    }
+            public SubProperties SubPropertiesB { get; set; }
+        }
 
-    internal class SubProperties
-    {
-        public string SampleSubPropertyA { get; set; }
+        internal class SubProperties
+        {
+            public string SampleSubPropertyA { get; set; }
 
-        public string SampleSubPropertyB { get; set; }
+            public string SampleSubPropertyB { get; set; }
+        }
     }
 }
