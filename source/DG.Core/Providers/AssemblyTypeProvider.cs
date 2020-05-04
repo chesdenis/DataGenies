@@ -1,4 +1,6 @@
-﻿namespace DG.Core.Providers
+﻿using System.IO;
+
+namespace DG.Core.Providers
 {
     using System;
     using System.Collections.Generic;
@@ -14,8 +16,20 @@
 
         public IEnumerable<Type> GetTypes(string assemblyPath)
         {
-            var assembly = Assembly.LoadFrom(assemblyPath);
-            return assembly.GetTypes();
+            try
+            {
+                if (File.Exists(assemblyPath))
+                {
+                    var assembly = Assembly.LoadFrom(assemblyPath);
+                    return assembly.GetTypes();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            
+            return new List<Type>();
         }
     }
 }
