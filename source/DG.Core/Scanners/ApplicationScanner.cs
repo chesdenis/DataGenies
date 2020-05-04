@@ -29,10 +29,10 @@ namespace DG.Core.Scanners
             var typesSources = this.clusterConfigProvider.GetApplicationTypesSources();
 
             return typesSources
-                .Where(w => w.PathType == PathType.Folder)
+                .Where(w => w.PathType == "Folder")
                 .SelectMany(this.ScanApplicationsInFolder)
                 .Union(typesSources
-                    .Where(w => w.PathType == PathType.DirectFile)
+                    .Where(w => w.PathType == "DirectFile")
                     .SelectMany(this.ScanApplicationsInDirectFile));
         }
 

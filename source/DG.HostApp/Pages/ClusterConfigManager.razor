@@ -1,6 +1,7 @@
 ﻿@page "/clusterconfigeditor"
 @using System.Text.Json
 @using DG.Core.Model.ClusterConfig
+@using DG.Core.Model.Dto
 @using DG.Core.Services
 @using DG.HostApp.Extensions
 @using Microsoft.Extensions.Options
@@ -43,7 +44,16 @@ else
             <b>Current Host:</b>
             <b>Name:</b> @clusterConfig.CurrentHost.Name
             <b>HashMd5:</b> @clusterConfig.ClusterDefinition.HashMD5
-            
+            <h3>Available applications:</h3>
+            @foreach (var application in availableApplications)
+                        {
+                            <p>
+                                <b>Name:</b>@application.Name
+                                <b>FullName:</b>@application.FullName
+                                <b>Version:</b>@application.Version
+                                <b>AssemblyFullName:</b>@application.AssemblyFullName
+                            </p>
+                        }
         </p>
         <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
             <h3>Current Host:</h3>
@@ -65,6 +75,16 @@ else
             <br />
             <br />
 
+            <h3>Application types sources:</h3>
+            @foreach (var applicationType in clusterConfig.ClusterDefinition.ApplicationTypesSources)
+            {
+                <p>
+                    <b>Name:</b> <InputText @bind-Value="applicationType.Name" /><br />
+                    <b>Path:</b> <InputText @bind-Value="applicationType.Path" /><br />
+                    <b>Path Type:</b> <InputText @bind-Value="applicationType.PathType" /><br />
+                </p>
+            }
+            
             <h3>Application instances:</h3>
             @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
             {
@@ -102,6 +122,7 @@ else
 
     private string newPlacement;
     private string rawConfigAsJson = "{}";
+    private List<TypeDto> availableApplications = new List<TypeDto>();
 
     private bool fileUploadView = false;
     private const int MaxFileSize = 1 * 1024 * 1024; // 1MB
@@ -116,6 +137,8 @@ else
     {
         await ReadConfig();
         SetFormView();
+
+        await ScanAvailableApplications();
     }
 
     async Task ViewFile(IFileListEntry[] files)
@@ -162,6 +185,12 @@ else
     private async Task ReadConfig()
     {
         rawConfigAsJson = await httpService.Get(currentHost.Value.GetConfig());
+    }
+
+    private async Task ScanAvailableApplications()
+    {
+        var availableApplicationsAsJson = await httpService.Get(currentHost.Value.Scan());
+        this.availableApplications = JsonSerializer.Deserialize<List<TypeDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
     }
 
     private void SetRawView()

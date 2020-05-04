@@ -103,13 +103,13 @@ namespace DG.Core.Tests.Unit
                     {
                         Name = "SourceA",
                         Path = "pathWithMultipleAssemblies",
-                        PathType = PathType.Folder,
+                        PathType = "Folder",
                     },
                     new ApplicationTypeSource()
                     {
                         Name = "SourceB",
                         Path = "pathToDirectAssemblyC",
-                        PathType = PathType.DirectFile,
+                        PathType = "DirectFile",
                     },
                 });
 

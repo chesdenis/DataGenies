@@ -6,7 +6,7 @@ namespace DG.Core.Model.ClusterConfig
     {
         public string Name { get; set; }
 
-        public PathType PathType { get; set; }
+        public string PathType { get; set; }
 
         public string Path { get; set; }
     }

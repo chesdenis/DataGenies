@@ -11,7 +11,6 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
       <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
       <PackageReference Include="BlazorInputFile" Version="0.1.0-preview" />
       <PackageReference Include="BlazorInputFile" Version="0.1.0-preview" />
@@ -19,6 +18,14 @@
 
     <ItemGroup>
       <ProjectReference Include="..\DG.Core\DG.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="dg-cluster.config.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
