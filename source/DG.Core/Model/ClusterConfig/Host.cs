@@ -7,8 +7,6 @@ namespace DG.Core.Model.ClusterConfig
     {
         public string Name { get; set; }
         
-        public string HostingModel { get; set; }
-        
         public string ListeningUrls { get; set; }
         
         public string LocalAddress { get; set; }
