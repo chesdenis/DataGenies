@@ -12,5 +12,7 @@ namespace DG.Core.Model.ClusterConfig
         public Hosts Hosts { get; set; }
 
         public ApplicationInstances ApplicationInstances { get; set; }
+
+        public ApplicationTypesSources ApplicationTypesSources { get; set; }
     }
 }

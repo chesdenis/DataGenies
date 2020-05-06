@@ -1,8 +1,11 @@
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
+using DG.Core.Providers;
 using DG.Core.Repositories;
+using DG.Core.Scanners;
 using DG.Core.Services;
+using DG.HostApp.Providers;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -34,14 +37,23 @@ namespace DG.HostApp
             services.AddHostedService<ServiceWatcher>();
             services.AddControllers();
 
-            services.AddSingleton<IHttpService, HttpService>();
-            services.AddSingleton<ISystemClock, SystemClock>();
+            services.AddTransient<IHttpService, HttpService>();
+            services.AddTransient<ISystemClock, SystemClock>();
             
-            services.AddSingleton<IClusterConfigRepository, ClusterJsonConfigRepository>();
+            services.AddTransient<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
             services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            services.AddTransient<IApplicationScanner, ApplicationScanner>();
+            
+            services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
+            services.AddTransient<IFileSystemProvider, FileSystemProvider>();
+            services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
             
             services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
+            services.Configure<DG.Core.Model.ClusterConfig.ApplicationTypesSources>(
+                this.Configuration.GetSection("ClusterDefinition:ApplicationTypesSources"));
+            services.Configure<DG.Core.Model.ClusterConfig.ApplicationInstances>(
+                this.Configuration.GetSection("ClusterDefinition:ApplicationInstances"));
 
             services.AddSingleton(this.Configuration);
         }
