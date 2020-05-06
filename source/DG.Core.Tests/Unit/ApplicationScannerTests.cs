@@ -62,7 +62,7 @@ namespace DG.Core.Tests.Unit
         {
             var clusterConfigProvider = new Mock<IClusterConfigProvider>();
             var fileSystemProvider = new Mock<IFileSystemProvider>();
-            var assemblyProvider = new Mock<IAssemblyTypeProvider>();
+            var assemblyProvider = new Mock<IAssemblyTypesProvider>();
 
             fileSystemProvider.Setup(x => x.GetAssembliesLocations("pathWithMultipleAssemblies")).Returns(new[]
             {

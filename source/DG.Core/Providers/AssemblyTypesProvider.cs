@@ -6,7 +6,7 @@ namespace DG.Core.Providers
     using System.Collections.Generic;
     using System.Reflection;
 
-    public class AssemblyTypeProvider : IAssemblyTypeProvider
+    public class AssemblyTypesProvider : IAssemblyTypesProvider
     {
         public Type GetInstanceType(string typeName, string assemblyPath)
         {

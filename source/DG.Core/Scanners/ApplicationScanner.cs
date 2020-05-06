@@ -12,16 +12,16 @@ namespace DG.Core.Scanners
     {
         private readonly IClusterConfigProvider clusterConfigProvider;
         private readonly IFileSystemProvider fileSystemProvider;
-        private readonly IAssemblyTypeProvider assemblyTypeProvider;
+        private readonly IAssemblyTypesProvider _assemblyTypesProvider;
 
         public ApplicationScanner(
             IClusterConfigProvider clusterConfigProvider, 
             IFileSystemProvider fileSystemProvider, 
-            IAssemblyTypeProvider assemblyTypeProvider)
+            IAssemblyTypesProvider assemblyTypesProvider)
         {
             this.clusterConfigProvider = clusterConfigProvider;
             this.fileSystemProvider = fileSystemProvider;
-            this.assemblyTypeProvider = assemblyTypeProvider;
+            this._assemblyTypesProvider = assemblyTypesProvider;
         }
         
         public IEnumerable<Type> Scan()
@@ -41,13 +41,13 @@ namespace DG.Core.Scanners
             var assembliesInFolder = this.fileSystemProvider.GetAssembliesLocations(applicationTypeSource.Path);
 
             return assembliesInFolder.SelectMany(s =>
-                this.assemblyTypeProvider.GetTypes(s)
+                this._assemblyTypesProvider.GetTypes(s)
                     .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute))));
         }
 
         private IEnumerable<Type> ScanApplicationsInDirectFile(ApplicationTypeSource applicationTypeSource)
         {
-            return this.assemblyTypeProvider.GetTypes(applicationTypeSource.Path)
+            return this._assemblyTypesProvider.GetTypes(applicationTypeSource.Path)
                 .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute)));
         }
     }

@@ -47,7 +47,7 @@ namespace DG.HostApp
             
             services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
             services.AddTransient<IFileSystemProvider, FileSystemProvider>();
-            services.AddTransient<IAssemblyTypeProvider, AssemblyTypeProvider>();
+            services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
             
             services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
             services.Configure<DG.Core.Model.ClusterConfig.ApplicationTypesSources>(
