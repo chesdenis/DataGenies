@@ -14,7 +14,7 @@
         void CollectPossibleApplicationTypes();
 
         void Register(string application, string instanceName);
-        
+
         void UnRegister(string application, string instanceName);
 
         void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1);

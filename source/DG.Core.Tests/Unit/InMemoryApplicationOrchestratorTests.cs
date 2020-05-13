@@ -178,7 +178,6 @@
                 .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
                 .Should().NotBeNull();
 
-
             properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
                 .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
                 .Should().NotBeNull();
