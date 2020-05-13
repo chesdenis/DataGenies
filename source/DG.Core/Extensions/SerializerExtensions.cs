@@ -19,12 +19,12 @@ namespace DG.Core.Extensions
 
         public static JToken GetJTokenByPath(this JObject jObject, string pathToJObject)
         {
-            
+
             var pathToSectionDelimiter = ':';
             var pathElements = pathToJObject.Split(pathToSectionDelimiter);
             JToken jToken = jObject[pathElements[0]];
             for (int i = 1; i < pathElements.Length; i++)
-            {              
+            {
                 {
                     if (jToken.ToString().StartsWith("["))
                     {

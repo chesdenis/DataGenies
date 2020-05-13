@@ -43,12 +43,12 @@
                 .GetProperties()
                 .Where(f => f.GetCustomAttributes(typeof(PropertyAttribute)).Any());
 
-            dynamic settingsData = JsonConvert.SerializeObject(settingsValueAsJson);
+            var settingsJObject = JObject.Parse(settingsValueAsJson);
 
             foreach (var propertyInfo in propertiesToFill)
             {
                 var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute)).First() as PropertyAttribute;
-                propertyInfo.SetValue(instance, settingsData[propertyAtribute.Name]);
+                propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).Value<string>());
             }
         }
     }

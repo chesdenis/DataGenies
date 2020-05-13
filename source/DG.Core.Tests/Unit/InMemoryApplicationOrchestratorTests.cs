@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Core.Attributes;
-using DG.Core.Extensions;
-using DG.Core.Model.Enums;
-using DG.Core.Model.Output;
-using DG.Core.Orchestrators;
-using DG.Core.Scanners;
-using FluentAssertions;
-using Moq;
-using Xunit;
+﻿namespace DG.Core.Tests.Unit
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using DG.Core.Attributes;
+    using DG.Core.Extensions;
+    using DG.Core.Model.Enums;
+    using DG.Core.Model.Output;
+    using DG.Core.Orchestrators;
+    using DG.Core.Scanners;
+    using FluentAssertions;
+    using Moq;
+    using Xunit;
 
     public class InMemoryApplicationOrchestratorTests
     {
@@ -20,11 +23,11 @@ using Xunit;
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            
+
             // Assert
             Assert.Throws<ArgumentException>(() => inMemoryOrchestrator.Register(applicationName, instanceName));
         }
@@ -62,7 +65,7 @@ using Xunit;
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-        
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
@@ -72,7 +75,7 @@ using Xunit;
                 .And.Subject[ApplicationExtensions.ConstructUniqueId(applicationName, instanceName)].First().Should()
                 .BeOfType(expectedType);
         }
-        
+
         [Theory]
         [InlineData("AppA", "instanceNameWith//DoubleBackslashes")]
         [InlineData("AppA", "instanceNameWith/Backslash")]
@@ -82,7 +85,7 @@ using Xunit;
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
@@ -100,12 +103,12 @@ using Xunit;
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-        
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
             var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
-        
+
             // Assert
             reports.Should().HaveCount(1);
             reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
@@ -144,58 +147,17 @@ using Xunit;
             // Assert
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
-        
+
         [Fact]
         public void ShouldSetApplicationPropertiesIfNeeded()
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            var propertiesAsJson = @"
-{
-""PropertyA"":""FirstString"",
-""PropertyB"":""SecondString"",
-""IntegerProperty"":42,
-""RealProperty"":3.1415926,
-""ComplexProperyA"" : {
-    ""CmpPropertyA"": ""1234"",
-    ""CmpPropertyB"": ""12345"",
-    ""CmpsubPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
-    ""CmpsubPropertiesB"": null
-    }
-}";
-
-            var application = "testApp";
-            var instanceName = "instanceA";
-
-            // Act
-            inMemoryOrchestrator.Register(application, typeof(AppE), instanceName, propertiesAsJson);
-            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
-
-            // Assert
-            properties.Should().HaveCount(5);
-            //((ComplexProperties)properties).PropertyA.Should().Be("1234");
-            //((ComplexProperties)properties).PropertyB.Should().Be("12345");
-            //((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
-            //((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
-        }
-
-        [Fact]
-        public void ShouldThrowExceptionIfApplicationPropetyHasEmptyName()
-        {
-            // Arrange
-            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator();
-            var propertiesAsJson = @"
-{
-""PropertyA"":""FirstString"",
-""PropertyB"":""SecondString"",
-""IntegerProperty"":42,
-""RealProperty"":3.1415926,
-""ComplexProperyA"" : {
-    ""CmpPropertyA"": ""1234"",
-    ""CmpPropertyB"": ""12345"",
-    ""CmpsubPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
-    ""CmpsubPropertiesB"": null
-    }
+            var propertiesAsJson = @"{
+    ""PropertyA"": ""1234"",
+    ""PropertyB"": ""12345"",
+    ""subPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
+    ""subPropertiesB"": null
 }";
 
             var application = "AppE";
@@ -204,15 +166,22 @@ using Xunit;
             // Act
             inMemoryOrchestrator.Register(application, instanceName);
             inMemoryOrchestrator.BuildInstance(application, instanceName, propertiesAsJson);
-            
-            var properties = inMemoryOrchestrator.GetProperties(application, instanceName);
+
+            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
 
             // Assert
-            //properties.Should().BeOfType<ComplexProperties>();
-            //((ComplexProperties)properties).PropertyA.Should().Be("1234");
-            //((ComplexProperties)properties).PropertyB.Should().Be("12345");
-            //((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
-            //((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyA"))
+                .Should().NotBeNull();
+
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
+                .Should().NotBeNull();
+
+
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
+                .Should().NotBeNull();
         }
 
         private InMemoryApplicationOrchestrator BuildApplicationOrchestrator()
@@ -231,7 +200,7 @@ using Xunit;
 
             return inMemoryOrchestrator;
         }
-        
+
         [Application]
         internal class AppA
         {
@@ -270,26 +239,14 @@ using Xunit;
         [Application]
         internal class AppE
         {
-            [Properties]
-            public ComplexProperties ComplexProperties { get; set; }
-        }
+            [Property("PropertyA")]
+            public string TargetPropertyA { get; set; }
 
-        internal class ComplexProperties
-        {
-            public string PropertyA { get; set; }
+            [Property("PropertyB")]
+            public string TargetPropertyB { get; set; }
 
-            public string PropertyB { get; set; }
-
-            public SubProperties SubPropertiesA { get; set; }
-
-            public SubProperties SubPropertiesB { get; set; }
-        }
-
-        internal class SubProperties
-        {
+            [Property("subPropertiesA:SampleSubPropertyA")]
             public string SampleSubPropertyA { get; set; }
-
-            public string SampleSubPropertyB { get; set; }
         }
     }
 }
