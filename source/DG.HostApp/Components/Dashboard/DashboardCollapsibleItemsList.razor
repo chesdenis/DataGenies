@@ -1,0 +1,30 @@
+﻿<div class="card">
+  <div class="card-header">
+    <h2 class="mb-0">
+      <button class="btn btn-link btn-block text-left" 
+              type="button"
+              @onclick="@Toggle">
+        @Header
+      </button>
+    </h2>
+  </div>
+
+  <div id="collapseOne"
+       class="collapse @CollapsedMark">
+    <div class="card-body">
+      Here this will be items list.
+    </div>
+  </div>
+</div>
+@code
+{
+  private string CollapsedMark => Collapsed ? string.Empty : "show";
+
+  private void Toggle() => this.Collapsed = !this.Collapsed;
+
+  [Parameter]
+  public string Header { get; set; }
+
+  [Parameter]
+  public bool Collapsed { get; set; }
+}
