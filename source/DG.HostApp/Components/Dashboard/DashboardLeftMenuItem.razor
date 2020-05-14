@@ -1,0 +1,13 @@
+﻿<a href="#" class="list-group-item list-group-item-action @ActiveMark">
+    @Name
+</a>
+@code
+{
+    private string ActiveMark => Active ? "active" : string.Empty;
+    
+    [Parameter]
+    public bool Active { get; set; }
+    
+    [Parameter]
+    public string Name { get; set; }
+}

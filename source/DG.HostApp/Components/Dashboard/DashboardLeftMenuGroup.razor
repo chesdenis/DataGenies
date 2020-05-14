@@ -12,7 +12,7 @@
   <div id="collapseOne"
        class="collapse @CollapsedMark">
     <div class="card-body">
-      Here this will be items list.
+      @ChildContent
     </div>
   </div>
 </div>
@@ -27,4 +27,7 @@
 
   [Parameter]
   public bool Collapsed { get; set; }
+  
+  [Parameter]
+  public RenderFragment ChildContent { get; set; }
 }
