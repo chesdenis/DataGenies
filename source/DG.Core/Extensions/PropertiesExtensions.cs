@@ -48,7 +48,7 @@
             foreach (var propertyInfo in propertiesToFill)
             {
                 var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute)).First() as PropertyAttribute;
-                propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).Value<string>());
+                propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).ToObject(propertyInfo.PropertyType));
             }
         }
     }
