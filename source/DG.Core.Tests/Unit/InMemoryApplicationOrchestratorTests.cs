@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using DG.Core.Attributes;
-using DG.Core.Extensions;
-using DG.Core.Model.Enums;
-using DG.Core.Model.Output;
-using DG.Core.Orchestrators;
-using DG.Core.Scanners;
-using FluentAssertions;
-using Moq;
-using Xunit;
-
-namespace DG.Core.Tests.Unit
+﻿namespace DG.Core.Tests.Unit
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using DG.Core.Attributes;
+    using DG.Core.Extensions;
+    using DG.Core.Model.Enums;
+    using DG.Core.Model.Output;
+    using DG.Core.Orchestrators;
+    using DG.Core.Scanners;
+    using FluentAssertions;
+    using Moq;
+    using Xunit;
+
     public class InMemoryApplicationOrchestratorTests
     {
         [Theory]
@@ -22,11 +23,11 @@ namespace DG.Core.Tests.Unit
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            
+
             // Assert
             Assert.Throws<ArgumentException>(() => inMemoryOrchestrator.Register(applicationName, instanceName));
         }
@@ -64,7 +65,7 @@ namespace DG.Core.Tests.Unit
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-        
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
@@ -74,7 +75,7 @@ namespace DG.Core.Tests.Unit
                 .And.Subject[ApplicationExtensions.ConstructUniqueId(applicationName, instanceName)].First().Should()
                 .BeOfType(expectedType);
         }
-        
+
         [Theory]
         [InlineData("AppA", "instanceNameWith//DoubleBackslashes")]
         [InlineData("AppA", "instanceNameWith/Backslash")]
@@ -84,7 +85,7 @@ namespace DG.Core.Tests.Unit
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
@@ -102,12 +103,12 @@ namespace DG.Core.Tests.Unit
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-        
+
             // Act
             inMemoryOrchestrator.Register(applicationName, instanceName);
             inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
             var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
-        
+
             // Assert
             reports.Should().HaveCount(1);
             reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
@@ -146,14 +147,13 @@ namespace DG.Core.Tests.Unit
             // Assert
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
-        
+
         [Fact]
         public void ShouldSetApplicationPropertiesIfNeeded()
         {
             // Arrange
             var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            var propertiesAsJson = @"
-{
+            var propertiesAsJson = @"{
     ""PropertyA"": ""1234"",
     ""PropertyB"": ""12345"",
     ""subPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
@@ -166,15 +166,21 @@ namespace DG.Core.Tests.Unit
             // Act
             inMemoryOrchestrator.Register(application, instanceName);
             inMemoryOrchestrator.BuildInstance(application, instanceName, propertiesAsJson);
-            
-            var properties = inMemoryOrchestrator.GetProperties(application, instanceName);
+
+            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
 
             // Assert
-            properties.Should().BeOfType<ComplexProperties>();
-            ((ComplexProperties)properties).PropertyA.Should().Be("1234");
-            ((ComplexProperties)properties).PropertyB.Should().Be("12345");
-            ((ComplexProperties)properties).SubPropertiesA.Should().NotBeNull();
-            ((ComplexProperties)properties).SubPropertiesB.Should().BeNull();
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyA"))
+                .Should().NotBeNull();
+
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
+                .Should().NotBeNull();
+
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
+                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
+                .Should().NotBeNull();
         }
 
         private InMemoryApplicationOrchestrator BuildApplicationOrchestrator()
@@ -193,7 +199,7 @@ namespace DG.Core.Tests.Unit
 
             return inMemoryOrchestrator;
         }
-        
+
         [Application]
         internal class AppA
         {
@@ -232,26 +238,14 @@ namespace DG.Core.Tests.Unit
         [Application]
         internal class AppE
         {
-            [Properties]
-            public ComplexProperties ComplexProperties { get; set; }
-        }
+            [Property("PropertyA")]
+            public string TargetPropertyA { get; set; }
 
-        internal class ComplexProperties
-        {
-            public string PropertyA { get; set; }
+            [Property("PropertyB")]
+            public string TargetPropertyB { get; set; }
 
-            public string PropertyB { get; set; }
-
-            public SubProperties SubPropertiesA { get; set; }
-
-            public SubProperties SubPropertiesB { get; set; }
-        }
-
-        internal class SubProperties
-        {
+            [Property("subPropertiesA:SampleSubPropertyA")]
             public string SampleSubPropertyA { get; set; }
-
-            public string SampleSubPropertyB { get; set; }
         }
     }
 }

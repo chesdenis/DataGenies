@@ -2,7 +2,10 @@
 {
     using System;
     using System.Linq;
+    using System.Reflection;
+    using DG.Core.Attributes;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public static class PropertiesExtensions
     {
@@ -31,6 +34,22 @@
         {
             return type.GetProperties()
                 .Any(x => x.GetCustomAttributes(attributeType, true).Any());
+        }
+
+        public static void SetApplicationSettingsWithPropertyAttribute(this object instance, string settingsValueAsJson)
+        {
+            var propertiesToFill = instance
+                .GetType()
+                .GetProperties()
+                .Where(f => f.GetCustomAttributes(typeof(PropertyAttribute)).Any());
+
+            var settingsJObject = JObject.Parse(settingsValueAsJson);
+
+            foreach (var propertyInfo in propertiesToFill)
+            {
+                var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute)).First() as PropertyAttribute;
+                propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).ToObject(propertyInfo.PropertyType));
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using DG.Core.Scanners;
-
-namespace DG.Core.Orchestrators
+﻿namespace DG.Core.Orchestrators
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +7,7 @@ namespace DG.Core.Orchestrators
     using DG.Core.Attributes;
     using DG.Core.Extensions;
     using DG.Core.Model.Output;
+    using DG.Core.Scanners;
 
     public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
     {
@@ -41,21 +40,20 @@ namespace DG.Core.Orchestrators
             }
         }
 
-        public object GetProperties(string application, string instanceName)
+        public IEnumerable<PropertyInfo> GetSettingsProperties(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
             return this.inMemoryInstances[uniqueId]
                 .First()
                 .GetType()
                 .GetProperties()
-                .First(f => f.GetCustomAttributes(typeof(PropertiesAttribute)).Any())
-                .GetValue(this.inMemoryInstances[uniqueId].First());
+                .Where(f => f.GetCustomAttributes(typeof(PropertyAttribute)).Any());
         }
 
         public void CollectPossibleApplicationTypes()
         {
             this.possibleApplicationTypes.Clear();
-            
+
             this.possibleApplicationTypes.AddRange(this.applicationScanner.Scan());
         }
 
@@ -67,21 +65,21 @@ namespace DG.Core.Orchestrators
             {
                 throw new ArgumentException("Already registered", nameof(uniqueId));
             }
-    
+
             this.inMemoryInstances.Add(uniqueId, new List<object>());
         }
 
         public void UnRegister(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            
+
             if (!this.inMemoryInstances.ContainsKey(uniqueId))
             {
                 throw new ArgumentException("Can't unregister this, because it does not register", nameof(uniqueId));
             }
 
             this.Stop(application, instanceName);
-            
+
             this.inMemoryInstances[uniqueId].Clear();
             this.inMemoryInstances.Remove(uniqueId);
         }
@@ -90,14 +88,14 @@ namespace DG.Core.Orchestrators
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
             var instanceType = this.possibleApplicationTypes.First(f => f.Name == application);
-            
+
             for (int i = 0; i < count; i++)
             {
                 var instance = Activator.CreateInstance(instanceType);
 
-                if (instanceType.HasPropertyAttribute(typeof(PropertiesAttribute)))
+                if (instanceType.HasPropertyAttribute(typeof(PropertyAttribute)))
                 {
-                    instance.SetValueToPropertyWithAttribute(typeof(PropertiesAttribute), propertiesAsJson);
+                    instance.SetApplicationSettingsWithPropertyAttribute(propertiesAsJson);
                 }
 
                 this.inMemoryInstances[uniqueId].Add(instance);

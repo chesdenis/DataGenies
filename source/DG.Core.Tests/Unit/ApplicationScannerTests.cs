@@ -157,7 +157,7 @@ namespace DG.Core.Tests.Unit
         [Application]
         internal class AppE
         {
-            [Properties]
+            [Property("Test")]
             public ComplexProperties ComplexProperties { get; set; }
         }
 
