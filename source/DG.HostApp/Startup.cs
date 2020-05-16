@@ -43,7 +43,7 @@ namespace DG.HostApp
             services.AddTransient<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
             services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
-            services.AddTransient<IApplicationScanner, ApplicationScanner>();
+            services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
             
             services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
             services.AddTransient<IFileSystemProvider, FileSystemProvider>();

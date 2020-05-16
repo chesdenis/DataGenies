@@ -10,18 +10,18 @@ namespace DG.HostApp.Controllers
     [ApiController]
     public class ApplicationScannerController : ControllerBase
     {
-        private readonly IApplicationScanner applicationScanner;
+        private readonly IApplicationTypesScanner _applicationTypesScanner;
 
-        public ApplicationScannerController(IApplicationScanner applicationScanner)
+        public ApplicationScannerController(IApplicationTypesScanner applicationTypesScanner)
         {
-            this.applicationScanner = applicationScanner;
+            this._applicationTypesScanner = applicationTypesScanner;
         }
 
         [HttpGet]
         [Route("Scan")]
         public ActionResult<string> Scan()
         {
-            var data = this.applicationScanner.Scan()
+            var data = this._applicationTypesScanner.Scan()
                 .Select(s => new TypeDto()
                 {
                     Name = s.Name,

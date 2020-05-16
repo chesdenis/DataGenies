@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DG.Core.Scanners
 {
-    public interface IApplicationScanner
+    public interface IApplicationTypesScanner
     {
         IEnumerable<Type> Scan();
     }

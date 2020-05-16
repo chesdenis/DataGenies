@@ -179,7 +179,7 @@ namespace DG.Core.Tests.Unit
 
         private InMemoryApplicationOrchestrator BuildApplicationOrchestrator()
         {
-            var applicationScannerMock = new Mock<IApplicationScanner>();
+            var applicationScannerMock = new Mock<IApplicationTypesScanner>();
             applicationScannerMock.Setup(x => x.Scan()).Returns(new List<Type>
             {
                 typeof(AppA),

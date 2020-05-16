@@ -8,13 +8,13 @@ using DG.Core.Providers;
 
 namespace DG.Core.Scanners
 {
-    public class ApplicationScanner : IApplicationScanner
+    public class ApplicationTypesScanner : IApplicationTypesScanner
     {
         private readonly IClusterConfigProvider clusterConfigProvider;
         private readonly IFileSystemProvider fileSystemProvider;
         private readonly IAssemblyTypesProvider _assemblyTypesProvider;
 
-        public ApplicationScanner(
+        public ApplicationTypesScanner(
             IClusterConfigProvider clusterConfigProvider, 
             IFileSystemProvider fileSystemProvider, 
             IAssemblyTypesProvider assemblyTypesProvider)

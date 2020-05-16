@@ -12,14 +12,14 @@ namespace DG.Core.Orchestrators
 
     public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
     {
-        private readonly IApplicationScanner applicationScanner;
+        private readonly IApplicationTypesScanner _applicationTypesScanner;
         private readonly Dictionary<string, List<object>> inMemoryInstances = new Dictionary<string, List<object>>();
 
         private readonly List<Type> possibleApplicationTypes = new List<Type>();
 
-        public InMemoryApplicationOrchestrator(IApplicationScanner applicationScanner)
+        public InMemoryApplicationOrchestrator(IApplicationTypesScanner applicationTypesScanner)
         {
-            this.applicationScanner = applicationScanner;
+            this._applicationTypesScanner = applicationTypesScanner;
         }
 
         public IDictionary<string, List<object>> GetInMemoryInstancesData() => this.inMemoryInstances;
@@ -56,7 +56,7 @@ namespace DG.Core.Orchestrators
         {
             this.possibleApplicationTypes.Clear();
             
-            this.possibleApplicationTypes.AddRange(this.applicationScanner.Scan());
+            this.possibleApplicationTypes.AddRange(this._applicationTypesScanner.Scan());
         }
 
         public void Register(string application, string instanceName)

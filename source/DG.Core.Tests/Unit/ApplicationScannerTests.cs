@@ -58,7 +58,7 @@ namespace DG.Core.Tests.Unit
             scanResult.Should().HaveCount(0);
         }
 
-        private ApplicationScanner BuildApplicationScanner(ApplicationTypesSources customSources = null)
+        private ApplicationTypesScanner BuildApplicationScanner(ApplicationTypesSources customSources = null)
         {
             var clusterConfigProvider = new Mock<IClusterConfigProvider>();
             var fileSystemProvider = new Mock<IFileSystemProvider>();
@@ -113,7 +113,7 @@ namespace DG.Core.Tests.Unit
                     },
                 });
 
-            return new ApplicationScanner(
+            return new ApplicationTypesScanner(
                 clusterConfigProvider.Object,
                 fileSystemProvider.Object,
                 assemblyProvider.Object);
