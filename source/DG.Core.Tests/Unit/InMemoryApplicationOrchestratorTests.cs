@@ -170,16 +170,16 @@
             var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
 
             // Assert
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyA"))
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertiesAttribute), true)
+                .Cast<PropertiesAttribute>().FirstOrDefault(a => a.Name == "PropertyA"))
                 .Should().NotBeNull();
 
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertiesAttribute), true)
+                .Cast<PropertiesAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
                 .Should().NotBeNull();
 
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
+            properties.Select(p => p.GetCustomAttributes(typeof(PropertiesAttribute), true)
+                .Cast<PropertiesAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
                 .Should().NotBeNull();
         }
 
@@ -238,13 +238,13 @@
         [Application]
         internal class AppE
         {
-            [Property("PropertyA")]
+            [Properties("PropertyA")]
             public string TargetPropertyA { get; set; }
 
-            [Property("PropertyB")]
+            [Properties("PropertyB")]
             public string TargetPropertyB { get; set; }
 
-            [Property("subPropertiesA:SampleSubPropertyA")]
+            [Properties("subPropertiesA:SampleSubPropertyA")]
             public string SampleSubPropertyA { get; set; }
         }
     }

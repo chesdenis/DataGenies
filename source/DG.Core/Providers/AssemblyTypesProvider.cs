@@ -31,5 +31,10 @@ namespace DG.Core.Providers
             
             return new List<Type>();
         }
+
+        public IEnumerable<Type> GetEntryAssemblyTypes()
+        {
+            return Assembly.GetEntryAssembly()?.GetTypes();
+        }
     }
 }

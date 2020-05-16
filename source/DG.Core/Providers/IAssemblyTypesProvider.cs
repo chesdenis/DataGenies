@@ -8,5 +8,7 @@
         Type GetInstanceType(string typeName, string assemblyPath);
         
         IEnumerable<Type> GetTypes(string assemblyPath);
+        
+        IEnumerable<Type> GetEntryAssemblyTypes();
     }
 }

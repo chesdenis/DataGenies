@@ -41,6 +41,11 @@ namespace DG.Core.Orchestrators
             }
         }
 
+        public IEnumerable<PropertyInfo> GetSettingsProperties(string application, string instanceName)
+        {
+            throw new NotImplementedException();
+        }
+
         public object GetProperties(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);

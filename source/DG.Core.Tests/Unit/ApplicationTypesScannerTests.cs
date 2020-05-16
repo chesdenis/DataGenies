@@ -13,7 +13,7 @@ using Xunit;
 
 namespace DG.Core.Tests.Unit
 {
-    public class ApplicationScannerTests
+    public class ApplicationTypesScannerTests
     {
         [Fact]
         public void ShouldScanApplicationsWithApplicationAttributeOnly()
@@ -157,7 +157,7 @@ namespace DG.Core.Tests.Unit
         [Application]
         internal class AppE
         {
-            [Property("Test")]
+            [Properties("Test")]
             public ComplexProperties ComplexProperties { get; set; }
         }
 

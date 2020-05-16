@@ -41,13 +41,13 @@
             var propertiesToFill = instance
                 .GetType()
                 .GetProperties()
-                .Where(f => f.GetCustomAttributes(typeof(PropertyAttribute)).Any());
+                .Where(f => f.GetCustomAttributes(typeof(PropertiesAttribute)).Any());
 
             var settingsJObject = JObject.Parse(settingsValueAsJson);
 
             foreach (var propertyInfo in propertiesToFill)
             {
-                var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertyAttribute)).First() as PropertyAttribute;
+                var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertiesAttribute)).First() as PropertiesAttribute;
                 propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).ToObject(propertyInfo.PropertyType));
             }
         }
