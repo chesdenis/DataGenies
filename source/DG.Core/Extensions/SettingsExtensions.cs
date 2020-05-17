@@ -21,6 +21,8 @@ namespace DG.Core.Extensions
             var settings = JsonSerializer.Deserialize(settingsAsJson.GetRawText(), propertyToFill.PropertyType);
             
             propertyToFill.SetValue(instance, settings);
+
+            WriteSharedSettings(instance, propertyValueAsJson);
         }
 
         public static void WriteSharedSettings(this object instance, string propertyValueAsJson)
@@ -72,21 +74,5 @@ namespace DG.Core.Extensions
             return type.GetProperties()
                 .Any(x => x.GetCustomAttributes(attributeType, true).Any());
         }
-
-        // public static void SetApplicationSettingsWithPropertyAttribute(this object instance, string settingsValueAsJson)
-        // {
-        //     var propertiesToFill = instance
-        //         .GetType()
-        //         .GetProperties()
-        //         .Where(f => f.GetCustomAttributes(typeof(PropertiesAttribute)).Any());
-        //
-        //     var settingsJObject = JObject.Parse(settingsValueAsJson);
-        //
-        //     foreach (var propertyInfo in propertiesToFill)
-        //     {
-        //         var propertyAtribute = propertyInfo.GetCustomAttributes(typeof(PropertiesAttribute)).First() as PropertiesAttribute;
-        //         propertyInfo.SetValue(instance, settingsJObject.GetJTokenByPath(propertyAtribute.Name).ToObject(propertyInfo.PropertyType));
-        //     }
-        // }
     }
 }

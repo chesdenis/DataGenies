@@ -8,14 +8,6 @@ namespace DG.Core.Tests.Unit
     public class ApplicationSettingsWriterTests
     {
         [Fact]
-        public void NameMeSomehow()
-        {
-            // Arrange
-            // Act
-            // Assert
-        }
-        
-        [Fact]
         public void ShouldSetApplicationSettingsIfNeeded()
         {
             // Arrange
@@ -43,12 +35,12 @@ namespace DG.Core.Tests.Unit
             sut.WriteSettings(app, this.GetExampleSettingsAsJson());
             
             // Assert
-            app.Settings.SharedA.Should().Be("This is shared A");
+            app.SharedA.Should().Be("This is shared A");
         
-            app.Settings.SharedB.A.Should().Be("This is sub shared A");
-            app.Settings.SharedB.B.Should().Be("This is sub shared B");
+            app.SharedB.A.Should().Be("This is sub shared A");
+            app.SharedB.B.Should().Be("This is sub shared B");
         }
-
+        
         private string GetExampleSettingsAsJson()
         {
             return @"{
@@ -89,12 +81,6 @@ namespace DG.Core.Tests.Unit
         
         internal class SampleSettings
         {
-            [SharedSettings("SectionA:SharedA")]
-            public string SharedA { get; set; }
-        
-            [SharedSettings("SectionB:SharedB")]
-            public ComplexSharedB SharedB { get; set; }
-        
             public string B { get; set; }
         
             public RegularComplexC RegularC { get; set; }

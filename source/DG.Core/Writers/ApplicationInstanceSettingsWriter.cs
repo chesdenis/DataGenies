@@ -8,17 +8,7 @@ namespace DG.Core.Writers
     {
         public void WriteSettings(object applicationInstance, string settingsAsJson)
         {
-            var instanceType = applicationInstance.GetType();
-
-            if (instanceType.HasSettings())
-            {
-                applicationInstance.WriteSettings(settingsAsJson);
-            }       
-
-            if (instanceType.HasSharedSettings())
-            {
-                applicationInstance.WriteSharedSettings(settingsAsJson);
-            }
+            applicationInstance.WriteSettings(settingsAsJson);
         }
     }
 }

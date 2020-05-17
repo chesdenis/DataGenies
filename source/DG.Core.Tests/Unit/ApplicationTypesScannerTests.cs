@@ -120,7 +120,7 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppA
+        private class AppA
         {
             [StateReport]
             public StateReport ReportStateSampleFunction()
@@ -133,7 +133,7 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppB
+        private class AppB
         {
             [StateReport]
             public StateReport AnotherStateSampleFunction()
@@ -146,24 +146,23 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppC
+        private class AppC
         {
         }
 
-        internal class AppD
+        private class AppD
         {
         }
 
         [Application]
-        internal class AppE
+        private class AppE
         {
             [Settings]
             public ComplexSettings ComplexSettings { get; set; }
         }
 
-        internal class ComplexSettings
+        private class ComplexSettings
         {
-            
         }
     }
 }

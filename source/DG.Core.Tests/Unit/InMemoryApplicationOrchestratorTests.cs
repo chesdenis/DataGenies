@@ -5,7 +5,6 @@ namespace DG.Core.Tests.Unit
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using DG.Core.Attributes;
     using DG.Core.Extensions;
     using DG.Core.Model.Enums;
@@ -191,7 +190,7 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppA
+        private class AppA
         {
             [StateReport]
             public StateReport ReportStateSampleFunction()
@@ -204,7 +203,7 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppB
+        private class AppB
         {
             [StateReport]
             public StateReport AnotherStateSampleFunction()
@@ -217,24 +216,23 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppC
+        private class AppC
         {
         }
 
-        internal class AppD
+        private class AppD
         {
         }
 
         [Application]
-        internal class AppE
+        private class AppE
         {
             [Settings]
             public SettingsA Settings { get; set; }
         }
         
-        public class SettingsA
+        private class SettingsA
         {
-             
         }
     }
 }

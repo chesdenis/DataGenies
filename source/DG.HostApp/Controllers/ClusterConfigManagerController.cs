@@ -1,6 +1,8 @@
 ﻿using System.Text.Json;
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
+using DG.HostApp.Model;
+using DG.HostApp.Routes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DG.HostApp.Controllers
@@ -10,7 +12,7 @@ namespace DG.HostApp.Controllers
     public class ClusterConfigManagerController : ControllerBase
     {
         private readonly IClusterConfigManager clusterConfigManager;
-
+        
         public ClusterConfigManagerController(IClusterConfigManager clusterConfigManager)
         {
             this.clusterConfigManager = clusterConfigManager;
@@ -29,13 +31,13 @@ namespace DG.HostApp.Controllers
         }
 
         [HttpPost]
-        [Route("WriteConfig")]
+        [Route(ClusterConfigManagerRoutes.WriteConfig)]
         public ActionResult WriteConfig([FromBody] ClusterConfig clusterConfig)
         {
             this.clusterConfigManager.WriteConfig(clusterConfig);
             return this.Ok();
         }
-        
+
         [HttpPost]
         [Route("WriteClusterDefinition")]
         public ActionResult WriteClusterDefinition([FromBody] ClusterDefinition clusterDefinition)
