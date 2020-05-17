@@ -157,26 +157,13 @@ namespace DG.Core.Tests.Unit
         [Application]
         internal class AppE
         {
-            [Properties("Test")]
-            public ComplexProperties ComplexProperties { get; set; }
+            [Settings]
+            public ComplexSettings ComplexSettings { get; set; }
         }
 
-        internal class ComplexProperties
+        internal class ComplexSettings
         {
-            public string PropertyA { get; set; }
-
-            public string PropertyB { get; set; }
-
-            public SubProperties SubPropertiesA { get; set; }
-
-            public SubProperties SubPropertiesB { get; set; }
-        }
-
-        internal class SubProperties
-        {
-            public string SampleSubPropertyA { get; set; }
-
-            public string SampleSubPropertyB { get; set; }
+            
         }
     }
 }

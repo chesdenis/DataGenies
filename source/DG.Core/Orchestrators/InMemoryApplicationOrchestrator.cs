@@ -1,4 +1,5 @@
 ﻿using DG.Core.Scanners;
+using DG.Core.Writers;
 
 namespace DG.Core.Orchestrators
 {
@@ -12,14 +13,16 @@ namespace DG.Core.Orchestrators
 
     public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
     {
-        private readonly IApplicationTypesScanner _applicationTypesScanner;
+        private readonly IApplicationTypesScanner applicationTypesScanner;
+        private readonly IApplicationInstanceSettingsWriter instanceSettingsWriter;
         private readonly Dictionary<string, List<object>> inMemoryInstances = new Dictionary<string, List<object>>();
 
         private readonly List<Type> possibleApplicationTypes = new List<Type>();
 
-        public InMemoryApplicationOrchestrator(IApplicationTypesScanner applicationTypesScanner)
+        public InMemoryApplicationOrchestrator(IApplicationTypesScanner applicationTypesScanner, IApplicationInstanceSettingsWriter instanceSettingsWriter)
         {
-            this._applicationTypesScanner = applicationTypesScanner;
+            this.applicationTypesScanner = applicationTypesScanner;
+            this.instanceSettingsWriter = instanceSettingsWriter;
         }
 
         public IDictionary<string, List<object>> GetInMemoryInstancesData() => this.inMemoryInstances;
@@ -40,28 +43,12 @@ namespace DG.Core.Orchestrators
                 yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(StateReportAttribute));
             }
         }
-
-        public IEnumerable<PropertyInfo> GetSettingsProperties(string application, string instanceName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetProperties(string application, string instanceName)
-        {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            return this.inMemoryInstances[uniqueId]
-                .First()
-                .GetType()
-                .GetProperties()
-                .First(f => f.GetCustomAttributes(typeof(PropertiesAttribute)).Any())
-                .GetValue(this.inMemoryInstances[uniqueId].First());
-        }
-
+        
         public void CollectPossibleApplicationTypes()
         {
             this.possibleApplicationTypes.Clear();
             
-            this.possibleApplicationTypes.AddRange(this._applicationTypesScanner.Scan());
+            this.possibleApplicationTypes.AddRange(this.applicationTypesScanner.Scan());
         }
 
         public void Register(string application, string instanceName)
@@ -99,11 +86,8 @@ namespace DG.Core.Orchestrators
             for (int i = 0; i < count; i++)
             {
                 var instance = Activator.CreateInstance(instanceType);
-
-                if (instanceType.HasPropertyAttribute(typeof(PropertiesAttribute)))
-                {
-                    instance.SetValueToPropertyWithAttribute(typeof(PropertiesAttribute), propertiesAsJson);
-                }
+                
+                this.instanceSettingsWriter.WriteSettings(instance, propertiesAsJson);
 
                 this.inMemoryInstances[uniqueId].Add(instance);
             }

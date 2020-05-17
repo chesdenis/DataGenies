@@ -22,14 +22,14 @@
         "PublicAddress": "http://192.168.0.108:5023"
       }
     ],
-    "SharedProperties": {
+    "SharedSettings": {
       "SectionA": {
-        "SharedPropertyA": "This is shared property A"
+        "SharedA": "This is shared A"
       },
       "SectionB": {
-        "SharedPropertiesB": {
-          "SampleSubPropertyA": "This is sub property A",
-          "SampleSubPropertyB": "This is sub property B"
+        "SharedB": {
+          "A": "This is sub shared A",
+          "B": "This is sub shared B"
         }
       }
     },
@@ -63,13 +63,13 @@
         "Name": "SampleAppInstanceA",
         "Type": "HelloWorldAppWithProperties",
         "HostingModel": "InMemory",
-        "Properties": {
-          "SimplePropertyB": "This is simple property B",
-          "ComplexPropertyC": {
-            "SampleSubPropertyA": "This is regular sub property A",
-            "SampleSubPropertyB": "This is regular sub property B"
+        "Settings": {
+          "B": "This is simple property B",
+          "RegularC": {
+            "A": "This is regular sub property A",
+            "B": "This is regular sub property B"
           },
-          "SimpleNumericPropertyF": 1234
+          "F": 1234
         },
         "PlacementPolicies": [
           "Node1",

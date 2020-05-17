@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class PropertiesAttribute : Attribute
+    public class SettingsAttribute : Attribute
     {
     }
 }
