@@ -1,13 +1,12 @@
 ﻿using System.Text.Json;
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
-using DG.HostApp.Model;
 using DG.HostApp.Routes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DG.HostApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ClusterConfigManagerRoutes.Root)]
     [ApiController]
     public class ClusterConfigManagerController : ControllerBase
     {
@@ -19,7 +18,7 @@ namespace DG.HostApp.Controllers
         }
 
         [HttpGet]
-        [Route("GetConfig")]
+        [Route(ClusterConfigManagerRoutes.GetConfig)]
         public ActionResult<string> GetConfig()
         {
             return this.Ok(JsonSerializer.Serialize(
@@ -39,18 +38,10 @@ namespace DG.HostApp.Controllers
         }
 
         [HttpPost]
-        [Route("WriteClusterDefinition")]
+        [Route(ClusterConfigManagerRoutes.WriteClusterDefinition)]
         public ActionResult WriteClusterDefinition([FromBody] ClusterDefinition clusterDefinition)
         {
             this.clusterConfigManager.WriteClusterDefinition(clusterDefinition);
-            return this.Ok();
-        }
-        
-        [HttpPost]
-        [Route("SyncClusterDefinitionAcrossHosts")]
-        public ActionResult SyncClusterDefinitionAcrossHosts()
-        {
-            this.clusterConfigManager.SyncClusterDefinitionAcrossHosts();
             return this.Ok();
         }
     }

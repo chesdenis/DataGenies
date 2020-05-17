@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
+using DG.HostApp.Extensions;
 
 namespace DG.HostApp
 {

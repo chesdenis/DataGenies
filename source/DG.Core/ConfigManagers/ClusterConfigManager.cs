@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
@@ -73,30 +72,6 @@ namespace DG.Core.ConfigManagers
                 currentConfig.ClusterDefinition.LastUpdateTime = this.systemClock.Now;
                 
                 this.WriteConfig(currentConfig);
-            }
-        }
-
-        public async Task SyncClusterDefinitionAcrossHosts()
-        {
-            var currentHost = this.GetHost();
-            
-            foreach (var host in this.GetConfig().ClusterDefinition.Hosts)
-            {
-                if (host.Name.ToLowerInvariant() == currentHost.Name.ToLowerInvariant())
-                {
-                    continue;
-                }
-
-                try
-                {
-                    await Task.Run(() => this.httpService.Post(
-                        $"{host.GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition",
-                        this.GetClusterDefinition().ToJson()));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
             }
         }
     }
