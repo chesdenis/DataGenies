@@ -23,7 +23,7 @@ namespace DG.HostApp.Controllers
         public ActionResult<string> Scan()
         {
             var data = this.applicationTypesScanner.Scan()
-                .Select(s => new TypeDto()
+                .Select(s => new ApplicationDto()
                 {
                     Name = s.Name,
                     FullName = s.FullName,

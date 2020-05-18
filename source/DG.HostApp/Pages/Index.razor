@@ -1,37 +1,79 @@
 ﻿@page "/"
+@using DG.Core.Model.Dto
+@using DG.HostApp.Routes
+@using System.Text.Json
+@using DG.Core.Model.ClusterConfig
+@using DG.Core.Services
+@using DG.HostApp.Extensions
+@using Microsoft.Extensions.Options
+
+@inject IHttpService httpService
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
 
 <div class="row mb-3">
     
-  <div class="col-md-4 themed-grid-col">
+    <div class="col-md-4 themed-grid-col">
     
-     <DashboardLeftMenu>
-         <DashboardLeftMenuGroup Header="Dashboard Models" Collapsed="false">
-             <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-             <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-         </DashboardLeftMenuGroup>
-         <DashboardLeftMenuGroup Header="Dashboard Application Types" Collapsed="false">
-               <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-                          <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-         </DashboardLeftMenuGroup>
-         <DashboardLeftMenuGroup Header="Dashboard Application Instances" Collapsed="false">
-               <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-                          <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-         </DashboardLeftMenuGroup>
-         <DashboardLeftMenuGroup Header="All Application Types" Collapsed="false">
-               <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-               <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-                 <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-                            <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-         </DashboardLeftMenuGroup>
-         <DashboardLeftMenuGroup Header="All Application Instances" Collapsed="false">
-               <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-               <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-                 <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-                            <DashboardLeftMenuItem Name="TypeB" Active="false"/>
-         </DashboardLeftMenuGroup>
-     </DashboardLeftMenu>
-  </div>
-  <div class="col-md-8 themed-grid-col">
+        <DashboardLeftMenu>
+            <DashboardLeftMenuGroup Header="Dashboard Models" Collapsed="false">
+                <DashboardLeftMenuItem Name="TypeA" Active="false"/>
+                <DashboardLeftMenuItem Name="TypeB" Active="false"/>
+            </DashboardLeftMenuGroup>
+            <DashboardLeftMenuGroup Header="Registered Application Instances" Collapsed="false">
+                @if (clusterConfig != null && clusterConfig.ClusterDefinition != null && clusterConfig.ClusterDefinition.ApplicationInstances != null)
+                {
+                    @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
+                    {
+                        <DashboardLeftMenuItem IconClass="oi oi-puzzle-piece" Name="@applicationInstance.RenderNameAndType()" BadgeText="@applicationInstance.Count" Active="false"/>
+                        <DashboardLeftMenuDescription Captions="@applicationInstance.PlacementPolicies"/>
+                    }
+                }
+            </DashboardLeftMenuGroup>
+            <DashboardLeftMenuGroup Header="Registered sources" Collapsed="false">
+                @if (clusterConfig != null && clusterConfig.ClusterDefinition != null && clusterConfig.ClusterDefinition.ApplicationTypesSources != null)
+                {
+                    @foreach (var applicationTypesSource in clusterConfig.ClusterDefinition.ApplicationTypesSources)
+                    {
+                        <DashboardLeftMenuItem IconClass="oi oi-layers" Name="@applicationTypesSource.Name" BadgeText="@applicationTypesSource.PathType" Active="false"/>
+                        <DashboardLeftMenuDescription Caption="@applicationTypesSource.Path"/>
+                    }
+                }
+            </DashboardLeftMenuGroup>
+            <DashboardLeftMenuGroup Header="Possible applications" Collapsed="false">
+                @foreach (var applicationType in allApplicationTypes)
+                {
+                    <DashboardLeftMenuItem IconClass="oi oi-cog" Name="@applicationType.Name" BadgeText="@applicationType.Version" Active="false"/>
+                    <DashboardLeftMenuDescription Caption="@applicationType.FullName"/>
+                }
+            </DashboardLeftMenuGroup>
+            
+        </DashboardLeftMenu>
+    </div>
+    <div class="col-md-8 themed-grid-col">
     
-  </div>
+    </div>
 </div>
+
+@code{
+    private List<ApplicationDto> allApplicationTypes = new List<ApplicationDto>();
+    private ClusterConfig clusterConfig = new ClusterConfig();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadAvailableApplications();
+        await ReadConfig();
+    }
+    
+    private async Task ReadAvailableApplications()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
+        this.allApplicationTypes = JsonSerializer.Deserialize<List<ApplicationDto>>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+
+    private async Task ReadConfig()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetConfig));
+        this.clusterConfig = JsonSerializer.Deserialize<ClusterConfig>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+
+}

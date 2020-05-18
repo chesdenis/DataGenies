@@ -124,7 +124,7 @@ else
 
     private string newPlacement;
     private string rawConfigAsJson = "{}";
-    private List<TypeDto> availableApplications = new List<TypeDto>();
+    private List<ApplicationDto> availableApplications = new List<ApplicationDto>();
 
     private bool fileUploadView = false;
     private const int MaxFileSize = 1 * 1024 * 1024; // 1MB
@@ -215,7 +215,7 @@ else
     private async Task ScanAvailableApplications()
     {
         var availableApplicationsAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
-        this.availableApplications = JsonSerializer.Deserialize<List<TypeDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
+        this.availableApplications = JsonSerializer.Deserialize<List<ApplicationDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
     }
 
     private void SetRawView()

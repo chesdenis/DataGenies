@@ -2,7 +2,7 @@
 
 namespace DG.Core.Model.Dto
 {
-    public class TypeDto
+    public class ApplicationDto
     {
         public string Name { get; set; }
         
