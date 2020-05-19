@@ -14,48 +14,59 @@
     
     <div class="col-md-4 themed-grid-col">
     
-        <DashboardLeftMenu>
-            <DashboardLeftMenuGroup Header="Dashboard Models" Collapsed="false">
+        <DashboardMenu>
+            <DashboardMenuGroup Header="Dashboard Models" Collapsed="false">
                 @if (allModels != null)
                 {
                     @foreach (var model in allModels)
                     {
-                        <DashboardLeftMenuItem IconClass="oi oi-calculator" Name="@model" BadgeText="" Active="false"/>
+                        <DashboardMenuItem IconClass="oi oi-calculator" Name="@model" BadgeText="" Active="false"/>
                     }
                 }
-            </DashboardLeftMenuGroup>
-            <DashboardLeftMenuGroup Header="Registered Application Instances" Collapsed="false">
-                @if (clusterConfig != null && clusterConfig.ClusterDefinition != null && clusterConfig.ClusterDefinition.ApplicationInstances != null)
+            </DashboardMenuGroup>
+            <DashboardMenuGroup Header="Registered Application Instances" Collapsed="false">
+                @if (this.ApplicationInstances != null)
                 {
-                    @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
+                    @foreach (var applicationInstance in this.ApplicationInstances)
                     {
-                        <DashboardLeftMenuItem IconClass="oi oi-puzzle-piece" Name="@applicationInstance.RenderNameAndType()" BadgeText="@applicationInstance.Count" Active="false"/>
-                        <DashboardLeftMenuDescription Captions="@applicationInstance.PlacementPolicies"/>
+                        <DashboardMenuItem IconClass="oi oi-puzzle-piece" Name="@applicationInstance.RenderNameAndType()" BadgeText="@applicationInstance.Count" Active="false"/>
+                        <DashboardMenuItemDescription Captions="@applicationInstance.PlacementPolicies"/>
                     }
                 }
-            </DashboardLeftMenuGroup>
-            <DashboardLeftMenuGroup Header="Registered sources" Collapsed="false">
-                @if (clusterConfig != null && clusterConfig.ClusterDefinition != null && clusterConfig.ClusterDefinition.ApplicationTypesSources != null)
+            </DashboardMenuGroup>
+            <DashboardMenuGroup Header="Registered sources" Collapsed="false">
+                @if (this.ApplicationTypesSources != null)
                 {
-                    @foreach (var applicationTypesSource in clusterConfig.ClusterDefinition.ApplicationTypesSources)
+                    @foreach (var applicationTypesSource in this.ApplicationTypesSources)
                     {
-                        <DashboardLeftMenuItem IconClass="oi oi-layers" Name="@applicationTypesSource.Name" BadgeText="@applicationTypesSource.PathType" Active="false"/>
-                        <DashboardLeftMenuDescription Caption="@applicationTypesSource.Path"/>
+                        <DashboardMenuItem IconClass="oi oi-layers" Name="@applicationTypesSource.Name" BadgeText="@applicationTypesSource.PathType" Active="false"/>
+                        <DashboardMenuItemDescription Caption="@applicationTypesSource.Path"/>
                     }
                 }
-            </DashboardLeftMenuGroup>
-            <DashboardLeftMenuGroup Header="Possible applications" Collapsed="false">
+            </DashboardMenuGroup>
+            <DashboardMenuGroup Header="Possible applications" Collapsed="false">
                 @foreach (var applicationType in allApplicationTypes)
                 {
-                    <DashboardLeftMenuItem IconClass="oi oi-cog" Name="@applicationType.Name" BadgeText="@applicationType.Version" Active="false"/>
-                    <DashboardLeftMenuDescription Caption="@applicationType.FullName"/>
+                    <DashboardMenuItem IconClass="oi oi-cog" Name="@applicationType.Name" BadgeText="@applicationType.Version" Active="false"/>
+                    <DashboardMenuItemDescription Caption="@applicationType.FullName"/>
                 }
-            </DashboardLeftMenuGroup>
+            </DashboardMenuGroup>
             
-        </DashboardLeftMenu>
+        </DashboardMenu>
+       
     </div>
     <div class="col-md-8 themed-grid-col">
-    
+   
+            @if (this.ApplicationInstances != null)
+            {
+                <span>
+                @foreach (var applicationInstance in this.ApplicationInstances)
+                {
+                    <DashboardCanvasCard />
+                }
+                </span>
+            }
+      
     </div>
 </div>
 
@@ -64,6 +75,9 @@
     private ClusterConfig clusterConfig = new ClusterConfig();
     private List<string> allModels;
 
+    private ApplicationInstances ApplicationInstances => clusterConfig?.ClusterDefinition?.ApplicationInstances;
+    private ApplicationTypesSources ApplicationTypesSources => clusterConfig?.ClusterDefinition?.ApplicationTypesSources;
+    
     protected override async Task OnInitializedAsync()
     {
         await ReadAvailableApplications();

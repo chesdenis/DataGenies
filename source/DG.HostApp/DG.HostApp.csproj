@@ -26,16 +26,22 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       </Content>
-      <Content Update="Components\Dashboard\DashboardLeftMenuGroup.razor">
+      <Content Update="Components\Dashboard\DashboardMenuGroup.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
-      <Content Update="Components\Dashboard\DashboardLeftMenu.razor">
+      <Content Update="Components\Dashboard\DashboardMenu.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
-      <Content Update="Components\Dashboard\DashboardLeftMenuItem.razor">
+      <Content Update="Components\Dashboard\DashboardMenuItem.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
-      <Content Update="Components\Dashboard\DashboardLeftMenuDescription.razor">
+      <Content Update="Components\Dashboard\DashboardMenuItemDescription.razor">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </Content>
+      <Content Update="Components\Dashboard\DashboardCanvas.razor">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      </Content>
+      <Content Update="Components\Dashboard\DashboardCanvasCard.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
     </ItemGroup>
