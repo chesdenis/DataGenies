@@ -12,6 +12,8 @@ namespace DG.HostApp.Routes
         
         public const string WriteClusterDefinition = "WriteClusterDefinition";
         
+        public const string GetClusterModels = "GetClusterModels";
+        
         public override string GetRoot() => Root;
     }
 }

@@ -57,6 +57,10 @@
         "PlacementPolicies": [
           "Node1"
         ],
+        "Models": [
+          "Good price advisor",
+          "Today price informer"
+        ],
         "Count": "4"
       },
       {
@@ -74,6 +78,9 @@
         "PlacementPolicies": [
           "Node1",
           "Node2"
+        ],
+        "Models": [
+          "Good price advisor"
         ],
         "Count": "2"
       }

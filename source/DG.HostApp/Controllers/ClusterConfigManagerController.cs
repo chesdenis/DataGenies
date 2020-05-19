@@ -28,6 +28,18 @@ namespace DG.HostApp.Controllers
                     WriteIndented = true,
                 }));
         }
+        
+        [HttpGet]
+        [Route(ClusterConfigManagerRoutes.GetClusterModels)]
+        public ActionResult<string> GetClusterModels()
+        {
+            return this.Ok(JsonSerializer.Serialize(
+                this.clusterConfigManager.GetClusterModels(),
+                new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                }));
+        }
 
         [HttpPost]
         [Route(ClusterConfigManagerRoutes.WriteConfig)]

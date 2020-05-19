@@ -16,8 +16,13 @@
     
         <DashboardLeftMenu>
             <DashboardLeftMenuGroup Header="Dashboard Models" Collapsed="false">
-                <DashboardLeftMenuItem Name="TypeA" Active="false"/>
-                <DashboardLeftMenuItem Name="TypeB" Active="false"/>
+                @if (allModels != null)
+                {
+                    @foreach (var model in allModels)
+                    {
+                        <DashboardLeftMenuItem IconClass="oi oi-calculator" Name="@model" BadgeText="" Active="false"/>
+                    }
+                }
             </DashboardLeftMenuGroup>
             <DashboardLeftMenuGroup Header="Registered Application Instances" Collapsed="false">
                 @if (clusterConfig != null && clusterConfig.ClusterDefinition != null && clusterConfig.ClusterDefinition.ApplicationInstances != null)
@@ -57,10 +62,12 @@
 @code{
     private List<ApplicationDto> allApplicationTypes = new List<ApplicationDto>();
     private ClusterConfig clusterConfig = new ClusterConfig();
+    private List<string> allModels;
 
     protected override async Task OnInitializedAsync()
     {
         await ReadAvailableApplications();
+        await ReadAvailableModels();
         await ReadConfig();
     }
     
@@ -69,6 +76,13 @@
         var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
         this.allApplicationTypes = JsonSerializer.Deserialize<List<ApplicationDto>>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
     }
+    
+    private async Task ReadAvailableModels()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetClusterModels));
+        this.allModels = JsonSerializer.Deserialize<List<string>>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+
 
     private async Task ReadConfig()
     {

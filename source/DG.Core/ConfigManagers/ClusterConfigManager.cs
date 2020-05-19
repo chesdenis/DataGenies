@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Repositories;
@@ -51,6 +53,11 @@ namespace DG.Core.ConfigManagers
         public ClusterDefinition GetClusterDefinition()
         {
             return this.GetConfig().ClusterDefinition;
+        }
+
+        public IEnumerable<string> GetClusterModels()
+        {
+            return this.GetConfig().ClusterDefinition.ApplicationInstances.SelectMany(s => s.Models).Distinct();
         }
 
         public void WriteConfig(ClusterConfig clusterConfig)

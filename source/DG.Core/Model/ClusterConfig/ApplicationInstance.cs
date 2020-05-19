@@ -12,6 +12,8 @@ namespace DG.Core.Model.ClusterConfig
         public string HostingModel { get; set; }
 
         public List<string> PlacementPolicies { get; set; }
+        
+        public List<string> Models { get; set; }
 
         public string Count { get; set; }
     }
