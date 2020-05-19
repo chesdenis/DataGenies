@@ -1,14 +1,9 @@
-﻿<a href="#" class="list-group-item list-group-item-action @ActiveMark" style="text-overflow: ellipsis;">
+﻿<a class="nav-link">
     <span class="@IconClass" aria-hidden="true"></span> @Name <span class="badge badge-secondary">@BadgeText</span>
 </a>
 
 @code
 {
-    private string ActiveMark => Active ? "active" : string.Empty;
-    
-    [Parameter]
-    public bool Active { get; set; }
-    
     [Parameter]
     public string Name { get; set; }
     

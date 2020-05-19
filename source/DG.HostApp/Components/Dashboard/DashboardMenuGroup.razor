@@ -1,33 +1,27 @@
-﻿<div class="card">
-  <div class="card-header">
-    <h2 class="mb-0">
-      <button class="btn btn-link btn-block text-left" 
-              type="button"
-              @onclick="@Toggle">
-        @Header
-      </button>
-    </h2>
-  </div>
-
-  <div id="collapseOne"
-       class="collapse @CollapsedMark">
-    <div class="card-body">
-      @ChildContent
-    </div>
-  </div>
+﻿<div>
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <a class="nav-link" href="/dashboard/#" @onclick="@Toggle">
+                @Header
+            </a>
+        </li>
+        <li class="nav-item px-3 @groupCss">
+            @ChildContent
+        </li>
+    </ul>
 </div>
+
 @code
 {
-  private string CollapsedMark => Collapsed ? string.Empty : "show";
+    private string groupCss => Collapsed ? "collapse" : null;
+    private void Toggle() => Collapsed = !Collapsed;
 
-  private void Toggle() => this.Collapsed = !this.Collapsed;
+    [Parameter]
+    public string Header { get; set; }
 
-  [Parameter]
-  public string Header { get; set; }
+    [Parameter]
+    public bool Collapsed { get; set; }
 
-  [Parameter]
-  public bool Collapsed { get; set; }
-  
-  [Parameter]
-  public RenderFragment ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 }

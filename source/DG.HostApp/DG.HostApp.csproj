@@ -29,9 +29,6 @@
       <Content Update="Components\Dashboard\DashboardMenuGroup.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
-      <Content Update="Components\Dashboard\DashboardMenu.razor">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </Content>
       <Content Update="Components\Dashboard\DashboardMenuItem.razor">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>

@@ -64,6 +64,43 @@
         "Count": "4"
       },
       {
+        "Name": "HelloWorldAppInstanceA",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Good price advisor",
+          "Today price informer"
+        ],
+        "Count": "4"
+      },
+      {
+        "Name": "HelloWorldAppInstanceB",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Today price informer"
+        ],
+        "Count": "4"
+      },
+      {
+        "Name": "HelloWorldAppInstanceC",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Good price advisor"
+        ],
+        "Count": "4"
+      },
+      {
         "Name": "SampleAppInstanceA",
         "Type": "HelloWorldAppWithProperties",
         "HostingModel": "InMemory",
