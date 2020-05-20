@@ -1,23 +1,24 @@
 ﻿using System.Text.Json;
 using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
+using DG.HostApp.Routes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DG.HostApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ClusterConfigManagerRoutes.Root)]
     [ApiController]
     public class ClusterConfigManagerController : ControllerBase
     {
         private readonly IClusterConfigManager clusterConfigManager;
-
+        
         public ClusterConfigManagerController(IClusterConfigManager clusterConfigManager)
         {
             this.clusterConfigManager = clusterConfigManager;
         }
 
         [HttpGet]
-        [Route("GetConfig")]
+        [Route(ClusterConfigManagerRoutes.GetConfig)]
         public ActionResult<string> GetConfig()
         {
             return this.Ok(JsonSerializer.Serialize(
@@ -27,28 +28,32 @@ namespace DG.HostApp.Controllers
                     WriteIndented = true,
                 }));
         }
+        
+        [HttpGet]
+        [Route(ClusterConfigManagerRoutes.GetClusterModels)]
+        public ActionResult<string> GetClusterModels()
+        {
+            return this.Ok(JsonSerializer.Serialize(
+                this.clusterConfigManager.GetClusterModels(),
+                new JsonSerializerOptions()
+                {
+                    WriteIndented = true,
+                }));
+        }
 
         [HttpPost]
-        [Route("WriteConfig")]
+        [Route(ClusterConfigManagerRoutes.WriteConfig)]
         public ActionResult WriteConfig([FromBody] ClusterConfig clusterConfig)
         {
             this.clusterConfigManager.WriteConfig(clusterConfig);
             return this.Ok();
         }
-        
+
         [HttpPost]
-        [Route("WriteClusterDefinition")]
+        [Route(ClusterConfigManagerRoutes.WriteClusterDefinition)]
         public ActionResult WriteClusterDefinition([FromBody] ClusterDefinition clusterDefinition)
         {
             this.clusterConfigManager.WriteClusterDefinition(clusterDefinition);
-            return this.Ok();
-        }
-        
-        [HttpPost]
-        [Route("SyncClusterDefinitionAcrossHosts")]
-        public ActionResult SyncClusterDefinitionAcrossHosts()
-        {
-            this.clusterConfigManager.SyncClusterDefinitionAcrossHosts();
             return this.Ok();
         }
     }

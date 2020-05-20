@@ -1,9 +1,10 @@
-﻿namespace DG.Core.Tests.Unit
+﻿using DG.Core.Writers;
+
+namespace DG.Core.Tests.Unit
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Reflection;
     using DG.Core.Attributes;
     using DG.Core.Extensions;
     using DG.Core.Model.Enums;
@@ -134,6 +135,27 @@
             report.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
+        [Theory]
+        [InlineData("AppC", "instanceA")]
+        [InlineData("AppD", "instanceD")]
+        [InlineData("AppE", "instanceE")]
+        public void ShouldWriteSettingsDuringBuildOfApplicationInstance(string applicationName, string instanceName)
+        {
+            // Arrange
+            var propertiesWriterMock = new Mock<IApplicationInstanceSettingsWriter>();
+            var inMemoryOrchestrator = this.BuildApplicationOrchestrator(propertiesWriterMock);
+
+            // Act
+            inMemoryOrchestrator.Register(applicationName, instanceName);
+            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, "sample json data");
+
+            // Assert
+            propertiesWriterMock.Verify(
+                x => 
+                    x.WriteSettings(It.IsAny<object>(), It.IsAny<string>()), 
+                Times.Once);
+        }
+
         [Fact]
         public void ShouldThrowExceptionInGetInstanceStateInCaseOfMissingApplications()
         {
@@ -147,45 +169,12 @@
             // Assert
             reportsC.Should().BeOfType<KeyNotFoundException>();
         }
-
-        [Fact]
-        public void ShouldSetApplicationPropertiesIfNeeded()
+        
+        private InMemoryApplicationOrchestrator BuildApplicationOrchestrator(Mock<IApplicationInstanceSettingsWriter> propertiesWriterMock = null)
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-            var propertiesAsJson = @"{
-    ""PropertyA"": ""1234"",
-    ""PropertyB"": ""12345"",
-    ""subPropertiesA"": {""SampleSubPropertyA"":""qwe"", ""SampleSubPropertyB"": null},
-    ""subPropertiesB"": null
-}";
-
-            var application = "AppE";
-            var instanceName = "instanceA";
-
-            // Act
-            inMemoryOrchestrator.Register(application, instanceName);
-            inMemoryOrchestrator.BuildInstance(application, instanceName, propertiesAsJson);
-
-            var properties = inMemoryOrchestrator.GetSettingsProperties(application, instanceName);
-
-            // Assert
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyA"))
-                .Should().NotBeNull();
-
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "PropertyB"))
-                .Should().NotBeNull();
-
-            properties.Select(p => p.GetCustomAttributes(typeof(PropertyAttribute), true)
-                .Cast<PropertyAttribute>().FirstOrDefault(a => a.Name == "SampleSubPropertyA"))
-                .Should().NotBeNull();
-        }
-
-        private InMemoryApplicationOrchestrator BuildApplicationOrchestrator()
-        {
-            var applicationScannerMock = new Mock<IApplicationScanner>();
+            propertiesWriterMock ??= new Mock<IApplicationInstanceSettingsWriter>();
+            
+            var applicationScannerMock = new Mock<IApplicationTypesScanner>();
             applicationScannerMock.Setup(x => x.Scan()).Returns(new List<Type>
             {
                 typeof(AppA),
@@ -194,14 +183,14 @@
                 typeof(AppD),
                 typeof(AppE),
             });
-            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator(applicationScannerMock.Object);
+            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator(applicationScannerMock.Object, propertiesWriterMock.Object);
             inMemoryOrchestrator.CollectPossibleApplicationTypes();
 
             return inMemoryOrchestrator;
         }
 
         [Application]
-        internal class AppA
+        private class AppA
         {
             [StateReport]
             public StateReport ReportStateSampleFunction()
@@ -214,7 +203,7 @@
         }
 
         [Application]
-        internal class AppB
+        private class AppB
         {
             [StateReport]
             public StateReport AnotherStateSampleFunction()
@@ -227,25 +216,23 @@
         }
 
         [Application]
-        internal class AppC
+        private class AppC
         {
         }
 
-        internal class AppD
+        private class AppD
         {
         }
 
         [Application]
-        internal class AppE
+        private class AppE
         {
-            [Property("PropertyA")]
-            public string TargetPropertyA { get; set; }
-
-            [Property("PropertyB")]
-            public string TargetPropertyB { get; set; }
-
-            [Property("subPropertiesA:SampleSubPropertyA")]
-            public string SampleSubPropertyA { get; set; }
+            [Settings]
+            public SettingsA Settings { get; set; }
+        }
+        
+        private class SettingsA
+        {
         }
     }
 }

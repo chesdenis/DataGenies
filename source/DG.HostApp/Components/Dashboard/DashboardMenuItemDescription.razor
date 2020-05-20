@@ -1,0 +1,20 @@
+﻿@if (Captions != null)
+{
+    @foreach(var caption in Captions)
+    {
+        <span class="badge badge-pill badge-light">@caption</span>
+    }
+}
+else
+{
+    <span class="badge badge-pill badge-light">@Caption</span>
+}
+
+@code
+{
+    [Parameter]
+    public List<string> Captions { get; set; }
+
+    [Parameter]
+    public string Caption { get; set; }
+}

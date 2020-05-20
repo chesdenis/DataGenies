@@ -2,27 +2,28 @@
 using System.Text.Json;
 using DG.Core.Model.Dto;
 using DG.Core.Scanners;
+using DG.HostApp.Routes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DG.HostApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(ApplicationScannerControllerRoutes.Root)]
     [ApiController]
     public class ApplicationScannerController : ControllerBase
     {
-        private readonly IApplicationScanner applicationScanner;
+        private readonly IApplicationTypesScanner applicationTypesScanner;
 
-        public ApplicationScannerController(IApplicationScanner applicationScanner)
+        public ApplicationScannerController(IApplicationTypesScanner applicationTypesScanner)
         {
-            this.applicationScanner = applicationScanner;
+            this.applicationTypesScanner = applicationTypesScanner;
         }
 
         [HttpGet]
-        [Route("Scan")]
+        [Route(ApplicationScannerControllerRoutes.Scan)]
         public ActionResult<string> Scan()
         {
-            var data = this.applicationScanner.Scan()
-                .Select(s => new TypeDto()
+            var data = this.applicationTypesScanner.Scan()
+                .Select(s => new ApplicationDto()
                 {
                     Name = s.Name,
                     FullName = s.FullName,

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using DG.Core.Model.Output;
 using DG.Core.Orchestrators;
+using DG.HostApp.Routes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DG.HostApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route(OrchestratorControllerRoutes.Root)]
     [ApiController]
     public class OrchestratorController : ControllerBase
     {
@@ -17,6 +18,7 @@ namespace DG.HostApp.Controllers
         }
 
         [HttpGet]
+        [Route(OrchestratorControllerRoutes.GetInstanceState)]
         public ActionResult<IEnumerable<StateReport>> GetInstanceState(
             [FromQuery]string application,
             [FromQuery]string instanceName)

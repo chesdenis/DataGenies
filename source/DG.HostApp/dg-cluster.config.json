@@ -22,6 +22,17 @@
         "PublicAddress": "http://192.168.0.108:5023"
       }
     ],
+    "SharedSettings": {
+      "SectionA": {
+        "SharedA": "This is shared A"
+      },
+      "SectionB": {
+        "SharedB": {
+          "A": "This is sub shared A",
+          "B": "This is sub shared B"
+        }
+      }
+    },
     "ApplicationTypesSources": [
       {
         "Name": "SourceA",
@@ -32,31 +43,81 @@
         "Name": "SourceB",
         "Path": "C:\\DropFolderB\\directAssembly.dll",
         "PathType" : "DirectFile"
+      },
+      {
+        "Name": "SourceC",
+        "PathType": "CurrentApp"
       }
     ],
     "ApplicationInstances": [
       {
+        "Name": "HelloWorldAppInstance",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Good price advisor",
+          "Today price informer"
+        ],
+        "Count": "4"
+      },
+      {
+        "Name": "HelloWorldAppInstanceA",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Good price advisor",
+          "Today price informer"
+        ],
+        "Count": "4"
+      },
+      {
+        "Name": "HelloWorldAppInstanceB",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Today price informer"
+        ],
+        "Count": "4"
+      },
+      {
+        "Name": "HelloWorldAppInstanceC",
+        "Type": "HelloWorldApp",
+        "HostingModel": "InMemory",
+        "PlacementPolicies": [
+          "Node1"
+        ],
+        "Models": [
+          "Good price advisor"
+        ],
+        "Count": "4"
+      },
+      {
         "Name": "SampleAppInstanceA",
-        "Type": "HelloWorld",
-        "HostingModel": "TestHostingModel",
-        "Properties": {
-          "TestPropertyA": "sampleValueA",
-          "TestPropertyB": "sampleValueB"
+        "Type": "HelloWorldAppWithProperties",
+        "HostingModel": "InMemory",
+        "Settings": {
+          "B": "This is simple property B",
+          "RegularC": {
+            "A": "This is regular sub property A",
+            "B": "This is regular sub property B"
+          },
+          "F": 1234
         },
         "PlacementPolicies": [
           "Node1",
           "Node2"
         ],
-        "Count": "2"
-      },
-
-      {
-        "Name": "SampleAppInstanceA",
-        "Type": "HelloWorld",
-        "HostingModel": "TestHostingModel",
-        "PlacementPolicies": [
-          "Node3",
-          "Node4"
+        "Models": [
+          "Good price advisor"
         ],
         "Count": "2"
       }

@@ -4,24 +4,25 @@ using System.Linq;
 using DG.Core.Attributes;
 using DG.Core.Extensions;
 using DG.Core.Model.ClusterConfig;
+using DG.Core.Model.Enums;
 using DG.Core.Providers;
 
 namespace DG.Core.Scanners
 {
-    public class ApplicationScanner : IApplicationScanner
+    public class ApplicationTypesScanner : IApplicationTypesScanner
     {
         private readonly IClusterConfigProvider clusterConfigProvider;
         private readonly IFileSystemProvider fileSystemProvider;
-        private readonly IAssemblyTypesProvider _assemblyTypesProvider;
+        private readonly IAssemblyTypesProvider assemblyTypesProvider;
 
-        public ApplicationScanner(
+        public ApplicationTypesScanner(
             IClusterConfigProvider clusterConfigProvider, 
             IFileSystemProvider fileSystemProvider, 
             IAssemblyTypesProvider assemblyTypesProvider)
         {
             this.clusterConfigProvider = clusterConfigProvider;
             this.fileSystemProvider = fileSystemProvider;
-            this._assemblyTypesProvider = assemblyTypesProvider;
+            this.assemblyTypesProvider = assemblyTypesProvider;
         }
         
         public IEnumerable<Type> Scan()
@@ -29,11 +30,20 @@ namespace DG.Core.Scanners
             var typesSources = this.clusterConfigProvider.GetApplicationTypesSources();
 
             return typesSources
-                .Where(w => w.PathType == "Folder")
+                .Where(w => w.PathType.ParseEnum<SourcePathType>() == SourcePathType.Folder)
                 .SelectMany(this.ScanApplicationsInFolder)
                 .Union(typesSources
-                    .Where(w => w.PathType == "DirectFile")
-                    .SelectMany(this.ScanApplicationsInDirectFile));
+                    .Where(w => w.PathType.ParseEnum<SourcePathType>() == SourcePathType.DirectFile)
+                    .SelectMany(this.ScanApplicationsInDirectFile))
+                .Union(typesSources
+                    .Where(w => w.PathType.ParseEnum<SourcePathType>() == SourcePathType.CurrentApp)
+                    .SelectMany(this.ScanCurrentApp));
+        }
+
+        private IEnumerable<Type> ScanCurrentApp(ApplicationTypeSource arg)
+        {
+            return this.assemblyTypesProvider.GetEntryAssemblyTypes()
+                .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute)));
         }
 
         private IEnumerable<Type> ScanApplicationsInFolder(ApplicationTypeSource applicationTypeSource)
@@ -41,13 +51,13 @@ namespace DG.Core.Scanners
             var assembliesInFolder = this.fileSystemProvider.GetAssembliesLocations(applicationTypeSource.Path);
 
             return assembliesInFolder.SelectMany(s =>
-                this._assemblyTypesProvider.GetTypes(s)
+                this.assemblyTypesProvider.GetTypes(s)
                     .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute))));
         }
 
         private IEnumerable<Type> ScanApplicationsInDirectFile(ApplicationTypeSource applicationTypeSource)
         {
-            return this._assemblyTypesProvider.GetTypes(applicationTypeSource.Path)
+            return this.assemblyTypesProvider.GetTypes(applicationTypeSource.Path)
                 .Where(w => w.HasClassAttribute(typeof(ApplicationAttribute)));
         }
     }

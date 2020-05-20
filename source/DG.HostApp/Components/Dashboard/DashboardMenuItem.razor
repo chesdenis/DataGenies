@@ -1,0 +1,15 @@
+﻿<a class="nav-link">
+    <span class="@IconClass" aria-hidden="true"></span> @Name <span class="badge badge-secondary">@BadgeText</span>
+</a>
+
+@code
+{
+    [Parameter]
+    public string Name { get; set; }
+    
+    [Parameter]
+    public string BadgeText { get; set; }
+
+    [Parameter]
+    public string IconClass { get; set; }
+}

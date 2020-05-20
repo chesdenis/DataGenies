@@ -1,0 +1,23 @@
+﻿<div class="card">
+    <div class="card-body">
+        <span class="@IconClass" aria-hidden="true"></span><h5 class="card-title">@Name</h5><span class="badge badge-secondary">@BadgeText</span>
+        <p class="card-text">@Description</p>
+        <a href="#" class="btn btn-outline-primary">Start</a>
+        <a href="#" class="btn btn-outline-secondary">Stop</a>
+        <a href="#" class="btn btn-outline-info">Restart</a>
+    </div>
+</div>
+@code
+{
+    [Parameter]
+    public string Name { get; set; }
+    
+    [Parameter]
+    public string Description { get; set; }
+    
+    [Parameter]
+    public string BadgeText { get; set; }
+
+    [Parameter]
+    public string IconClass { get; set; }
+}

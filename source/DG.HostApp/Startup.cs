@@ -2,9 +2,11 @@ using DG.Core.ConfigManagers;
 using DG.Core.Model.ClusterConfig;
 using DG.Core.Orchestrators;
 using DG.Core.Providers;
+using DG.Core.Readers;
 using DG.Core.Repositories;
 using DG.Core.Scanners;
 using DG.Core.Services;
+using DG.Core.Writers;
 using DG.HostApp.Providers;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
@@ -43,11 +45,12 @@ namespace DG.HostApp
             services.AddTransient<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
             services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
-            services.AddTransient<IApplicationScanner, ApplicationScanner>();
+            services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
             
             services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
             services.AddTransient<IFileSystemProvider, FileSystemProvider>();
             services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
+            services.AddTransient<IApplicationInstanceSettingsWriter, ApplicationInstanceSettingsWriter>();
             
             services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
             services.Configure<DG.Core.Model.ClusterConfig.ApplicationTypesSources>(

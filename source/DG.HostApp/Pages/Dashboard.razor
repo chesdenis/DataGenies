@@ -1,0 +1,114 @@
+﻿@layout BlankLayout
+@page "/dashboard"
+@using DG.Core.Model.Dto
+@using DG.HostApp.Routes
+@using System.Text.Json
+@using DG.Core.Model.ClusterConfig
+@using DG.Core.Services
+@using DG.HostApp.Extensions
+@using Microsoft.Extensions.Options
+
+@inject IHttpService httpService
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+
+<div class="sidebar">
+    <NavMenu/>
+    
+    <DashboardMenuGroup Header="Dashboard Models" Collapsed="false">
+        @if (allModels != null)
+        {
+            @foreach (var model in allModels)
+            {
+                <DashboardMenuItem IconClass="oi oi-calculator" Name="@model" BadgeText=""/>
+            }
+        }
+    </DashboardMenuGroup>
+     <DashboardMenuGroup Header="Registered Application Instances" Collapsed="false">
+                @if (this.ApplicationInstances != null)
+                {
+                    @foreach (var applicationInstance in this.ApplicationInstances)
+                    {
+                        <DashboardMenuItem IconClass="oi oi-puzzle-piece" Name="@applicationInstance.Name" BadgeText="@applicationInstance.Count" />
+                        <DashboardMenuItemDescription Captions="@applicationInstance.PlacementPolicies"/>
+                    }
+                }
+            </DashboardMenuGroup>
+            <DashboardMenuGroup Header="Registered sources" Collapsed="false">
+                @if (this.ApplicationTypesSources != null)
+                {
+                    @foreach (var applicationTypesSource in this.ApplicationTypesSources)
+                    {
+                        <DashboardMenuItem IconClass="oi oi-layers" Name="@applicationTypesSource.Name" BadgeText="@applicationTypesSource.PathType" />
+                        <DashboardMenuItemDescription Caption="@applicationTypesSource.Path"/>
+                    }
+                }
+            </DashboardMenuGroup>
+            <DashboardMenuGroup Header="Possible applications" Collapsed="false">
+                @foreach (var applicationType in allApplicationTypes)
+                {
+                    <DashboardMenuItem IconClass="oi oi-cog" Name="@applicationType.Name" BadgeText="@applicationType.Version" />
+                    <DashboardMenuItemDescription Caption="@applicationType.FullName"/>
+                }
+            </DashboardMenuGroup>
+    
+   
+</div>
+
+<div class="main">
+    <div class="top-row px-4">
+        <input type="text" class="form-control" placeholder="Type to search">
+    </div>
+    <div class="content px-4">
+        <div class="row">
+            
+            @if (this.ApplicationInstances != null)
+            {
+                @foreach (var applicationInstance in this.ApplicationInstances)
+                {
+                    <div class="col-sm-4">
+                        <DashboardCanvasCard Name="@applicationInstance.Name" 
+                                             Description="@applicationInstance.HostingModel" 
+                                             BadgeText="@applicationInstance.Count" 
+                                             IconClass="oi oi-puzzle-piece"/>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code{
+    private List<ApplicationDto> allApplicationTypes = new List<ApplicationDto>();
+    private ClusterConfig clusterConfig = new ClusterConfig();
+    private List<string> allModels;
+
+    private ApplicationInstances ApplicationInstances => clusterConfig?.ClusterDefinition?.ApplicationInstances;
+    private ApplicationTypesSources ApplicationTypesSources => clusterConfig?.ClusterDefinition?.ApplicationTypesSources;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await ReadAvailableApplications();
+        await ReadAvailableModels();
+        await ReadConfig();
+    }
+    
+    private async Task ReadAvailableApplications()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
+        this.allApplicationTypes = JsonSerializer.Deserialize<List<ApplicationDto>>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+    
+    private async Task ReadAvailableModels()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetClusterModels));
+        this.allModels = JsonSerializer.Deserialize<List<string>>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+
+
+    private async Task ReadConfig()
+    {
+        var jsonData = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetConfig));
+        this.clusterConfig = JsonSerializer.Deserialize<ClusterConfig>(jsonData, new JsonSerializerOptions() { IgnoreNullValues = true });
+    }
+
+}

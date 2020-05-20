@@ -132,38 +132,7 @@ namespace DG.Core.Tests.Unit
             originalHash.Should().NotBe(md5HashRemovedInstance);
             md5HashRemovedInstance.Should().NotBe(md5HashRenamedInstance);
         }
-
-        [Fact]
-        public void ShouldCallWriteConfigEndpointsForOtherHosts()
-        {
-            // Arrange
-            var httpService = new Mock<IHttpService>();
-            var configRepositoryMock = new Mock<IClusterConfigRepository>();
-            var systemClockMock = new Mock<ISystemClock>();
-            
-            var hostConfig = this.GetSampleConfig();
-            configRepositoryMock.Setup(x => x.GetClusterConfig()).Returns(hostConfig);
-            
-            // Act
-            var sut = new ClusterConfigManager(configRepositoryMock.Object, httpService.Object, systemClockMock.Object);
-            sut.SyncClusterDefinitionAcrossHosts();
-            
-            // Assert
-            httpService.Verify(
-                x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[1].GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition"),
-                    It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
-                    It.IsAny<string>()),
-                Times.Once());
-            
-            httpService.Verify(
-                x => x.Post(
-                    It.Is<string>(xx => xx == $"{hostConfig.ClusterDefinition.Hosts[0].GetClusterConfigManagerPublicEndpoint()}/WriteClusterDefinition"),
-                    It.Is<string>(xx => xx.Contains("SampleAppInstanceA")), 
-                    It.IsAny<string>()),
-                Times.Never);
-        }
-
+ 
         [Fact]
         public void ShouldSkipWriteInCaseOfNoUpdateInClusterDefinition()
         {

@@ -1,0 +1,27 @@
+﻿<div>
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <a class="nav-link" href="/dashboard/#" @onclick="@Toggle">
+                @Header
+            </a>
+        </li>
+        <li class="nav-item px-3 @groupCss">
+            @ChildContent
+        </li>
+    </ul>
+</div>
+
+@code
+{
+    private string groupCss => Collapsed ? "collapse" : null;
+    private void Toggle() => Collapsed = !Collapsed;
+
+    [Parameter]
+    public string Header { get; set; }
+
+    [Parameter]
+    public bool Collapsed { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

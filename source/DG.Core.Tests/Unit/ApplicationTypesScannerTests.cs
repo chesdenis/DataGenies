@@ -13,7 +13,7 @@ using Xunit;
 
 namespace DG.Core.Tests.Unit
 {
-    public class ApplicationScannerTests
+    public class ApplicationTypesScannerTests
     {
         [Fact]
         public void ShouldScanApplicationsWithApplicationAttributeOnly()
@@ -58,7 +58,7 @@ namespace DG.Core.Tests.Unit
             scanResult.Should().HaveCount(0);
         }
 
-        private ApplicationScanner BuildApplicationScanner(ApplicationTypesSources customSources = null)
+        private ApplicationTypesScanner BuildApplicationScanner(ApplicationTypesSources customSources = null)
         {
             var clusterConfigProvider = new Mock<IClusterConfigProvider>();
             var fileSystemProvider = new Mock<IFileSystemProvider>();
@@ -113,14 +113,14 @@ namespace DG.Core.Tests.Unit
                     },
                 });
 
-            return new ApplicationScanner(
+            return new ApplicationTypesScanner(
                 clusterConfigProvider.Object,
                 fileSystemProvider.Object,
                 assemblyProvider.Object);
         }
 
         [Application]
-        internal class AppA
+        private class AppA
         {
             [StateReport]
             public StateReport ReportStateSampleFunction()
@@ -133,7 +133,7 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppB
+        private class AppB
         {
             [StateReport]
             public StateReport AnotherStateSampleFunction()
@@ -146,37 +146,23 @@ namespace DG.Core.Tests.Unit
         }
 
         [Application]
-        internal class AppC
+        private class AppC
         {
         }
 
-        internal class AppD
+        private class AppD
         {
         }
 
         [Application]
-        internal class AppE
+        private class AppE
         {
-            [Property("Test")]
-            public ComplexProperties ComplexProperties { get; set; }
+            [Settings]
+            public ComplexSettings ComplexSettings { get; set; }
         }
 
-        internal class ComplexProperties
+        private class ComplexSettings
         {
-            public string PropertyA { get; set; }
-
-            public string PropertyB { get; set; }
-
-            public SubProperties SubPropertiesA { get; set; }
-
-            public SubProperties SubPropertiesB { get; set; }
-        }
-
-        internal class SubProperties
-        {
-            public string SampleSubPropertyA { get; set; }
-
-            public string SampleSubPropertyB { get; set; }
         }
     }
 }

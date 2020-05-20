@@ -1,9 +1,11 @@
 ﻿@page "/clusterconfigeditor"
 @using System.Text.Json
+@using DG.Core.Extensions
 @using DG.Core.Model.ClusterConfig
 @using DG.Core.Model.Dto
 @using DG.Core.Services
 @using DG.HostApp.Extensions
+@using DG.HostApp.Routes
 @using Microsoft.Extensions.Options
 @inject IHttpService httpService
 @inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
@@ -122,7 +124,7 @@ else
 
     private string newPlacement;
     private string rawConfigAsJson = "{}";
-    private List<TypeDto> availableApplications = new List<TypeDto>();
+    private List<ApplicationDto> availableApplications = new List<ApplicationDto>();
 
     private bool fileUploadView = false;
     private const int MaxFileSize = 1 * 1024 * 1024; // 1MB
@@ -178,19 +180,42 @@ else
            rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
         }
 
-        await httpService.Post(currentHost.Value.WriteConfig(), rawConfigAsJson);
-        await httpService.Post(currentHost.Value.SyncClusterDefinitionAcrossHosts(), string.Empty);
+        await httpService.Post(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.WriteConfig), rawConfigAsJson);
+
+        this.SyncConfigAcrossNodes();
     }
- 
+
+    private void SyncConfigAcrossNodes()
+    {
+        Parallel.ForEach(clusterConfig.ClusterDefinition.Hosts, async(host) =>
+        {
+            if (host.Name.ToLowerInvariant() == currentHost.Value.Name.ToLowerInvariant())
+            {
+               return;
+            }
+
+            try
+            {
+                await Task.Run(() => this.httpService.Post(
+                    host.BuildPublicEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.WriteClusterDefinition),
+                    clusterConfig.ClusterDefinition.ToJson()));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        });
+    }
+
     private async Task ReadConfig()
     {
-        rawConfigAsJson = await httpService.Get(currentHost.Value.GetConfig());
+        rawConfigAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetConfig));
     }
 
     private async Task ScanAvailableApplications()
     {
-        var availableApplicationsAsJson = await httpService.Get(currentHost.Value.Scan());
-        this.availableApplications = JsonSerializer.Deserialize<List<TypeDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
+        var availableApplicationsAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
+        this.availableApplications = JsonSerializer.Deserialize<List<ApplicationDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
     }
 
     private void SetRawView()
