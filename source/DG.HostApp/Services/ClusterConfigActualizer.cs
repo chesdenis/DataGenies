@@ -69,7 +69,7 @@
 
                             if (nodeInstanceAmountDiference > 0)
                             {
-                                this.applicationOrchestrator.BuildInstance(clusterInstanceDescription.Type, clusterInstanceDescription.Name, "NeedToSetSettingsHere", nodeInstanceAmountDiference);
+                                this.applicationOrchestrator.BuildInstance(clusterInstanceDescription.Type, clusterInstanceDescription.Name, clusterInstanceDescription.Settings?.ToString(), nodeInstanceAmountDiference);
                             }
                             else if (nodeInstanceAmountDiference < 0)
                             {
@@ -87,7 +87,7 @@
                             {
                                 int nodeInstanceAmount = this.InstanceDifferenceCalculator(application, currentHost, 0);
 
-                                this.applicationOrchestrator.BuildInstance(application.Type, application.Name, "NeedToSetSettingsHere", nodeInstanceAmount);
+                                this.applicationOrchestrator.BuildInstance(application.Type, application.Name, application.Settings?.ToString(), nodeInstanceAmount);
                             }
                         }
 
