@@ -49,7 +49,7 @@
                     }
 
                     // case when instance was moved to another host
-                    if (clusterInstanceDescription.PlacementPolicies.First(pp => pp == currentHost.Name) == null)
+                    if (clusterInstanceDescription.PlacementPolicies.FirstOrDefault(pp => pp == currentHost.Name) == null)
                     {
                         this.applicationOrchestrator.Stop(instance.Key);
                         this.applicationOrchestrator.UnRegister(instance.Key);
@@ -74,7 +74,7 @@
                 foreach (var application in applicationInstances)
                 {
                     var isInstanceExist = instances.ContainsKey(ApplicationExtensions.ConstructUniqueId(application.Type, application.Name));
-                    var isHostedOnThisNode = application.PlacementPolicies.First(x => x == currentHost.Name).Any();
+                    var isHostedOnThisNode = application.PlacementPolicies.Any(x => x == currentHost.Name);
 
                     if (isHostedOnThisNode && !isInstanceExist)
                     {

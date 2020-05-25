@@ -82,10 +82,14 @@
                 };
 
             public IEnumerator<object[]> GetEnumerator()
-            { return this.data.GetEnumerator(); }
+            {
+                return this.data.GetEnumerator();
+            }
 
             IEnumerator IEnumerable.GetEnumerator()
-            { return this.GetEnumerator(); }
+            {
+                return this.GetEnumerator();
+            }
         }
     }
 }
