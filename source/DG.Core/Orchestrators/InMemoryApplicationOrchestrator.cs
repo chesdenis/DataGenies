@@ -1,7 +1,4 @@
-﻿using DG.Core.Scanners;
-using DG.Core.Writers;
-
-namespace DG.Core.Orchestrators
+﻿namespace DG.Core.Orchestrators
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +6,8 @@ namespace DG.Core.Orchestrators
     using DG.Core.Attributes;
     using DG.Core.Extensions;
     using DG.Core.Model.Output;
+    using DG.Core.Scanners;
+    using DG.Core.Writers;
 
     public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
     {
@@ -42,11 +41,11 @@ namespace DG.Core.Orchestrators
                 yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(StateReportAttribute));
             }
         }
-        
+
         public void CollectPossibleApplicationTypes()
         {
             this.possibleApplicationTypes.Clear();
-            
+
             this.possibleApplicationTypes.AddRange(this.applicationTypesScanner.Scan());
         }
 
@@ -58,50 +57,74 @@ namespace DG.Core.Orchestrators
             {
                 throw new ArgumentException("Already registered", nameof(uniqueId));
             }
-    
+
             this.inMemoryInstances.Add(uniqueId, new List<object>());
         }
 
         public void UnRegister(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            
-            if (!this.inMemoryInstances.ContainsKey(uniqueId))
+            this.UnRegister(uniqueId);
+        }
+
+        public void UnRegister(string instanceUniqueId)
+        {
+            if (!this.inMemoryInstances.ContainsKey(instanceUniqueId))
             {
-                throw new ArgumentException("Can't unregister this, because it does not register", nameof(uniqueId));
+                throw new ArgumentException("Can't unregister this, because it does not register", nameof(instanceUniqueId));
             }
 
-            this.Stop(application, instanceName);
-            
-            this.inMemoryInstances[uniqueId].Clear();
-            this.inMemoryInstances.Remove(uniqueId);
+            this.Stop(instanceUniqueId);
+
+            this.inMemoryInstances[instanceUniqueId].Clear();
+            this.inMemoryInstances.Remove(instanceUniqueId);
         }
 
         public void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
             var instanceType = this.possibleApplicationTypes.First(f => f.Name == application);
-            
+
             for (int i = 0; i < count; i++)
             {
                 var instance = Activator.CreateInstance(instanceType);
-                
+
                 this.instanceSettingsWriter.WriteSettings(instance, propertiesAsJson);
 
                 this.inMemoryInstances[uniqueId].Add(instance);
             }
         }
 
+        public void RemoveInstance(string application, string instanceName, int count = 1)
+        {
+            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+
+            for (int i = 0; i < count; i++)
+            {
+                this.inMemoryInstances[uniqueId].RemoveAt(this.inMemoryInstances[uniqueId].Count - 1);
+            }
+        }
+
         public void Start(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            this.inMemoryInstances[uniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StartAttribute)));
+            this.Start(uniqueId);
         }
 
         public void Stop(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            this.inMemoryInstances[uniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StopAttribute)));
+            this.Stop(uniqueId);
+        }
+
+        public void Start(string instanceUniqueId)
+        {
+            this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StartAttribute)));
+        }
+
+        public void Stop(string instanceUniqueId)
+        {
+            this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StopAttribute)));
         }
     }
 }
