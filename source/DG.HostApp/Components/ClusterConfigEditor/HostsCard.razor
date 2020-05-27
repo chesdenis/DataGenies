@@ -1,0 +1,81 @@
+﻿@using DG.Core.Model.ClusterConfig
+@using DG.HostApp.Components.ClusterConfigEditor.Forms
+
+
+<div class="card-body">
+    <table class="table">
+        <tr>
+            <th> Host name: </th>
+            <th> Listening urls: </th>
+            <th> Local address: </th>
+            <th>Public address: </th>
+            <th> </th>
+            <th> </th>
+        </tr>
+        @foreach (var host in ClusterConfig.ClusterDefinition.Hosts)
+        {
+            <tr>
+                <td>@host.Name</td>
+                <td>@host.ListeningUrls</td>
+                <td>@host.LocalAddress</td>
+                <td>@host.PublicAddress</td>
+                <td> <button class="btn btn-outline-primary" @onclick="() => SetHost(host)">Edit</button> </td>
+                <td> <button class=" btn btn-outline-primary" @onclick="(async () => await DeleteHost(host))">Delete</button></td>
+            </tr>
+            <tr style="display:@SetVisible(host.Name)">
+                <td colspan="4"><HostEditForm EditableHost="host" OnClickCallBack="Refresh" /> </td>
+            </tr>
+        }
+    </table>
+    <button class="btn btn-outline-primary" @onclick="@AddHost">Add Host</button>
+</div>
+
+@code {
+    [Parameter]
+    public ClusterConfig ClusterConfig { get; set; }
+    private Host selectedHost { get; set; }
+    private string displayMode = "none";
+    private string selectedHostName = "";
+
+
+    private void AddHost()
+    {
+        ClusterConfig.ClusterDefinition.Hosts.Add(
+            new Host
+            {
+                Name = "NewHost",
+            });
+    }
+
+    private Task<bool> DeleteHost(Host host)
+    {
+        return Task.Run(() =>
+              ClusterConfig.ClusterDefinition.Hosts.Remove(host)
+              );
+
+    }
+
+    private string SetVisible(string hostName)
+    {
+        if (hostName == selectedHostName)
+        {
+            displayMode = "table-row";
+        }
+        else displayMode = "none";
+        return displayMode;
+
+    }
+
+    private void SetHost(Host host)
+    {
+        selectedHost = host;
+        selectedHostName = selectedHost.Name;
+    }
+
+    private void Refresh(Host host)
+    {
+        displayMode = "none";
+        selectedHost = host;
+        selectedHostName = "";
+    }
+}

@@ -1,0 +1,66 @@
+﻿@using DG.Core.Model.ClusterConfig
+@using DG.Core.Model.Dto
+@using Microsoft.Extensions.Options
+@using DG.HostApp.Services
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+@inject ClusterConfigService clusterConfigService
+
+<div class="card" style="width: 100%;">
+    <div class="card-header">
+        <h4>Current Host</h4>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <tr>
+                <th>Name: </th>
+                <td>@ClusterConfig.CurrentHost.Name </td>
+            </tr>
+            <tr>
+                <th>Listening urls (separated by ";"): </th>
+                <td>@ClusterConfig.CurrentHost.ListeningUrls  </td>
+            </tr>
+            <tr>
+                <th>Local address (IP or hostname + port): </th>
+                <td>@ClusterConfig.CurrentHost.LocalAddress  </td>
+            </tr>
+            <tr>
+                <th>Public address (IP or hostname + port): </th>
+                <td>@ClusterConfig.CurrentHost.PublicAddress  </td>
+            </tr>
+        </table>
+
+
+    </div>
+    <h4> Available applications:</h4>
+    <table class="table">
+        <tr>
+            <th> Name: </th>
+            <th> FullName: </th>
+            <th> Version: </th>
+            <th> AssemblyFullName: </th>
+        </tr>
+        @foreach (var application in AvailableApplications)
+        {
+            <tr>
+                <td> @application.Name</td>
+                <td> @application.FullName</td>
+                <td> @application.Version</td>
+                <td> @application.AssemblyFullName</td>
+            </tr>
+        }
+    </table>
+
+</div>
+
+@code {
+
+    [Parameter]
+    public ClusterConfig ClusterConfig { get; set; }
+    private List<ApplicationDto> AvailableApplications { get; set; } = new List<ApplicationDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.AvailableApplications = await clusterConfigService.ScanAvailableApplications(currentHost);
+    }
+
+}

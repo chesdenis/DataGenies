@@ -7,6 +7,7 @@ using DG.Core.Repositories;
 using DG.Core.Scanners;
 using DG.Core.Services;
 using DG.Core.Writers;
+using DG.HostApp.Extensions;
 using DG.HostApp.Providers;
 using DG.HostApp.Services;
 using Microsoft.AspNetCore.Builder;
@@ -59,6 +60,8 @@ namespace DG.HostApp
                 this.Configuration.GetSection("ClusterDefinition:ApplicationInstances"));
 
             services.AddSingleton(this.Configuration);
+            services.AddClusterConfigService();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

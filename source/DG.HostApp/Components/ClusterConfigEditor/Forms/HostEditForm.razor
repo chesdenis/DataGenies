@@ -1,0 +1,38 @@
+﻿@using DG.Core.Model.ClusterConfig
+
+  <EditForm Model="@EditableHost">
+      <div class="hostEdit-form">
+          <div class="form-element">
+              <label>Listening urls (separated by ";"):</label>
+              <InputText @bind-Value="EditableHost.Name" />
+          </div>
+          <div class="form-element">
+              <label>Listening urls (separated by ";"):</label>
+              <InputText @bind-Value="EditableHost.ListeningUrls" />
+          </div>
+          <div class="form-element">
+              <label>Local address (IP or hostname + port):</label>
+              <InputText @bind-Value="EditableHost.LocalAddress" />
+          </div>
+          <div class="form-element">
+              <label>Public address (IP or hostname + port):</label>
+              <InputText @bind-Value="EditableHost.PublicAddress" />
+          </div>
+          <button class="btn btn-outline-primary" @onclick="SubmitForm">Submit</button>
+       </div>
+</EditForm>
+
+
+        @code {
+            
+            [Parameter]
+            public  Host EditableHost { get; set; }
+
+            [Parameter]
+            public EventCallback<Host> OnClickCallBack { get; set; }
+
+            private async Task SubmitForm()
+            {
+               await OnClickCallBack.InvokeAsync(EditableHost);
+            }
+        }

@@ -10,43 +10,16 @@
     "LastUpdateTime": "2020-04-28T21:37:00.8971439+03:00",
     "Hosts": [
       {
-        "Name": "Node1",
-        "ListeningUrls": "https://*:5001",
-        "LocalAddress": "https://localhost:5001",
-        "PublicAddress": "https://192.168.0.103:5001"
-      },
-      {
-        "Name": "Node2",
+        "Name": "Node27",
         "ListeningUrls": "https://*:5023",
         "LocalAddress": "http://localhost:5023",
         "PublicAddress": "http://192.168.0.108:5023"
-      }
-    ],
-    "SharedSettings": {
-      "SectionA": {
-        "SharedA": "This is shared A"
-      },
-      "SectionB": {
-        "SharedB": {
-          "A": "This is sub shared A",
-          "B": "This is sub shared B"
-        }
-      }
-    },
-    "ApplicationTypesSources": [
-      {
-        "Name": "SourceA",
-        "Path": "C:\\DropFolderA",
-        "PathType" : "Folder"
       },
       {
-        "Name": "SourceB",
-        "Path": "C:\\DropFolderB\\directAssembly.dll",
-        "PathType" : "DirectFile"
-      },
-      {
-        "Name": "SourceC",
-        "PathType": "CurrentApp"
+        "Name": "NewHost11",
+        "ListeningUrls": "4",
+        "LocalAddress": "aaaa",
+        "PublicAddress": "sssss"
       }
     ],
     "ApplicationInstances": [
@@ -104,14 +77,6 @@
         "Name": "SampleAppInstanceA",
         "Type": "HelloWorldAppWithProperties",
         "HostingModel": "InMemory",
-        "Settings": {
-          "B": "This is simple property B",
-          "RegularC": {
-            "A": "This is regular sub property A",
-            "B": "This is regular sub property B"
-          },
-          "F": 1234
-        },
         "PlacementPolicies": [
           "Node1",
           "Node2"
@@ -120,6 +85,23 @@
           "Good price advisor"
         ],
         "Count": "2"
+      }
+    ],
+    "ApplicationTypesSources": [
+      {
+        "Name": "SourceA",
+        "PathType": "Folder",
+        "Path": "C:\\DropFolderA"
+      },
+      {
+        "Name": "SourceB",
+        "PathType": "DirectFile",
+        "Path": "C:\\DropFolderB\\directAssembly.dll"
+      },
+      {
+        "Name": "SourceC",
+        "PathType": "CurrentApp",
+        "Path": null
       }
     ]
   }
