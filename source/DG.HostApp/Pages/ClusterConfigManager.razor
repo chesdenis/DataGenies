@@ -1,21 +1,19 @@
 ﻿@page "/clusterconfigeditor"
 @using System.Text.Json
-@using DG.Core.Extensions
 @using DG.Core.Model.ClusterConfig
-@using DG.Core.Model.Dto
 @using DG.Core.Services
-@using DG.HostApp.Extensions
-@using DG.HostApp.Routes
 @using Microsoft.Extensions.Options
+@using DG.HostApp.Services
 @inject IHttpService httpService
 @inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+@inject ClusterConfigService clusterConfigService
+
 
 <h1>Cluster configuration manager</h1>
 <button class="btn btn-outline-primary" @onclick="SetFormView">Form view</button>
 <button class="btn btn-outline-primary" @onclick="SetRawView">Raw view</button>
 <button class="btn btn-outline-primary" @onclick="ToggleFileUploadView">Upload JsonConfig</button>
-<br />
-<br />
+
 
 @if (fileUploadView == true)
 {
@@ -34,97 +32,21 @@ else
     if (rawView == true)
     {
         <h2>Cluster configuration:</h2>
-        <EditForm Model="@rawConfigAsJson" OnValidSubmit="@WriteConfig">
+        <EditForm Model="@rawConfigAsJson" OnValidSubmit="@(async()=> await clusterConfigService.WriteConfig(clusterConfig,currentHost, rawView, rawConfigAsJson))">
             <InputTextArea style="height: 500px; width: 70%; resize:both;" @bind-Value="rawConfigAsJson" /> <br />
             <button class="btn btn-outline-primary" type="submit">Update config</button>
         </EditForm>
     }
     else
     {
-        <h2>Cluster configuration:</h2>
-        <p>
-            <b>Current Host:</b>
-            <b>Name:</b> @clusterConfig.CurrentHost.Name
-            <b>HashMd5:</b> @clusterConfig.ClusterDefinition.HashMD5
-            <h3>Available applications:</h3>
-            @foreach (var application in availableApplications)
-                        {
-                            <p>
-                                <b>Name:</b>@application.Name
-                                <b>FullName:</b>@application.FullName
-                                <b>Version:</b>@application.Version
-                                <b>AssemblyFullName:</b>@application.AssemblyFullName
-                            </p>
-                        }
-        </p>
-        <EditForm Model="@clusterConfig" OnValidSubmit="@WriteConfig">
-            <h3>Current Host:</h3>
-            <b>Listening urls (separated by ;):</b> <InputText @bind-Value="clusterConfig.CurrentHost.ListeningUrls" /><br />
-            <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.LocalAddress" /><br />
-            <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="clusterConfig.CurrentHost.PublicAddress" /><br />
-            <h3>Hosts:</h3>
-            @foreach (var host in clusterConfig.ClusterDefinition.Hosts)
-            {
-                <p>
-                    <b>Host name:</b> <InputText @bind-Value="host.Name" /><br />
-                    <b>Listening urls (separated by ;):</b> <InputText @bind-Value="host.ListeningUrls" /><br />
-                    <b>Local address (IP or hostname + port):</b> <InputText @bind-Value="host.LocalAddress" /><br />
-                    <b>Public address (IP or hostname + port):</b> <InputText @bind-Value="host.PublicAddress" /><br />
-                </p>
-            }
-
-            <button class="btn btn-outline-primary" @onclick="AddHost">Add Host</button>
-            <br />
-            <br />
-
-            <h3>Application types sources:</h3>
-            @foreach (var applicationType in clusterConfig.ClusterDefinition.ApplicationTypesSources)
-            {
-                <p>
-                    <b>Name:</b> <InputText @bind-Value="applicationType.Name" /><br />
-                    <b>Path:</b> <InputText @bind-Value="applicationType.Path" /><br />
-                    <b>Path Type:</b> <InputText @bind-Value="applicationType.PathType" /><br />
-                </p>
-            }
-            
-            <h3>Application instances:</h3>
-            @foreach (var applicationInstance in clusterConfig.ClusterDefinition.ApplicationInstances)
-            {
-                <p>
-                    <b>Name:</b> <InputText @bind-Value="applicationInstance.Name" /><br />
-                    <b>Type:</b> <InputText @bind-Value="@applicationInstance.Type" /><br />
-                    <b>Hosting model:</b> <InputText @bind-Value="applicationInstance.HostingModel" /><br />
-                    <b>Placement policies:</b><br />
-
-                    @foreach (var placement in applicationInstance.PlacementPolicies)
-                    {
-                        <span style=" margin-left:40px">
-                            <b>=></b>@placement;<br />
-                        </span>
-                    }
-
-                    <span style=" margin-left:40px">
-                        <b>=></b><InputText @bind-Value="newPlacement" />
-                        <button class="btn-outline-primary" @onclick="@(e => { applicationInstance.PlacementPolicies.Add(newPlacement); newPlacement = null; })">Add Placement</button> <br />
-                    </span>
-                    <b>Count:</b> <InputText @bind-Value="applicationInstance.Count" />
-                </p>
-            }
-            <button class="btn btn-outline-primary" @onclick="AddApplicationInstance">Add Application instance</button>
-            <br />
-            <br />
-            <p>
-                <button class="btn btn-outline-primary" type="submit">Update config</button>
-            </p>
-        </EditForm>
+        <CurrentHostCard ClusterConfig="clusterConfig" />
+        <ClusterDefinitionGroup ClusterConfig="clusterConfig" />
     }
 }
 @code {
-    private ClusterConfig clusterConfig;
 
-    private string newPlacement;
+    private ClusterConfig clusterConfig;
     private string rawConfigAsJson = "{}";
-    private List<ApplicationDto> availableApplications = new List<ApplicationDto>();
 
     private bool fileUploadView = false;
     private const int MaxFileSize = 1 * 1024 * 1024; // 1MB
@@ -132,15 +54,12 @@ else
     private string fileToBigStatus = $"That's too big. Max size: {MaxFileSize} bytes.";
     private const string LoadingStatus = "Loading...";
     private string status = DefaultStatus;
-    
     private bool rawView = false;
 
     protected override async Task OnInitializedAsync()
     {
-        await ReadConfig();
+        rawConfigAsJson = await clusterConfigService.ReadConfig(currentHost);
         SetFormView();
-
-        await ScanAvailableApplications();
     }
 
     async Task ViewFile(IFileListEntry[] files)
@@ -173,51 +92,6 @@ else
         }
     }
 
-    private async Task WriteConfig()
-    {
-        if (rawView == false)
-        {
-           rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
-        }
-
-        await httpService.Post(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.WriteConfig), rawConfigAsJson);
-
-        this.SyncConfigAcrossNodes();
-    }
-
-    private void SyncConfigAcrossNodes()
-    {
-        Parallel.ForEach(clusterConfig.ClusterDefinition.Hosts, async(host) =>
-        {
-            if (host.Name.ToLowerInvariant() == currentHost.Value.Name.ToLowerInvariant())
-            {
-               return;
-            }
-
-            try
-            {
-                await Task.Run(() => this.httpService.Post(
-                    host.BuildPublicEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.WriteClusterDefinition),
-                    clusterConfig.ClusterDefinition.ToJson()));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        });
-    }
-
-    private async Task ReadConfig()
-    {
-        rawConfigAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ClusterConfigManagerRoutes>(ClusterConfigManagerRoutes.GetConfig));
-    }
-
-    private async Task ScanAvailableApplications()
-    {
-        var availableApplicationsAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
-        this.availableApplications = JsonSerializer.Deserialize<List<ApplicationDto>>(availableApplicationsAsJson, new JsonSerializerOptions() {WriteIndented = true, IgnoreNullValues = true});
-    }
-
     private void SetRawView()
     {
         rawConfigAsJson = JsonSerializer.Serialize(clusterConfig, new JsonSerializerOptions() { WriteIndented = true });
@@ -234,23 +108,10 @@ else
     {
         this.fileUploadView = !this.fileUploadView;
     }
-
-    private void AddHost()
-    {
-        clusterConfig.ClusterDefinition.Hosts.Add(
-            new Host
-            {
-                Name = "NewHost",
-            });
-    }
-
-    private void AddApplicationInstance()
-    {
-        clusterConfig.ClusterDefinition.ApplicationInstances.Add(
-            new ApplicationInstance
-            {
-                Name = "NewAppication",
-                PlacementPolicies = new List<string>() { }
-            });
-    }
 }
+
+
+
+
+
+

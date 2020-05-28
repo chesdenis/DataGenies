@@ -1,0 +1,34 @@
+﻿@using DG.Core.Model.ClusterConfig
+
+<EditForm Model="@EditableType">
+    <div class="appTypeEdit-form">
+        <div class="form-element">
+            <label>Application type name:</label>
+            <InputText @bind-Value="EditableType.Name" />
+        </div>
+        <div class="form-element">
+            <label>Application type path:</label>
+            <InputText @bind-Value="EditableType.Path" />
+        </div>
+        <div class="form-element">
+            <label>Path type:</label>
+            <InputText @bind-Value="EditableType.PathType" />
+        </div>
+               <button class="btn btn-outline-primary" @onclick="SubmitForm">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public ApplicationTypeSource EditableType { get; set; }
+
+    [Parameter]
+    public EventCallback<ApplicationTypeSource> OnClickCallBack { get; set; }
+
+    private async Task SubmitForm()
+    {
+        await OnClickCallBack.InvokeAsync(EditableType);
+    }
+}

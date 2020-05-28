@@ -1,0 +1,45 @@
+﻿@using DG.Core.Model.ClusterConfig
+
+<EditForm Model="@EditableInstance">
+    <div class="instanceEdit-form">
+        <div class="form-element">
+            <label>Application instance name:</label>
+            <InputText @bind-Value="EditableInstance.Name" />
+        </div>
+        <div class="form-element">
+            <label>Application instance type:</label>
+            <InputText @bind-Value="EditableInstance.Type" />
+        </div>
+        <div class="form-element">
+            <label>Hosting model:</label>
+            <InputText @bind-Value="EditableInstance.HostingModel" />
+        </div>
+        @foreach (var placementPolicy in EditableInstance.PlacementPolicies)
+        {
+        <div class="form-element">
+            <label>Placement policy:</label>
+            
+        </div>
+        }
+        <div class="form-element">
+            <label>Count:</label>
+            <InputText @bind-Value="EditableInstance.Count" />
+        </div>
+        <button class="btn btn-outline-primary" @onclick="SubmitForm">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public ApplicationInstance EditableInstance { get; set; }
+
+    [Parameter]
+    public EventCallback<ApplicationInstance> OnClickCallBack { get; set; }
+
+    private async Task SubmitForm()
+    {
+        await OnClickCallBack.InvokeAsync(EditableInstance);
+    }
+}
