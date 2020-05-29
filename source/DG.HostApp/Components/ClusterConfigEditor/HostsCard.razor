@@ -12,7 +12,7 @@
             <th> </th>
             <th> </th>
         </tr>
-        @foreach (var host in ClusterConfig.ClusterDefinition.Hosts)
+        @foreach (var host in Hosts)
         {
             <tr>
                 <td>@host.Name</td>
@@ -32,6 +32,7 @@
 
 @code {
     [Parameter]
+    public Hosts Hosts { get; set; }
     public ClusterConfig ClusterConfig { get; set; }
     private Host selectedHost { get; set; }
     private string displayMode = "none";

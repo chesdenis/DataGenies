@@ -1,0 +1,82 @@
+﻿@using DG.Core.Model.ClusterConfig
+@using DG.HostApp.Components.ClusterConfigEditor.Forms
+
+<div class="card-body">
+    <table class="table">
+        <tr>
+            <th> Name: </th>
+            <th> Path: </th>
+            <th> Path type: </th>
+            <th> </th>
+            <th> </th>
+        </tr>
+        @foreach (var applicationTypeSource in ClusterConfig.ClusterDefinition.ApplicationTypesSources)
+
+        {
+    <tr>
+        <td>@applicationTypeSource.Name</td>
+        <td>@applicationTypeSource.Path </td>
+        <td>@applicationTypeSource.PathType"</td>
+        <td> <button class=" btn btn-outline-primary" @onclick="() => SetTypeSource(applicationTypeSource) ">Edit</button></td>
+        <td> <button class=" btn btn-outline-primary" @onclick="(async () => await DeleteAppTypeSource(applicationTypeSource))">Delete</button></td>
+    </tr>
+            <tr style="display:@SetVisible(applicationTypeSource.Name)">
+                <td colspan="4"><AppTypeSourceEditForm EditableType="applicationTypeSource" OnClickCallBack="Refresh" /> </td>
+            </tr>
+        }
+    </table>
+    <button class="btn btn-outline-primary" @onclick="AddTypeSource">Add Type</button>
+</div>
+
+
+
+
+@code {
+    [Parameter]
+    public ClusterConfig ClusterConfig { get; set; }
+    private ApplicationTypeSource selectedTypeSource { get; set; }
+    private string displayMode = "none";
+    private string selectedTypeName = "";
+
+    private void AddTypeSource()
+    {
+        ClusterConfig.ClusterDefinition.ApplicationTypesSources.Add(
+            new ApplicationTypeSource
+            {
+
+            });
+    }
+
+    private Task<bool> DeleteAppTypeSource(ApplicationTypeSource applicationTypeSource)
+    {
+        return Task.Run(() =>
+              ClusterConfig.ClusterDefinition.ApplicationTypesSources.Remove(applicationTypeSource)
+              );
+
+    }
+
+    private string SetVisible(string applicationTypeSourceName)
+    {
+        if (applicationTypeSourceName == selectedTypeName)
+        {
+            displayMode = "table-row";
+        }
+        else displayMode = "none";
+        return displayMode;
+
+    }
+
+    private void SetTypeSource(ApplicationTypeSource applicationTypeSource)
+    {
+        selectedTypeSource = applicationTypeSource;
+        selectedTypeName = selectedTypeSource.Name;
+    }
+
+    private void Refresh(ApplicationTypeSource applicationTypeSource)
+    {
+        displayMode = "none";
+        selectedTypeSource = applicationTypeSource;
+        selectedTypeName = "";
+    }
+
+}

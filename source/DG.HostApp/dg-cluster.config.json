@@ -1,7 +1,7 @@
 {
   "CurrentHost": {
     "Name": "Node1",
-    "ListeningUrls": "https://localhost:5001",
+    "ListeningUrls": "https://*:5001",
     "LocalAddress": "https://localhost:5001",
     "PublicAddress": "https://192.168.0.103:5001"
   },
@@ -10,16 +10,22 @@
     "LastUpdateTime": "2020-04-28T21:37:00.8971439+03:00",
     "Hosts": [
       {
-        "Name": "Node27",
+        "Name": "Node1",
+        "ListeningUrls": "https://*:5001",
+        "LocalAddress": "https://localhost:5001",
+        "PublicAddress": "https://192.168.0.103:5001"
+      },
+      {
+        "Name": "Node2",
         "ListeningUrls": "https://*:5023",
         "LocalAddress": "http://localhost:5023",
         "PublicAddress": "http://192.168.0.108:5023"
       },
       {
-        "Name": "NewHost11",
-        "ListeningUrls": "4",
-        "LocalAddress": "aaaa",
-        "PublicAddress": "sssss"
+        "Name": "Node3",
+        "ListeningUrls": "https://*:5024",
+        "LocalAddress": "http://localhost:5024",
+        "PublicAddress": "http://192.168.0.108:5024"
       }
     ],
     "ApplicationInstances": [
@@ -27,8 +33,9 @@
         "Name": "HelloWorldAppInstance",
         "Type": "HelloWorldApp",
         "HostingModel": "InMemory",
+        "Settings": null,
         "PlacementPolicies": [
-          "Node1"
+          "Node3"
         ],
         "Models": [
           "Good price advisor",
@@ -40,8 +47,9 @@
         "Name": "HelloWorldAppInstanceA",
         "Type": "HelloWorldApp",
         "HostingModel": "InMemory",
+        "Settings": null,
         "PlacementPolicies": [
-          "Node1"
+          "Node3"
         ],
         "Models": [
           "Good price advisor",
@@ -53,6 +61,7 @@
         "Name": "HelloWorldAppInstanceB",
         "Type": "HelloWorldApp",
         "HostingModel": "InMemory",
+        "Settings": null,
         "PlacementPolicies": [
           "Node1"
         ],
@@ -63,10 +72,12 @@
       },
       {
         "Name": "HelloWorldAppInstanceC",
-        "Type": "HelloWorldApp",
+        "Type": "HelloWorldAppWithSettings",
         "HostingModel": "InMemory",
+        "Settings": null,
         "PlacementPolicies": [
-          "Node1"
+          "Node1",
+          "Node2"
         ],
         "Models": [
           "Good price advisor"
@@ -75,9 +86,18 @@
       },
       {
         "Name": "SampleAppInstanceA",
-        "Type": "HelloWorldAppWithProperties",
+        "Type": "HelloWorldAppWithSettings",
         "HostingModel": "InMemory",
+        "Settings": {
+          "B": "This is simple property B",
+          "RegularC": {
+            "A": "This is regular sub property A",
+            "B": "This is regular sub property B"
+          },
+          "F": 1234
+        },
         "PlacementPolicies": [
+          "Node3",
           "Node1",
           "Node2"
         ],
@@ -85,6 +105,17 @@
           "Good price advisor"
         ],
         "Count": "2"
+      },
+      {
+        "Name": "NewAppication",
+        "Type": "HelloWorldAppWithSettings",
+        "HostingModel": "InMemory",
+        "Settings": null,
+        "PlacementPolicies": [
+          "Node2"
+        ],
+        "Models": null,
+        "Count": "1"
       }
     ],
     "ApplicationTypesSources": [

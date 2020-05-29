@@ -1,0 +1,57 @@
+﻿@using DG.Core.Model.ClusterConfig
+
+@for (int i = 0; i < EditablePlacementPolicies.Count; i++)
+{  int index=i;
+    <div class="edit-placement">
+        @EditablePlacementPolicies[i]
+        Set new value:
+        <select @onclick="@(()=>SetEditableHostIndex(index))" @onchange="@EditPlacement">
+            <option hidden></option>
+            @foreach (var host in Hosts)
+            {
+                <option value=@host.Name>@host.Name</option>
+            }
+        </select>
+
+        <button class=" btn btn-outline-primary" @onclick="@(()=>DeletePlacement(index))">Delete</button>
+    </div>
+}
+<button class="btn btn-outline-primary" @onclick="@AddPlacement">AddPlacement</button>
+
+
+@code {
+    [CascadingParameter]
+    public Hosts Hosts { get; set; }
+
+    private int editableHostIndex;
+
+    [Parameter]
+    public List<string> EditablePlacementPolicies { get; set; }
+
+    [Parameter]
+    public EventCallback<List<string>> OnHostChangeCallBack { get; set; }
+
+ 
+    private void SetEditableHostIndex(int index)
+    {
+        editableHostIndex = index;
+    }
+
+    private void EditPlacement(ChangeEventArgs args)
+    {
+        EditablePlacementPolicies[editableHostIndex] = args.Value.ToString();
+    }
+
+    private void DeletePlacement(int hostIndex)
+    {
+        EditablePlacementPolicies.RemoveAt(hostIndex);
+    }
+
+    private void AddPlacement()
+    {
+        EditablePlacementPolicies.Add(
+             "NewPlacement"
+             );
+    }
+}
+
