@@ -105,18 +105,8 @@
           "Good price advisor"
         ],
         "Count": "2"
-      },
-      {
-        "Name": "NewAppication",
-        "Type": "HelloWorldAppWithSettings",
-        "HostingModel": "InMemory",
-        "Settings": null,
-        "PlacementPolicies": [
-          "Node2"
-        ],
-        "Models": null,
-        "Count": "1"
       }
+     
     ],
     "ApplicationTypesSources": [
       {
