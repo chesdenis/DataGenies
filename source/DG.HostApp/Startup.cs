@@ -45,7 +45,7 @@ namespace DG.HostApp
             
             services.AddTransient<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
-            services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
+            services.AddSingleton<IApplicationOrchestrator, ApplicationOrchestrator>();
             services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
             
             services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
@@ -65,7 +65,7 @@ namespace DG.HostApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

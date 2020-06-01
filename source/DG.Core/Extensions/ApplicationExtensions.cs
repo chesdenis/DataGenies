@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Json;
 using DG.Core.Model.ClusterConfig;
+using DG.Core.Orchestrators;
 
 namespace DG.Core.Extensions
 {
@@ -10,6 +11,15 @@ namespace DG.Core.Extensions
         public static string ConstructUniqueId(string application, string instanceName)
         {
             return $"{application}/{instanceName}";
+        }
+
+        public static ApplicationUniqueId ParseUniqueId(string uniqueIdAsString)
+        {
+            return new ApplicationUniqueId()
+            {
+                Application = uniqueIdAsString.Split('/')[0],
+                InstanceName = uniqueIdAsString.Split('/')[1],
+            };
         }
 
         public static string ConstructUniqueId(this ApplicationInstance applicationInstance)

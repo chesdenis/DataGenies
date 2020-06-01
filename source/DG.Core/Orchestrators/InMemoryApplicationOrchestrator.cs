@@ -9,122 +9,156 @@
     using DG.Core.Scanners;
     using DG.Core.Writers;
 
-    public class InMemoryApplicationOrchestrator : IApplicationOrchestrator
+    public class ApplicationOrchestrator : IApplicationOrchestrator
     {
-        private readonly IApplicationTypesScanner applicationTypesScanner;
-        private readonly IApplicationInstanceSettingsWriter instanceSettingsWriter;
-        private readonly Dictionary<string, List<object>> inMemoryInstances = new Dictionary<string, List<object>>();
+        private readonly IEnumerable<IApplicationHost> applicationHosts;
 
-        private readonly List<Type> possibleApplicationTypes = new List<Type>();
-
-        public InMemoryApplicationOrchestrator(IApplicationTypesScanner applicationTypesScanner, IApplicationInstanceSettingsWriter instanceSettingsWriter)
+        public ApplicationOrchestrator(IEnumerable<IApplicationHost> applicationHosts)
         {
-            this.applicationTypesScanner = applicationTypesScanner;
-            this.instanceSettingsWriter = instanceSettingsWriter;
+            this.applicationHosts = applicationHosts;
         }
 
-        public IDictionary<string, List<object>> GetInMemoryInstancesData() => this.inMemoryInstances;
-
-        public IEnumerable<StateReport> GetInstanceState(string application, string instanceName)
+        public void Register(ApplicationInfo applicationInfo)
         {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            var instances = this.inMemoryInstances[uniqueId];
-
-            if (!instances.Any() || !instances.All(x => x.GetType().HasMethodAttribute(typeof(StateReportAttribute))))
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(uniqueId), "Can't find any instances");
-            }
-
-            foreach (var instance in instances)
-            {
-                yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(StateReportAttribute));
-            }
+            var applicationHost = this.applicationHosts.First(f => f.CanExecute(applicationInfo.HostingModel));
+            applicationHost.ApplicationBuilder.Build(applicationInfo.ApplicationUniqueId, applicationInfo.PropertiesAsJson);
         }
 
-        public void CollectPossibleApplicationTypes()
+        public void Scale(ApplicationUniqueId applicationUniqueId, int instanceCount)
         {
-            this.possibleApplicationTypes.Clear();
-
-            this.possibleApplicationTypes.AddRange(this.applicationTypesScanner.Scan());
+            throw new NotImplementedException();
         }
 
-        public void Register(string application, string instanceName)
+        public void Start(ApplicationUniqueId applicationUniqueId)
         {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-
-            if (this.inMemoryInstances.ContainsKey(uniqueId))
-            {
-                throw new ArgumentException("Already registered", nameof(uniqueId));
-            }
-
-            this.inMemoryInstances.Add(uniqueId, new List<object>());
+            throw new NotImplementedException();
         }
 
-        public void UnRegister(string application, string instanceName)
+        public void Stop(ApplicationUniqueId applicationUniqueId)
         {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            this.UnRegister(uniqueId);
+            throw new NotImplementedException();
         }
 
-        public void UnRegister(string instanceUniqueId)
+        public void UnRegister(ApplicationUniqueId applicationUniqueId)
         {
-            if (!this.inMemoryInstances.ContainsKey(instanceUniqueId))
-            {
-                throw new ArgumentException("Can't unregister this, because it does not register", nameof(instanceUniqueId));
-            }
-
-            this.Stop(instanceUniqueId);
-
-            this.inMemoryInstances[instanceUniqueId].Clear();
-            this.inMemoryInstances.Remove(instanceUniqueId);
+            throw new NotImplementedException();
         }
 
-        public void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1)
-        {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            var instanceType = this.possibleApplicationTypes.First(f => f.Name == application);
 
-            for (int i = 0; i < count; i++)
-            {
-                var instance = Activator.CreateInstance(instanceType);
+        //private readonly IApplicationTypesScanner applicationTypesScanner;
+        //private readonly IApplicationInstanceSettingsWriter instanceSettingsWriter;
+        //private readonly Dictionary<string, List<object>> inMemoryInstances = new Dictionary<string, List<object>>();
 
-                this.instanceSettingsWriter.WriteSettings(instance, propertiesAsJson);
+        //private readonly List<Type> possibleApplicationTypes = new List<Type>();
 
-                this.inMemoryInstances[uniqueId].Add(instance);
-            }
-        }
+        //public InMemoryApplicationOrchestrator(IApplicationTypesScanner applicationTypesScanner, IApplicationInstanceSettingsWriter instanceSettingsWriter)
+        //{
+        //    this.applicationTypesScanner = applicationTypesScanner;
+        //    this.instanceSettingsWriter = instanceSettingsWriter;
+        //}
 
-        public void RemoveInstance(string application, string instanceName, int count = 1)
-        {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //public IDictionary<string, List<object>> GetInMemoryInstancesData() => this.inMemoryInstances;
 
-            for (int i = 0; i < count; i++)
-            {
-                this.inMemoryInstances[uniqueId].RemoveAt(this.inMemoryInstances[uniqueId].Count - 1);
-            }
-        }
+        //public IEnumerable<StateReport> GetInstanceState(string application, string instanceName)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //    var instances = this.inMemoryInstances[uniqueId];
 
-        public void Start(string application, string instanceName)
-        {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            this.Start(uniqueId);
-        }
+        //    if (!instances.Any() || !instances.All(x => x.GetType().HasMethodAttribute(typeof(StateReportAttribute))))
+        //    {
+        //        throw new ArgumentOutOfRangeException(
+        //            nameof(uniqueId), "Can't find any instances");
+        //    }
 
-        public void Stop(string application, string instanceName)
-        {
-            var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-            this.Stop(uniqueId);
-        }
+        //    foreach (var instance in instances)
+        //    {
+        //        yield return instance.ExecuteFunctionWithoutArgs<StateReport>(typeof(StateReportAttribute));
+        //    }
+        //}
 
-        public void Start(string instanceUniqueId)
-        {
-            this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StartAttribute)));
-        }
+        //public void CollectPossibleApplicationTypes()
+        //{
+        //    this.possibleApplicationTypes.Clear();
 
-        public void Stop(string instanceUniqueId)
-        {
-            this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StopAttribute)));
-        }
+        //    this.possibleApplicationTypes.AddRange(this.applicationTypesScanner.Scan());
+        //}
+
+        //public void Register(string application, string instanceName)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+
+        //    if (this.inMemoryInstances.ContainsKey(uniqueId))
+        //    {
+        //        throw new ArgumentException("Already registered", nameof(uniqueId));
+        //    }
+
+        //    this.inMemoryInstances.Add(uniqueId, new List<object>());
+        //}
+
+        //public void UnRegister(string application, string instanceName)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //    this.UnRegister(uniqueId);
+        //}
+
+        //public void UnRegister(string instanceUniqueId)
+        //{
+        //    if (!this.inMemoryInstances.ContainsKey(instanceUniqueId))
+        //    {
+        //        throw new ArgumentException("Can't unregister this, because it does not register", nameof(instanceUniqueId));
+        //    }
+
+        //    this.Stop(instanceUniqueId);
+
+        //    this.inMemoryInstances[instanceUniqueId].Clear();
+        //    this.inMemoryInstances.Remove(instanceUniqueId);
+        //}
+
+        //public void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //    var instanceType = this.possibleApplicationTypes.First(f => f.Name == application);
+
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        var instance = Activator.CreateInstance(instanceType);
+
+        //        this.instanceSettingsWriter.WriteSettings(instance, propertiesAsJson);
+
+        //        this.inMemoryInstances[uniqueId].Add(instance);
+        //    }
+        //}
+
+        //public void RemoveInstance(string application, string instanceName, int count = 1)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        this.inMemoryInstances[uniqueId].RemoveAt(this.inMemoryInstances[uniqueId].Count - 1);
+        //    }
+        //}
+
+        //public void Start(string application, string instanceName)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //    this.Start(uniqueId);
+        //}
+
+        //public void Stop(string application, string instanceName)
+        //{
+        //    var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
+        //    this.Stop(uniqueId);
+        //}
+
+        //public void Start(string instanceUniqueId)
+        //{
+        //    this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StartAttribute)));
+        //}
+
+        //public void Stop(string instanceUniqueId)
+        //{
+        //    this.inMemoryInstances[instanceUniqueId].ForEach(f => f.ExecuteMethodWithoutArgs(typeof(StopAttribute)));
+        //}
     }
 }

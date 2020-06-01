@@ -5,17 +5,20 @@ namespace DG.Core.Tests.Unit
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using DG.Core.Applications.InMemoryHosting;
     using DG.Core.Attributes;
     using DG.Core.Extensions;
     using DG.Core.Model.Enums;
     using DG.Core.Model.Output;
     using DG.Core.Orchestrators;
     using DG.Core.Scanners;
+    using DG.Core.Tests.Collections;
     using FluentAssertions;
+    using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
     using Moq;
     using Xunit;
 
-    public class InMemoryApplicationOrchestratorTests
+    public class ApplicationOrchestratorWithInMemoryHostTests
     {
         [Theory]
         [InlineData("AppA", "instanceA")]
@@ -23,40 +26,42 @@ namespace DG.Core.Tests.Unit
         public void ShouldThrowExceptionIfWeTryToRegisterMoreThanOne(string applicationName, string instanceName)
         {
             // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            var inMemoryApplications = new InMemoryApplications();
+            var inMemoryApplicationBuilder = this.BuildInMemoryApplicationBuilder(inMemoryApplications);
+            var orchestrator = this.BuildApplicationOrchestrator(inMemoryApplicationBuilder);
+            var applicationInfo = this.BuildApplicationInfo(applicationName, instanceName);
 
             // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
+            orchestrator.Register(applicationInfo);
 
             // Assert
-            Assert.Throws<ArgumentException>(() => inMemoryOrchestrator.Register(applicationName, instanceName));
+            Assert.Throws<ArgumentException>(() => orchestrator.Register(applicationInfo));
         }
 
         [Fact]
         public void ShouldSupportMultipleApplicationInstancesAtSameTime()
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            inMemoryOrchestrator.Register("AppA", "instanceA");
-            inMemoryOrchestrator.Register("AppB", "instanceB");
-            inMemoryOrchestrator.BuildInstance("AppA", "instanceA", string.Empty, 10);
-            inMemoryOrchestrator.BuildInstance("AppB", "instanceB", string.Empty, 15);
+            //// Act
+            //inMemoryOrchestrator.Register("AppA", "instanceA");
+            //inMemoryOrchestrator.Register("AppB", "instanceB");
+            //inMemoryOrchestrator.BuildInstance("AppA", "instanceA", string.Empty, 10);
+            //inMemoryOrchestrator.BuildInstance("AppB", "instanceB", string.Empty, 15);
 
-            // Assert
-            var instancesData = inMemoryOrchestrator.GetInMemoryInstancesData();
+            //// Assert
+            //var instancesData = inMemoryOrchestrator.GetInMemoryInstancesData();
 
-            instancesData.Should().HaveCount(2);
+            //instancesData.Should().HaveCount(2);
 
-            instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].Should().HaveCount(10);
-            instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].First().Should()
-                .BeOfType(typeof(AppA));
+            //instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].Should().HaveCount(10);
+            //instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].First().Should()
+            //    .BeOfType(typeof(AppA));
 
-            instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].Should().HaveCount(15);
-            instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].First().Should()
-                .BeOfType(typeof(AppB));
+            //instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].Should().HaveCount(15);
+            //instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].First().Should()
+            //    .BeOfType(typeof(AppB));
         }
 
         [Theory]
@@ -64,17 +69,17 @@ namespace DG.Core.Tests.Unit
         [InlineData("AppB", "instanceA", typeof(AppB))]
         public void ShouldCreateApplicationInstance(string applicationName, string instanceName, Type expectedType)
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
+            //// Act
+            //inMemoryOrchestrator.Register(applicationName, instanceName);
+            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
 
-            // Assert
-            inMemoryOrchestrator.GetInMemoryInstancesData().Should().HaveCount(1)
-                .And.Subject[ApplicationExtensions.ConstructUniqueId(applicationName, instanceName)].First().Should()
-                .BeOfType(expectedType);
+            //// Assert
+            //inMemoryOrchestrator.GetInMemoryInstancesData().Should().HaveCount(1)
+            //    .And.Subject[ApplicationExtensions.ConstructUniqueId(applicationName, instanceName)].First().Should()
+            //    .BeOfType(expectedType);
         }
 
         [Theory]
@@ -84,17 +89,17 @@ namespace DG.Core.Tests.Unit
         [InlineData("AppA", "instanceNameWith\\Slash")]
         public void ShouldWorkWithApplicationsWithSpecializedNames(string applicationName, string instanceName)
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
+            //// Act
+            //inMemoryOrchestrator.Register(applicationName, instanceName);
+            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
+            //var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
 
-            // Assert
-            reports.Should().HaveCount(1);
-            reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
+            //// Assert
+            //reports.Should().HaveCount(1);
+            //reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
         }
 
         [Theory]
@@ -102,17 +107,17 @@ namespace DG.Core.Tests.Unit
         [InlineData("AppB", "instanceA")]
         public void ShouldGetInstanceStateInCaseOfTypedDataInStateReport(string applicationName, string instanceName)
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
+            //// Act
+            //inMemoryOrchestrator.Register(applicationName, instanceName);
+            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
+            //var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
 
-            // Assert
-            reports.Should().HaveCount(1);
-            reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
+            //// Assert
+            //reports.Should().HaveCount(1);
+            //reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
         }
 
         [Theory]
@@ -122,17 +127,17 @@ namespace DG.Core.Tests.Unit
             string applicationName,
             string instanceName)
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            var report = Assert.Throws<ArgumentOutOfRangeException>(() =>
-                inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList());
+            //// Act
+            //inMemoryOrchestrator.Register(applicationName, instanceName);
+            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
+            //var report = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            //    inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList());
 
-            // Assert
-            report.Should().BeOfType<ArgumentOutOfRangeException>();
+            //// Assert
+            //report.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
         [Theory]
@@ -141,39 +146,37 @@ namespace DG.Core.Tests.Unit
         [InlineData("AppE", "instanceE")]
         public void ShouldWriteSettingsDuringBuildOfApplicationInstance(string applicationName, string instanceName)
         {
-            // Arrange
-            var propertiesWriterMock = new Mock<IApplicationInstanceSettingsWriter>();
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator(propertiesWriterMock);
+            //// Arrange
+            //var propertiesWriterMock = new Mock<IApplicationInstanceSettingsWriter>();
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator(propertiesWriterMock);
 
-            // Act
-            inMemoryOrchestrator.Register(applicationName, instanceName);
-            inMemoryOrchestrator.BuildInstance(applicationName, instanceName, "sample json data");
+            //// Act
+            //inMemoryOrchestrator.Register(applicationName, instanceName);
+            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, "sample json data");
 
-            // Assert
-            propertiesWriterMock.Verify(
-                x => 
-                    x.WriteSettings(It.IsAny<object>(), It.IsAny<string>()), 
-                Times.Once);
+            //// Assert
+            //propertiesWriterMock.Verify(
+            //    x => 
+            //        x.WriteSettings(It.IsAny<object>(), It.IsAny<string>()), 
+            //    Times.Once);
         }
 
         [Fact]
         public void ShouldThrowExceptionInGetInstanceStateInCaseOfMissingApplications()
         {
-            // Arrange
-            var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
+            //// Arrange
+            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
 
-            // Act
-            var reportsC = Assert.Throws<KeyNotFoundException>(() =>
-                inMemoryOrchestrator.GetInstanceState("testAppC", "instanceA").ToList());
+            //// Act
+            //var reportsC = Assert.Throws<KeyNotFoundException>(() =>
+            //    inMemoryOrchestrator.GetInstanceState("testAppC", "instanceA").ToList());
 
-            // Assert
-            reportsC.Should().BeOfType<KeyNotFoundException>();
+            //// Assert
+            //reportsC.Should().BeOfType<KeyNotFoundException>();
         }
-        
-        private InMemoryApplicationOrchestrator BuildApplicationOrchestrator(Mock<IApplicationInstanceSettingsWriter> propertiesWriterMock = null)
+
+        private IApplicationBuilder BuildInMemoryApplicationBuilder(params object[] dependencies)
         {
-            propertiesWriterMock ??= new Mock<IApplicationInstanceSettingsWriter>();
-            
             var applicationScannerMock = new Mock<IApplicationTypesScanner>();
             applicationScannerMock.Setup(x => x.Scan()).Returns(new List<Type>
             {
@@ -183,10 +186,43 @@ namespace DG.Core.Tests.Unit
                 typeof(AppD),
                 typeof(AppE),
             });
-            var inMemoryOrchestrator = new InMemoryApplicationOrchestrator(applicationScannerMock.Object, propertiesWriterMock.Object);
-            inMemoryOrchestrator.CollectPossibleApplicationTypes();
+
+            return new InMemoryApplicationBuilder(
+                dependencies.GetOrMock<InMemoryApplications>(isExplicit: true),
+                dependencies.GetOrMock<IApplicationController>(),
+                applicationScannerMock.Object,
+                dependencies.GetOrMock<IApplicationSettingsWriter>()
+                );
+        }
+
+        private ApplicationOrchestrator BuildApplicationOrchestrator(params object[] dependencies)
+        {
+            var inMemoryHost = new InMemoryApplicationHost(
+                dependencies.GetOrMock<IApplicationController>(),
+                dependencies.GetOrMock<IApplicationBuilder>(),
+                dependencies.GetOrMock<IApplicationSettingsReader>());
+
+            var inMemoryOrchestrator = new ApplicationOrchestrator(new List<IApplicationHost>()
+            {
+                inMemoryHost,
+            });
 
             return inMemoryOrchestrator;
+        }
+
+        private ApplicationInfo BuildApplicationInfo(string applicationName, string instanceName, string hostingModel = "InMemory", int instanceCount = 1, string propertiesAsJson = "{}")
+        {
+            return new ApplicationInfo()
+            {
+                ApplicationUniqueId = new ApplicationUniqueId()
+                {
+                    Application = applicationName,
+                    InstanceName = instanceName,
+                },
+                InstanceCount = instanceCount,
+                PropertiesAsJson = string.Empty,
+                HostingModel = hostingModel,
+            };
         }
 
         [Application]

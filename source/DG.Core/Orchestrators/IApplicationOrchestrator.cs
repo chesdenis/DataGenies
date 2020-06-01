@@ -5,28 +5,14 @@
 
     public interface IApplicationOrchestrator
     {
-        IEnumerable<StateReport> GetInstanceState(string application, string instanceName);
+        void Register(ApplicationInfo applicationInfo);
 
-        IDictionary<string, List<object>> GetInMemoryInstancesData();
+        void UnRegister(ApplicationUniqueId applicationUniqueId);
 
-        void CollectPossibleApplicationTypes();
+        void Start(ApplicationUniqueId applicationUniqueId);
 
-        void Register(string application, string instanceName);
+        void Stop(ApplicationUniqueId applicationUniqueId);
 
-        void UnRegister(string instanceUniqueId);
-
-        void UnRegister(string application, string instanceName);
-
-        void BuildInstance(string application, string instanceName, string propertiesAsJson, int count = 1);
-
-        public void RemoveInstance(string application, string instanceName, int count = 1);
-
-        void Start(string instanceUniqueId);
-
-        void Stop(string instanceUniqueId);
-
-        void Start(string application, string instanceName);
-
-        void Stop(string application, string instanceName);
+        void Scale(ApplicationUniqueId applicationUniqueId, int instanceCount);
     }
 }
