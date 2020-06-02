@@ -4,14 +4,7 @@
     {
         private const string HostingModelName = "Console";
 
-        private readonly ConsoleApplicationHost applicationHost;
-
-        public ConsoleApplicationBuilder(ConsoleApplicationHost applicationHost)
-        {
-            this.applicationHost = applicationHost;
-        }
-
-        public void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson)
+        public void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson = "{}")
         {
             throw new System.NotImplementedException();
         }

@@ -10,7 +10,7 @@ namespace DG.Core.Orchestrators
 
         public override string ToString()
         {
-            return ApplicationExtensions.ConstructUniqueId(this.Application, this.InstanceName);
+            return $"{this.Application}/{this.InstanceName}";
         }
     }
 }

@@ -8,9 +8,13 @@ namespace DG.Core.Extensions
 {
     public static class ApplicationExtensions
     {
-        public static string ConstructUniqueId(string application, string instanceName)
+        public static ApplicationUniqueId ParseUniqueId(string application, string instanceName)
         {
-            return $"{application}/{instanceName}";
+            return new ApplicationUniqueId()
+            {
+                Application = application,
+                InstanceName = instanceName,
+            };
         }
 
         public static ApplicationUniqueId ParseUniqueId(string uniqueIdAsString)
@@ -20,11 +24,6 @@ namespace DG.Core.Extensions
                 Application = uniqueIdAsString.Split('/')[0],
                 InstanceName = uniqueIdAsString.Split('/')[1],
             };
-        }
-
-        public static string ConstructUniqueId(this ApplicationInstance applicationInstance)
-        {
-            return ConstructUniqueId(applicationInstance.Type, applicationInstance.Name);
         }
 
         public static T ExecuteFunctionWithoutArgs<T>(this object instance, Type attributeType)

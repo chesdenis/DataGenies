@@ -3,25 +3,25 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using DG.Core.Attributes;
-    using DG.Core.Extensions;
-    using DG.Core.Model.Output;
-    using DG.Core.Scanners;
-    using DG.Core.Writers;
 
     public class ApplicationOrchestrator : IApplicationOrchestrator
     {
-        private readonly IEnumerable<IApplicationHost> applicationHosts;
+        private readonly IEnumerable<IApplicationBuilder> applicationBuilders;
 
-        public ApplicationOrchestrator(IEnumerable<IApplicationHost> applicationHosts)
+        public ApplicationOrchestrator(IEnumerable<IApplicationBuilder> applicationBuilders)
         {
-            this.applicationHosts = applicationHosts;
+            this.applicationBuilders = applicationBuilders;
+        }
+
+        public IEnumerable<ApplicationInfo> GetApplications()
+        {
+            throw new NotImplementedException();
         }
 
         public void Register(ApplicationInfo applicationInfo)
         {
-            var applicationHost = this.applicationHosts.First(f => f.CanExecute(applicationInfo.HostingModel));
-            applicationHost.ApplicationBuilder.Build(applicationInfo.ApplicationUniqueId, applicationInfo.PropertiesAsJson);
+            var applicationBuilder = this.applicationBuilders.First(f => f.CanExecute(applicationInfo.HostingModel));
+            applicationBuilder.Build(applicationInfo.ApplicationUniqueId, applicationInfo.PropertiesAsJson);
         }
 
         public void Scale(ApplicationUniqueId applicationUniqueId, int instanceCount)

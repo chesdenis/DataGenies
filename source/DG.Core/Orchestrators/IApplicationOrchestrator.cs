@@ -14,5 +14,7 @@
         void Stop(ApplicationUniqueId applicationUniqueId);
 
         void Scale(ApplicationUniqueId applicationUniqueId, int instanceCount);
+
+        IEnumerable<ApplicationInfo> GetApplications();
     }
 }

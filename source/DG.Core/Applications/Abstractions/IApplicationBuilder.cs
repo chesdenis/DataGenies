@@ -2,7 +2,9 @@
 {
     public interface IApplicationBuilder
     {
-        void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson);
+        bool CanExecute(string hostingModelName);
+
+        void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson = "{}");
 
         void Scale(ApplicationUniqueId applicationUniqueId, int newInstanceCount);
 

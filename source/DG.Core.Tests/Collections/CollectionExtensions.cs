@@ -11,7 +11,7 @@ namespace DG.Core.Tests.Collections
         {
             foreach (var item in collection)
             {
-                if (item.GetType().IsSameOrInherits(typeof(T)))
+                if (item is T)
                 {
                     return (T)item;
                 }

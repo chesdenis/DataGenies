@@ -9,6 +9,8 @@ namespace DG.Core.Applications.InMemoryHosting
 
     public class InMemoryApplicationBuilder : IApplicationBuilder
     {
+        private const string HostingModelName = "InMemory";
+
         private readonly InMemoryApplications inMemoryApplications;
 
         private readonly IApplicationController applicationController;
@@ -29,7 +31,7 @@ namespace DG.Core.Applications.InMemoryHosting
             this.applicationSettingsWriter = applicationSettingsWriter;
         }
 
-        public void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson)
+        public void Build(ApplicationUniqueId applicationUniqueId, string propertiesAsJson = "{}")
         {
             if (this.inMemoryApplications.ContainsKey(applicationUniqueId))
             {
@@ -38,7 +40,7 @@ namespace DG.Core.Applications.InMemoryHosting
 
             this.inMemoryApplications.Add(applicationUniqueId, new InMemoryApplication()
             {
-                ApplicationInfo = new ApplicationInfo()
+                Metadata = new ApplicationInfo()
                 {
                     PropertiesAsJson = propertiesAsJson,
                     ApplicationUniqueId = applicationUniqueId,
@@ -56,12 +58,14 @@ namespace DG.Core.Applications.InMemoryHosting
 
             var possibleTypes = this.applicationTypesScanner.Scan();
             var instanceType = possibleTypes.First(f => f.Name == applicationUniqueId.Application);
-            var propertiesAsJson = this.inMemoryApplications[applicationUniqueId].ApplicationInfo.PropertiesAsJson;
+            var propertiesAsJson = this.inMemoryApplications[applicationUniqueId].Metadata.PropertiesAsJson;
 
             for (int i = 0; i < newInstanceCount; i++)
             {
                 this.CreateInMemoryInstance(applicationUniqueId, possibleTypes, propertiesAsJson);
             }
+
+            this.applicationController.Start(applicationUniqueId);
         }
 
         public void Remove(ApplicationUniqueId applicationUniqueId)
@@ -72,7 +76,12 @@ namespace DG.Core.Applications.InMemoryHosting
             }
 
             this.Scale(applicationUniqueId, 0);
-            this.Remove(applicationUniqueId);
+            this.inMemoryApplications.Remove(applicationUniqueId);
+        }
+
+        public bool CanExecute(string hostingModelName)
+        {
+            return hostingModelName == HostingModelName;
         }
 
         private void CreateInMemoryInstance(ApplicationUniqueId applicationUniqueId, IEnumerable<Type> possibleApplicationTypes, string propertiesAsJson)

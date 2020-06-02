@@ -1,107 +1,19 @@
-﻿using DG.Core.Writers;
-
-namespace DG.Core.Tests.Unit
+﻿namespace DG.Core.Tests.Unit
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using DG.Core.Applications.InMemoryHosting;
     using DG.Core.Attributes;
-    using DG.Core.Extensions;
     using DG.Core.Model.Enums;
     using DG.Core.Model.Output;
     using DG.Core.Orchestrators;
     using DG.Core.Scanners;
     using DG.Core.Tests.Collections;
-    using FluentAssertions;
-    using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
     using Moq;
     using Xunit;
 
     public class ApplicationOrchestratorWithInMemoryHostTests
     {
-        [Theory]
-        [InlineData("AppA", "instanceA")]
-        [InlineData("AppB", "instanceA")]
-        public void ShouldThrowExceptionIfWeTryToRegisterMoreThanOne(string applicationName, string instanceName)
-        {
-            // Arrange
-            var inMemoryApplications = new InMemoryApplications();
-            var inMemoryApplicationBuilder = this.BuildInMemoryApplicationBuilder(inMemoryApplications);
-            var orchestrator = this.BuildApplicationOrchestrator(inMemoryApplicationBuilder);
-            var applicationInfo = this.BuildApplicationInfo(applicationName, instanceName);
-
-            // Act
-            orchestrator.Register(applicationInfo);
-
-            // Assert
-            Assert.Throws<ArgumentException>(() => orchestrator.Register(applicationInfo));
-        }
-
-        [Fact]
-        public void ShouldSupportMultipleApplicationInstancesAtSameTime()
-        {
-            //// Arrange
-            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-
-            //// Act
-            //inMemoryOrchestrator.Register("AppA", "instanceA");
-            //inMemoryOrchestrator.Register("AppB", "instanceB");
-            //inMemoryOrchestrator.BuildInstance("AppA", "instanceA", string.Empty, 10);
-            //inMemoryOrchestrator.BuildInstance("AppB", "instanceB", string.Empty, 15);
-
-            //// Assert
-            //var instancesData = inMemoryOrchestrator.GetInMemoryInstancesData();
-
-            //instancesData.Should().HaveCount(2);
-
-            //instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].Should().HaveCount(10);
-            //instancesData[ApplicationExtensions.ConstructUniqueId("AppA", "instanceA")].First().Should()
-            //    .BeOfType(typeof(AppA));
-
-            //instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].Should().HaveCount(15);
-            //instancesData[ApplicationExtensions.ConstructUniqueId("AppB", "instanceB")].First().Should()
-            //    .BeOfType(typeof(AppB));
-        }
-
-        [Theory]
-        [InlineData("AppA", "instanceA", typeof(AppA))]
-        [InlineData("AppB", "instanceA", typeof(AppB))]
-        public void ShouldCreateApplicationInstance(string applicationName, string instanceName, Type expectedType)
-        {
-            //// Arrange
-            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-
-            //// Act
-            //inMemoryOrchestrator.Register(applicationName, instanceName);
-            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-
-            //// Assert
-            //inMemoryOrchestrator.GetInMemoryInstancesData().Should().HaveCount(1)
-            //    .And.Subject[ApplicationExtensions.ConstructUniqueId(applicationName, instanceName)].First().Should()
-            //    .BeOfType(expectedType);
-        }
-
-        [Theory]
-        [InlineData("AppA", "instanceNameWith//DoubleBackslashes")]
-        [InlineData("AppA", "instanceNameWith/Backslash")]
-        [InlineData("AppA", "instanceNameWith'Ampersand")]
-        [InlineData("AppA", "instanceNameWith\\Slash")]
-        public void ShouldWorkWithApplicationsWithSpecializedNames(string applicationName, string instanceName)
-        {
-            //// Arrange
-            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator();
-
-            //// Act
-            //inMemoryOrchestrator.Register(applicationName, instanceName);
-            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, string.Empty);
-            //var reports = inMemoryOrchestrator.GetInstanceState(applicationName, instanceName).ToList();
-
-            //// Assert
-            //reports.Should().HaveCount(1);
-            //reports.First().Should().Match<StateReport>(x => x.Status == Status.Finished);
-        }
-
         [Theory]
         [InlineData("AppA", "instanceA")]
         [InlineData("AppB", "instanceA")]
@@ -140,27 +52,6 @@ namespace DG.Core.Tests.Unit
             //report.Should().BeOfType<ArgumentOutOfRangeException>();
         }
 
-        [Theory]
-        [InlineData("AppC", "instanceA")]
-        [InlineData("AppD", "instanceD")]
-        [InlineData("AppE", "instanceE")]
-        public void ShouldWriteSettingsDuringBuildOfApplicationInstance(string applicationName, string instanceName)
-        {
-            //// Arrange
-            //var propertiesWriterMock = new Mock<IApplicationInstanceSettingsWriter>();
-            //var inMemoryOrchestrator = this.BuildApplicationOrchestrator(propertiesWriterMock);
-
-            //// Act
-            //inMemoryOrchestrator.Register(applicationName, instanceName);
-            //inMemoryOrchestrator.BuildInstance(applicationName, instanceName, "sample json data");
-
-            //// Assert
-            //propertiesWriterMock.Verify(
-            //    x => 
-            //        x.WriteSettings(It.IsAny<object>(), It.IsAny<string>()), 
-            //    Times.Once);
-        }
-
         [Fact]
         public void ShouldThrowExceptionInGetInstanceStateInCaseOfMissingApplications()
         {
@@ -197,17 +88,18 @@ namespace DG.Core.Tests.Unit
 
         private ApplicationOrchestrator BuildApplicationOrchestrator(params object[] dependencies)
         {
-            var inMemoryHost = new InMemoryApplicationHost(
-                dependencies.GetOrMock<IApplicationController>(),
-                dependencies.GetOrMock<IApplicationBuilder>(),
-                dependencies.GetOrMock<IApplicationSettingsReader>());
+            throw new NotImplementedException();
+            //var inMemoryHost = new InMemoryApplicationHost(
+            //    dependencies.GetOrMock<IApplicationController>(),
+            //    dependencies.GetOrMock<IApplicationBuilder>(),
+            //    dependencies.GetOrMock<IApplicationSettingsReader>());
 
-            var inMemoryOrchestrator = new ApplicationOrchestrator(new List<IApplicationHost>()
-            {
-                inMemoryHost,
-            });
+            //var inMemoryOrchestrator = new ApplicationOrchestrator(new List<IApplicationHost>()
+            //{
+            //    inMemoryHost,
+            //});
 
-            return inMemoryOrchestrator;
+            //return inMemoryOrchestrator;
         }
 
         private ApplicationInfo BuildApplicationInfo(string applicationName, string instanceName, string hostingModel = "InMemory", int instanceCount = 1, string propertiesAsJson = "{}")
