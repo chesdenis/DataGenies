@@ -1,9 +1,5 @@
 ﻿@using DG.Core.Model.ClusterConfig
-@using DG.Core.Model.Dto
-@using Microsoft.Extensions.Options
-@using DG.HostApp.Services
-@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
-@inject ClusterConfigService clusterConfigService
+
 
 <div class="card" style="width: 100%;">
     <div class="card-header">
@@ -29,38 +25,36 @@
             </tr>
         </table>
 
+        Set new value:
+        <select @onchange="@SetHostValue">
+            <option hidden></option>
+            @foreach (var host in ClusterConfig.ClusterDefinition.Hosts)
+            {
+                <option value=@host.Name>@host.Name</option>
+            }
+        </select>
+
+        <button class="btn-outline-primary" @onclick="@ChangeHost">Change Host </button>
 
     </div>
-    <h4> Available applications:</h4>
-    <table class="table">
-        <tr>
-            <th> Name: </th>
-            <th> FullName: </th>
-            <th> Version: </th>
-            <th> AssemblyFullName: </th>
-        </tr>
-        @foreach (var application in AvailableApplications)
-        {
-            <tr>
-                <td> @application.Name</td>
-                <td> @application.FullName</td>
-                <td> @application.Version</td>
-                <td> @application.AssemblyFullName</td>
-            </tr>
-        }
-    </table>
-
+    
 </div>
 
 @code {
 
     [Parameter]
     public ClusterConfig ClusterConfig { get; set; }
-    private List<ApplicationDto> AvailableApplications { get; set; } = new List<ApplicationDto>();
+    private Host selectedHost;
 
-    protected override async Task OnInitializedAsync()
+    private void SetHostValue(ChangeEventArgs args)
     {
-        this.AvailableApplications = await clusterConfigService.ScanAvailableApplications(currentHost);
+        selectedHost = ClusterConfig.ClusterDefinition.Hosts.Where
+            (h=> h.Name==args.Value.ToString()).FirstOrDefault();
+    }
+
+    private void ChangeHost()
+    {
+        ClusterConfig.CurrentHost = selectedHost;
     }
 
 }

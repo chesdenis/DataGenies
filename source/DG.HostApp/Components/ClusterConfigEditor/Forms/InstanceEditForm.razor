@@ -1,4 +1,5 @@
 ﻿@using DG.Core.Model.ClusterConfig
+@using DG.Core.Model.Dto
 
 <EditForm Model="@EditableInstance">
     <div class="instanceEdit-form">
@@ -7,20 +8,24 @@
             <InputText @bind-Value="EditableInstance.Name" />
         </div>
         <div class="form-element">
-            <label>Application instance type:</label>
-            <InputText @bind-Value="EditableInstance.Type" />
+            <label>Application instance type:</label> @EditableInstance.Type <br/>
+            <label>Set new instance type value:</label>
+            <InputSelect @bind-Value="EditableInstance.Type" class="form-control">
+                <option hidden></option>
+                @foreach (var type in AvailableApplications)
+                {
+                    <option value="@type.Name">@type.Name</option>
+                }
+            </InputSelect>
         </div>
         <div class="form-element">
             <label>Hosting model:</label>
             <InputText @bind-Value="EditableInstance.HostingModel" />
         </div>
-        @foreach (var placementPolicy in EditableInstance.PlacementPolicies)
-        {
         <div class="form-element">
-            <label>Placement policy:</label>
-            
+            <label>Placement policies:</label>
         </div>
-        }
+            <PlacementPoliciesEditForm EditablePlacementPolicies="EditableInstance.PlacementPolicies"  OnHostChangeCallBack="@RefreshHost" />      
         <div class="form-element">
             <label>Count:</label>
             <InputText @bind-Value="EditableInstance.Count" />
@@ -35,11 +40,21 @@
     [Parameter]
     public ApplicationInstance EditableInstance { get; set; }
 
+    [CascadingParameter]
+    public List<ApplicationDto> AvailableApplications { get; set; }
+
     [Parameter]
     public EventCallback<ApplicationInstance> OnClickCallBack { get; set; }
+
 
     private async Task SubmitForm()
     {
         await OnClickCallBack.InvokeAsync(EditableInstance);
     }
+
+    private void RefreshHost(List<string> hosts)
+    {
+        EditableInstance.PlacementPolicies = hosts;
+    }
+
 }

@@ -4,7 +4,7 @@ using DG.HostApp.Routes;
 
 namespace DG.HostApp.Extensions
 {
-    public static class ServiceExtensions
+    public static class HostExtensions
     {
         public static string[] GetHostListeningAddress(this Host host) => host.ListeningUrls.Split(';', StringSplitOptions.RemoveEmptyEntries);
         

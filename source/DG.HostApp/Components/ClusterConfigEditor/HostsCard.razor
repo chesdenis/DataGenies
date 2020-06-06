@@ -5,14 +5,14 @@
 <div class="card-body">
     <table class="table">
         <tr>
-            <th> Host name: </th>
-            <th> Listening urls: </th>
-            <th> Local address: </th>
+            <th>Host name: </th>
+            <th>Listening urls: </th>
+            <th>Local address: </th>
             <th>Public address: </th>
             <th> </th>
             <th> </th>
         </tr>
-        @foreach (var host in ClusterConfig.ClusterDefinition.Hosts)
+        @foreach (var host in Hosts)
         {
             <tr>
                 <td>@host.Name</td>
@@ -32,7 +32,8 @@
 
 @code {
     [Parameter]
-    public ClusterConfig ClusterConfig { get; set; }
+    public Hosts Hosts { get; set; }
+    
     private Host selectedHost { get; set; }
     private string displayMode = "none";
     private string selectedHostName = "";
@@ -40,7 +41,7 @@
 
     private void AddHost()
     {
-        ClusterConfig.ClusterDefinition.Hosts.Add(
+        Hosts.Add(
             new Host
             {
                 Name = "NewHost",
@@ -50,7 +51,7 @@
     private Task<bool> DeleteHost(Host host)
     {
         return Task.Run(() =>
-              ClusterConfig.ClusterDefinition.Hosts.Remove(host)
+              Hosts.Remove(host)
               );
 
     }

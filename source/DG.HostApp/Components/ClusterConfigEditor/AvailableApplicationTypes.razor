@@ -1,0 +1,25 @@
+﻿@using DG.Core.Model.Dto
+<h4> Available applications:</h4>
+<table class="table">
+    <tr>
+        <th> Name: </th>
+        <th> FullName: </th>
+        <th> Version: </th>
+        <th> AssemblyFullName: </th>
+    </tr>
+    @foreach (var application in AvailableApplications)
+    {
+        <tr>
+            <td> @application.Name</td>
+            <td> @application.FullName</td>
+            <td> @application.Version</td>
+            <td> @application.AssemblyFullName</td>
+        </tr>
+    }
+</table>
+
+
+@code {
+    [Parameter]
+    public List<ApplicationDto> AvailableApplications { get; set; } = new List<ApplicationDto>();
+}

@@ -1,8 +1,13 @@
 ﻿@using DG.Core.Model.ClusterConfig
 @using DG.HostApp.Services
 @using Microsoft.Extensions.Options
+@using DG.Core.Model.Dto
+
 @inject ClusterConfigService clusterConfigService
 @inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+
+
+<AvailableApplicationTypes AvailableApplications="this.AvailableApplications"/>
 
 <div class="card" style="width: 100%;">
     <div class="card-header">
@@ -21,15 +26,19 @@
 
     <div class="card-body tab-content">
         <div class="tab-pane fade @elementsSettings["Hosts"][0]">
-            <HostsCard ClusterConfig="ClusterConfig" />
+            <HostsCard  Hosts="ClusterConfig.ClusterDefinition.Hosts"/>
         </div>
-        <div class="tab-pane fade @elementsSettings["Types"][0]">
+        <div class="tab-pane fade @elementsSettings["Type sources"][0]">
             <div class="card-body">
-                <ApplicationTypesCard ClusterConfig="ClusterConfig" />
+                <ApplicationTypeSourcesCard ClusterConfig="ClusterConfig" />
             </div>
         </div>
         <div class="tab-pane fade @elementsSettings["Instances"][0]">
-            <ApplicationInstancesCard ClusterConfig="ClusterConfig" />
+         <CascadingValue Value="AvailableApplications">
+            <CascadingValue Value="ClusterConfig.ClusterDefinition.Hosts">
+            <ApplicationInstancesCard ClusterConfig="ClusterConfig"/>
+            </CascadingValue>
+             </CascadingValue>
         </div>
     </div>
     <EditForm Model="@ClusterConfig" OnValidSubmit="@(async()=> await clusterConfigService.WriteConfig(ClusterConfig, currentHost))">
@@ -47,12 +56,14 @@
 @code {
     [Parameter]
     public ClusterConfig ClusterConfig { get; set; }
+    private List<ApplicationDto> AvailableApplications { get; set; } = new List<ApplicationDto>();
+    
     private string previousActive;
     private string currentActive = "Hosts";
     private Dictionary<string, string[]> elementsSettings = new Dictionary<string, string[]>()
 {
         {"Hosts", new string[2]{  "show active" ,  "true"   } },
-        { "Types",new string[2]{"","false" } },
+        { "Type sources",new string[2]{"","false" } },
         { "Instances",new string[2]{"","false" } }
     };
 
@@ -71,5 +82,9 @@
         });
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        this.AvailableApplications = await clusterConfigService.ScanAvailableApplications(currentHost);
+    }
 
 }
