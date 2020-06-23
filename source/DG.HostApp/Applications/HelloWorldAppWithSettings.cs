@@ -21,19 +21,19 @@ namespace DG.HostApp.Applications
         [Settings]
         public SampleSettings Settings { get; set; }
     }
-    
+
     public class SampleSettings
     {
         [SharedSettings("SectionA:SharedA")]
         public string SharedA { get; set; }
-        
+
         [SharedSettings("SectionB:SharedB")]
         public ComplexSharedB SharedB { get; set; }
-        
+
         public string B { get; set; }
-        
+
         public RegularComplexC RegularC { get; set; }
-        
+
         public int F { get; set; }
     }
 
@@ -43,11 +43,13 @@ namespace DG.HostApp.Applications
 
         public string B { get; set; }
     }
-    
+
     public class RegularComplexC
     {
         public string A { get; set; }
 
         public string B { get; set; }
+
+        public ComplexSharedB SubC { get; set; }
     }
 }

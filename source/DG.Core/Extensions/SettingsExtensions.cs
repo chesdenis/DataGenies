@@ -1,9 +1,8 @@
-﻿using System.Text.Json;
-
-namespace DG.Core.Extensions
+﻿namespace DG.Core.Extensions
 {
     using System;
     using System.Linq;
+    using System.Text.Json;
     using DG.Core.Attributes;
 
     public static class SettingsExtensions
@@ -17,9 +16,9 @@ namespace DG.Core.Extensions
 
             var jsonDocument = JsonDocument.Parse(propertyValueAsJson);
             var settingsAsJson = jsonDocument.RootElement.GetProperty("Settings");
-            
+
             var settings = JsonSerializer.Deserialize(settingsAsJson.GetRawText(), propertyToFill.PropertyType);
-            
+
             propertyToFill.SetValue(instance, settings);
 
             WriteSharedSettings(instance, propertyValueAsJson);
@@ -32,23 +31,23 @@ namespace DG.Core.Extensions
                 .GetProperties()
                 .Where(f => f.GetCustomAttributes(typeof(SharedSettingsAttribute), true).Any())
                 .ToList();
-            
+
             var jsonDocument = JsonDocument.Parse(propertyValueAsJson);
             var sharedSettingsAsJson = jsonDocument.RootElement.GetProperty("SharedSettings");
-            
+
             foreach (var propertyToFill in propertiesToFill)
             {
                 var pathToSharedSetting = propertyToFill
                     .GetCustomAttributes(typeof(SharedSettingsAttribute), true)
                     .Cast<SharedSettingsAttribute>().First().PathToSharedSettings;
-                
+
                 var sharedSettingAsJson = sharedSettingsAsJson.GetPropertyByPath(pathToSharedSetting);
                 var sharedSetting = JsonSerializer.Deserialize(sharedSettingAsJson.GetRawText(), propertyToFill.PropertyType);
-                
+
                 propertyToFill.SetValue(instance, sharedSetting);
             }
         }
-        
+
         public static object ReadSettings(this object instance, Type attributeType)
         {
             var propertyToGet = instance

@@ -1,7 +1,4 @@
-﻿@using DG.Core.Model.ClusterConfig
-
-
-<div class="card" style="width: 100%;">
+﻿<div class="card" style="width: 100%;">
     <div class="card-header">
         <h4>Current Host</h4>
     </div>
@@ -9,52 +6,30 @@
         <table class="table">
             <tr>
                 <th>Name: </th>
-                <td>@ClusterConfig.CurrentHost.Name </td>
+                <td>@this.ClusterConfig.CurrentHost.Name </td>
             </tr>
             <tr>
                 <th>Listening urls (separated by ";"): </th>
-                <td>@ClusterConfig.CurrentHost.ListeningUrls  </td>
+                <td>@this.ClusterConfig.CurrentHost.ListeningUrls  </td>
             </tr>
             <tr>
                 <th>Local address (IP or hostname + port): </th>
-                <td>@ClusterConfig.CurrentHost.LocalAddress  </td>
+                <td>@this.ClusterConfig.CurrentHost.LocalAddress  </td>
             </tr>
             <tr>
                 <th>Public address (IP or hostname + port): </th>
-                <td>@ClusterConfig.CurrentHost.PublicAddress  </td>
+                <td>@this.ClusterConfig.CurrentHost.PublicAddress  </td>
             </tr>
         </table>
 
         Set new value:
         <select @onchange="@SetHostValue">
             <option hidden></option>
-            @foreach (var host in ClusterConfig.ClusterDefinition.Hosts)
+            @foreach (var host in this.ClusterConfig.ClusterDefinition.Hosts)
             {
                 <option value=@host.Name>@host.Name</option>
             }
         </select>
-
         <button class="btn-outline-primary" @onclick="@ChangeHost">Change Host </button>
-
     </div>
-    
 </div>
-
-@code {
-
-    [Parameter]
-    public ClusterConfig ClusterConfig { get; set; }
-    private Host selectedHost;
-
-    private void SetHostValue(ChangeEventArgs args)
-    {
-        selectedHost = ClusterConfig.ClusterDefinition.Hosts.Where
-            (h=> h.Name==args.Value.ToString()).FirstOrDefault();
-    }
-
-    private void ChangeHost()
-    {
-        ClusterConfig.CurrentHost = selectedHost;
-    }
-
-}

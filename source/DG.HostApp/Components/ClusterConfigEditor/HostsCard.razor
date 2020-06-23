@@ -1,6 +1,4 @@
-﻿@using DG.Core.Model.ClusterConfig
-@using DG.HostApp.Components.ClusterConfigEditor.Forms
-
+﻿@using DG.HostApp.Components.ClusterConfigEditor.Forms
 
 <div class="card-body">
     <table class="table">
@@ -12,7 +10,7 @@
             <th> </th>
             <th> </th>
         </tr>
-        @foreach (var host in Hosts)
+        @foreach (var host in this.Hosts)
         {
             <tr>
                 <td>@host.Name</td>
@@ -29,54 +27,3 @@
     </table>
     <button class="btn btn-outline-primary" @onclick="@AddHost">Add Host</button>
 </div>
-
-@code {
-    [Parameter]
-    public Hosts Hosts { get; set; }
-    
-    private Host selectedHost { get; set; }
-    private string displayMode = "none";
-    private string selectedHostName = "";
-
-
-    private void AddHost()
-    {
-        Hosts.Add(
-            new Host
-            {
-                Name = "NewHost",
-            });
-    }
-
-    private Task<bool> DeleteHost(Host host)
-    {
-        return Task.Run(() =>
-              Hosts.Remove(host)
-              );
-
-    }
-
-    private string SetVisible(string hostName)
-    {
-        if (hostName == selectedHostName)
-        {
-            displayMode = "table-row";
-        }
-        else displayMode = "none";
-        return displayMode;
-
-    }
-
-    private void SetHost(Host host)
-    {
-        selectedHost = host;
-        selectedHostName = selectedHost.Name;
-    }
-
-    private void Refresh(Host host)
-    {
-        displayMode = "none";
-        selectedHost = host;
-        selectedHostName = "";
-    }
-}

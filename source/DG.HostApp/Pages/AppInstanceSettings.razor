@@ -1,0 +1,7 @@
+﻿@page "/instance-settings/{instanceKey}"
+@using DG.HostApp.Components.Settings
+@inject IOrchestratorPageService orchestratorPageService
+@inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
+
+<h3>Instance Settings for @this.InstanceKey </h3>
+<RunTimeInstanceSettingsCard Properties="@this.Properties" />

@@ -10,13 +10,13 @@ using DG.HostApp.Extensions;
 using DG.HostApp.Routes;
 using Microsoft.Extensions.Options;
 
-namespace DG.HostApp.Services
+namespace DG.HostApp.Services.PageServices
 {
-    public class ClusterConfigService
+    public class ClusterConfigPageService : IClusterConfigPageService
     {
         private IHttpService httpService;
 
-        public ClusterConfigService(IHttpService httpService)
+        public ClusterConfigPageService(IHttpService httpService)
         {
             this.httpService = httpService;
         }
@@ -53,11 +53,11 @@ namespace DG.HostApp.Services
 
         public async Task<List<ApplicationDto>> ScanAvailableApplications(IOptions<DG.Core.Model.ClusterConfig.Host> currentHost)
         {
-            var availableApplicationsAsJson = await httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
+            var availableApplicationsAsJson = await this.httpService.Get(currentHost.Value.BuildLocalEndpoint<ApplicationScannerControllerRoutes>(ApplicationScannerControllerRoutes.Scan));
             return JsonSerializer.Deserialize<List<ApplicationDto>>(availableApplicationsAsJson, new JsonSerializerOptions() { WriteIndented = true, IgnoreNullValues = true });
         }
 
-        private void SyncConfigAcrossNodes(ClusterConfig clusterConfig, IOptions<Host> currentHost)
+        public void SyncConfigAcrossNodes(ClusterConfig clusterConfig, IOptions<Host> currentHost)
         {
             Parallel.ForEach(clusterConfig.ClusterDefinition.Hosts, async (host) =>
             {

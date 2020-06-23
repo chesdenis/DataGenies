@@ -1,9 +1,4 @@
-﻿@using DG.Core.Model.ClusterConfig
-@using DG.HostApp.Services
-@using Microsoft.Extensions.Options
-@using DG.Core.Model.Dto
-
-@inject ClusterConfigService clusterConfigService
+﻿@inject IClusterConfigPageService clusterConfigPageService
 @inject IOptions<DG.Core.Model.ClusterConfig.Host> currentHost
 
 
@@ -12,36 +7,36 @@
 <div class="card" style="width: 100%;">
     <div class="card-header">
         <h4> Cluster Definition:</h4>
-        <p><b>HashMd5: </b>@ClusterConfig.ClusterDefinition.HashMD5, <b>Last update time: </b>@ClusterConfig.ClusterDefinition.LastUpdateTime</p>
+        <p><b>HashMd5: </b>@this.ClusterConfig.ClusterDefinition.HashMD5, <b>Last update time: </b>@this.ClusterConfig.ClusterDefinition.LastUpdateTime</p>
 
         <ul class="nav nav-tabs card-header-tabs">
-            @foreach (var key in elementsSettings.Keys)
+            @foreach (var key in this.elementsSettings.Keys)
             {
                 <li class="nav-item">
-                    <a class="nav-link" aria-selected="@elementsSettings[key][1]" @onclick="(async () => await Expand(key))" href="" @onclick:preventDefault>@key </a>
+                    <a class="nav-link" aria-selected="@this.elementsSettings[key][1]" @onclick="(async () => await Expand(key))" href="" @onclick:preventDefault>@key </a>
                 </li>
             }
         </ul>
     </div>
 
     <div class="card-body tab-content">
-        <div class="tab-pane fade @elementsSettings["Hosts"][0]">
-            <HostsCard  Hosts="ClusterConfig.ClusterDefinition.Hosts"/>
+        <div class="tab-pane fade @this.elementsSettings["Hosts"][0]">
+            <HostsCard  Hosts="this.ClusterConfig.ClusterDefinition.Hosts"/>
         </div>
-        <div class="tab-pane fade @elementsSettings["Type sources"][0]">
+        <div class="tab-pane fade @this.elementsSettings["Type sources"][0]">
             <div class="card-body">
-                <ApplicationTypeSourcesCard ClusterConfig="ClusterConfig" />
+                <ApplicationTypeSourcesCard ClusterConfig="this.ClusterConfig" />
             </div>
         </div>
-        <div class="tab-pane fade @elementsSettings["Instances"][0]">
-         <CascadingValue Value="AvailableApplications">
-            <CascadingValue Value="ClusterConfig.ClusterDefinition.Hosts">
-            <ApplicationInstancesCard ClusterConfig="ClusterConfig"/>
+        <div class="tab-pane fade @this.elementsSettings["Instances"][0]">
+         <CascadingValue Value="this.AvailableApplications">
+            <CascadingValue Value="this.ClusterConfig.ClusterDefinition.Hosts">
+            <ApplicationInstancesCard ClusterConfig="this.ClusterConfig"/>
             </CascadingValue>
              </CascadingValue>
         </div>
     </div>
-    <EditForm Model="@ClusterConfig" OnValidSubmit="@(async()=> await clusterConfigService.WriteConfig(ClusterConfig, currentHost))">
+    <EditForm Model="@this.ClusterConfig" OnValidSubmit="@(async()=> await this.clusterConfigPageService.WriteConfig(ClusterConfig, currentHost))">
         <div class="row">
             <div class="col-3">
                 <button class="btn btn-outline-primary" type="submit">Update config</button>
@@ -52,39 +47,3 @@
         </div>
     </EditForm>
 </div>
-
-@code {
-    [Parameter]
-    public ClusterConfig ClusterConfig { get; set; }
-    private List<ApplicationDto> AvailableApplications { get; set; } = new List<ApplicationDto>();
-    
-    private string previousActive;
-    private string currentActive = "Hosts";
-    private Dictionary<string, string[]> elementsSettings = new Dictionary<string, string[]>()
-{
-        {"Hosts", new string[2]{  "show active" ,  "true"   } },
-        { "Type sources",new string[2]{"","false" } },
-        { "Instances",new string[2]{"","false" } }
-    };
-
-    private Task Expand(string elementName)
-    {
-        return Task.Run(() =>
-        {
-            {
-                previousActive = currentActive;
-                currentActive = elementName;
-                elementsSettings[previousActive][0] = "";
-                elementsSettings[previousActive][1] = "false";
-                elementsSettings[elementName][0] = "show active";
-                elementsSettings[elementName][1] = "true";
-            }
-        });
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        this.AvailableApplications = await clusterConfigService.ScanAvailableApplications(currentHost);
-    }
-
-}

@@ -10,6 +10,7 @@ using DG.Core.Writers;
 using DG.HostApp.Extensions;
 using DG.HostApp.Providers;
 using DG.HostApp.Services;
+using DG.HostApp.Services.PageServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -42,16 +43,15 @@ namespace DG.HostApp
 
             services.AddTransient<IHttpService, HttpService>();
             services.AddTransient<ISystemClock, SystemClock>();
-            
             services.AddTransient<IClusterConfigRepository, ClusterJsonConfigRepository>();
             services.AddSingleton<IClusterConfigManager, ClusterConfigManager>();
             services.AddSingleton<IApplicationOrchestrator, InMemoryApplicationOrchestrator>();
             services.AddTransient<IApplicationTypesScanner, ApplicationTypesScanner>();
-            
             services.AddTransient<IClusterConfigProvider, ClusterConfigJsonProvider>();
             services.AddTransient<IFileSystemProvider, FileSystemProvider>();
             services.AddTransient<IAssemblyTypesProvider, AssemblyTypesProvider>();
             services.AddTransient<IApplicationInstanceSettingsWriter, ApplicationInstanceSettingsWriter>();
+            services.AddSingleton<IApplicationInstanceSettingsReader, InMemoryApplicationInstanceSettingsReader>();
             
             services.Configure<DG.Core.Model.ClusterConfig.Host>(this.Configuration.GetSection("CurrentHost"));
             services.Configure<DG.Core.Model.ClusterConfig.ApplicationTypesSources>(
@@ -60,8 +60,7 @@ namespace DG.HostApp
                 this.Configuration.GetSection("ClusterDefinition:ApplicationInstances"));
 
             services.AddSingleton(this.Configuration);
-            services.AddClusterConfigService();
-
+            services.AddServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
