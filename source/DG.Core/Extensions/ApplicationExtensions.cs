@@ -9,7 +9,7 @@ namespace DG.Core.Extensions
     {
         public static string ConstructUniqueId(string application, string instanceName)
         {
-            return $"{application}/{instanceName}";
+            return $"{application}_{instanceName}";
         }
 
         public static string ConstructUniqueId(this ApplicationInstance applicationInstance)

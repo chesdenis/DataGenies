@@ -1,6 +1,4 @@
-﻿@using DG.Core.Model.ClusterConfig
-@using DG.HostApp.Components.ClusterConfigEditor.Forms
-
+﻿@using DG.HostApp.Components.ClusterConfigEditor.Forms
 
 <div class="card-body">
     <div class="top-row px-4">
@@ -13,10 +11,11 @@
             <th> Hosting model: </th>
             <th> Placement policies: </th>
             <th> Count: </th>
+            <th> Settings: </th>
             <th> </th>
             <th> </th>
         </tr>
-        @foreach (var applicationInstance in ClusterConfig.ClusterDefinition.ApplicationInstances)
+        @foreach (var applicationInstance in this.ClusterConfig.ClusterDefinition.ApplicationInstances)
 
         {
             <tr>
@@ -30,6 +29,7 @@
                     }
                 </td>
                 <td> @applicationInstance.Count</td>
+                <td> <NavLink href="@GenerateLink(applicationInstance)">View settings</NavLink></td>
                 <td> <button class="btn btn-outline-primary" @onclick="()=>SetAppInstance(applicationInstance)">Edit</button> </td>
                 <td> <button class=" btn btn-outline-primary" @onclick="(async () => await DeleteAppInstance(applicationInstance))">Delete</button></td>
             </tr>
@@ -43,56 +43,3 @@
     <br />
     <br />
 </div>
-
-@code {
-    [Parameter]
-    public ClusterConfig ClusterConfig { get; set; }
-    private ApplicationInstance selectedInstance { get; set; }
-    private string displayMode = "none";
-    private string selectedInstanceName = "";
-    private string selectedInstanceType = "";
-    private string newPlacement;
-
-    private void AddApplicationInstance()
-    {
-        ClusterConfig.ClusterDefinition.ApplicationInstances.Add(
-            new ApplicationInstance
-            {
-                Name = "NewAppication",
-                PlacementPolicies = new List<string>() { }
-            });
-    }
-
-    private Task<bool> DeleteAppInstance(ApplicationInstance appInstance)
-    {
-        return Task.Run(() =>
-              ClusterConfig.ClusterDefinition.ApplicationInstances.Remove(appInstance)
-              );
-    }
-
-    private string SetVisible(string appInstanceName, string appType)
-    {
-        if (appInstanceName == selectedInstanceName && appType == selectedInstanceType)
-        {
-            displayMode = "table-row";
-        }
-        else displayMode = "none";
-        return displayMode;
-
-    }
-
-    private void SetAppInstance(ApplicationInstance instance)
-    {
-        selectedInstance = instance;
-        selectedInstanceName = selectedInstance.Name;
-        selectedInstanceType = selectedInstance.Type;
-    }
-
-    private void Refresh(ApplicationInstance instance)
-    {
-        displayMode = "none";
-        selectedInstance = instance;
-        selectedInstanceName = "";
-        selectedInstanceType = "";
-    }
-}

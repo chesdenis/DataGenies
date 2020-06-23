@@ -33,14 +33,12 @@ namespace DG.Core.Readers
         public object GetSettings(string application, string instanceName)
         {
             var uniqueId = ApplicationExtensions.ConstructUniqueId(application, instanceName);
-
-            var applicationInstance = this.applicationOrchestrator.GetInMemoryInstancesData()[uniqueId].First();
-            
-            return applicationInstance
-                .GetType()
-                .GetProperties()
-                .First(f => f.GetCustomAttributes(typeof(SettingsAttribute)).Any())
-                .GetValue(applicationInstance);
+            this.applicationOrchestrator.GetInMemoryInstancesData().TryGetValue(uniqueId, out List<object> applicationInstances);
+            return applicationInstances?.First()
+            .GetType()
+            .GetProperties()
+            .First(f => f.GetCustomAttributes(typeof(SettingsAttribute)).Any())
+            .GetValue(applicationInstances.First());
         }
     }
 }
